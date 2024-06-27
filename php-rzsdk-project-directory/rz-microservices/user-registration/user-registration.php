@@ -4,6 +4,7 @@ require_once("include.php");
 ?>
 <?php
 use RzSDK\Curl\Curl;
+use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Response\Response;
 use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
@@ -15,8 +16,8 @@ use RzSDK\Database\SqliteConnection;
 use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
 use RzSDK\DatabaseSpace\DbUserTable;
-use RzSDK\HTTPRequest\ValidationType;
 use RzSDK\HTTPRequest\UserRegistrationRequest;
+use RzSDK\Validation\BuildValidationRules;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -28,48 +29,14 @@ class UserRegistration {
         $this->execute();
     }
 
-    public function reExecute() {
-        $userRegiRequest = new UserRegistrationRequest();
-        $regiParamList = $userRegiRequest->getQuery();
-        $userRegiRequestModel = new UserRegistrationRequestModel();
-        $keyMapping = $userRegiRequestModel->propertyKeyMapping();
-        $requestValue = array();
-        foreach($regiParamList as $value) {
-            if(array_key_exists($value, $_POST)) {
-                $paramValue = $_POST[$value];
-                $userRegiRequestModel->{$keyMapping[$value]} = $paramValue;
-                $requestValue[$value] = $paramValue;
-            } else {
-                //Error array key not exist, return
-            }
-            $method = $value . "_rules";
-            if(method_exists($userRegiRequest, $method)) {
-                $validationRules = $userRegiRequest->{$method}();
-                //DebugLog::log($validationRules);
-                foreach($validationRules as $rules) {
-                    if($rules == ValidationType::NOT_NULL) {
-                        echo "type not null";
-                    } else if($rules == ValidationType::EMAIL) {
-                        echo "type email";
-                    }
-                }
-            }
-        }
-        //DebugLog::log($userRegiRequestModel->deviceType);
-    }
-
     public function execute() {
         if(!empty($_POST)) {
-            $this->reExecute();
-            //
-            $userRegiRequestModel = new UserRegistrationRequestModel();
-            $userRegiRequestModel->agentType = $_POST[$userRegiRequestModel->agentType];
-            $userRegiRequestModel->authType = $_POST[$userRegiRequestModel->authType];
-            if(array_key_exists($userRegiRequestModel->deviceType, $_POST)) {
-                $userRegiRequestModel->deviceType = $_POST[$userRegiRequestModel->deviceType];
+            $isValidated = $this->isValidated($_POST);
+            if(!$isValidated["is_validate"]) {
+                return;
             }
-            $userRegiRequestModel->email = $_POST[$userRegiRequestModel->email];
-            $userRegiRequestModel->password = $_POST[$userRegiRequestModel->password];
+            //
+            $userRegiRequestModel = $isValidated["data"];
             $dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
 
             $enumValue = $userRegiRequestModel->authType;
@@ -79,13 +46,65 @@ class UserRegistration {
                 if($userAuthType == UserAuthType::EMAIL) {
                     $this->registrationByEmail($userRegiRequestModel);
                 } else {
-                    $this->response(null, new Info("Error! request parameter not matched out of type", InfoType::ERROR), $dataModel);
+                    $this->response(null,
+                        "Error! request parameter not matched out of type",
+                        InfoType::ERROR,
+                        $dataModel);
                 }
             } else {
-                $this->response(null, new Info("Error! request parameter not matched", InfoType::ERROR), $dataModel);
+                $this->response(null,
+                    "Error! request parameter not matched",
+                    InfoType::ERROR,
+                    $dataModel);
             }
-            //$this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
+            //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $dataModel);
         }
+    }
+
+    public function isValidated($dataSet) {
+        $buildValidationRules = new BuildValidationRules();
+        $userRegiRequest = new UserRegistrationRequest();
+        $regiParamList = $userRegiRequest->getQuery();
+        $userRegiRequestModel = new UserRegistrationRequestModel();
+        $keyMapping = $userRegiRequestModel->propertyKeyMapping();
+        //$requestValue = array();
+        //DebugLog::log($regiParamList);
+        $isValidated = true;
+        $returnValue = null;
+        foreach($regiParamList as $value) {
+            //Extract requested values from $_POST
+            if(array_key_exists($value, $dataSet)) {
+                $paramValue = $dataSet[$value];
+                $userRegiRequestModel->{$keyMapping[$value]} = $paramValue;
+            } else {
+                //Error array key not exist, return
+                $this->response(null,
+                    "Error! need to request by all parameter",
+                    InfoType::ERROR,
+                    $_POST);
+                $isValidated = false;
+            }
+            //Execute and check validation rules
+            $method = $value . "_rules";
+            if(method_exists($userRegiRequest, $method)) {
+                $validationRules = $userRegiRequest->{$method}();
+                //DebugLog::log($validationRules);
+                $isValidated = $buildValidationRules->setRules($paramValue, $validationRules)
+                    ->run();
+                if(!$isValidated["is_validate"]) {
+                    $this->response(null,
+                        $isValidated["message"],
+                        InfoType::ERROR,
+                        $_POST);
+                    $isValidated = false;
+                }
+            }
+        }
+        $returnValue = $userRegiRequestModel;
+        return array(
+            "is_validate"   => $isValidated,
+            "data"          => $returnValue,
+        );
     }
 
     private function registrationByEmail(UserRegistrationRequestModel $userRegiRequestModel) {
@@ -94,7 +113,10 @@ class UserRegistration {
             return;
         }
         if($this->haveDbUser($userRegiRequestModel)) {
-            $this->response(null, new Info("User already exists", InfoType::ERROR), $dataModel);
+            $this->response(null,
+                "User already exists",
+                InfoType::ERROR,
+                $dataModel);
             return;
         }
         $this->userResitration($userRegiRequestModel);
@@ -179,15 +201,18 @@ class UserRegistration {
         . ");";
         //echo $sqlQuery;
         $dbResult = $connection->query($sqlQuery);
-        $this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
+        $this->response(null,
+            "Successful registration completed",
+            InfoType::SUCCESS,
+            $dataModel);
     }
 
-    private function response($body, Info $info, $parameter = null) {
-        $response = new Response();
-        $response->body         = $body;
-        $response->info         = $info;
-        $response->parameter    = $parameter;
-        echo $response->toJson();
+    private function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
     }
 }
 ?>

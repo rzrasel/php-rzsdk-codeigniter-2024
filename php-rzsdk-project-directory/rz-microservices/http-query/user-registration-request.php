@@ -2,6 +2,7 @@
 namespace RzSDK\HTTPRequest;
 ?>
 <?php
+use RzSDK\Validation\PrepareValidationRules;
 use RzSDK\HTTPRequest\ValidationType;
 ?>
 <?php
@@ -31,19 +32,59 @@ class UserRegistrationRequest {
         );
     }
 
-    public function auth_type_rules() {
+    public function device_type_rules() {
+        $validationRules = new PrepareValidationRules();
         return array(
-            ValidationType::NOT_NULL,
+            $validationRules->notNullValidationRules("Device type can not be null"),
+        );
+    }
+
+    public function auth_type_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Auth type can not be null"),
+        );
+    }
+
+    public function agent_type_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Agent type can not be null"),
         );
     }
 
     public function user_email_rules() {
+        $minLength = 5;
+        $maxLength = 256;
+        $validationRules = new PrepareValidationRules();
         return array(
-            ValidationType::NOT_NULL,
-            ValidationType::EMAIL,
+            $validationRules->notNullValidationRules("User email can not be null"),
+            $validationRules->noWhiteSpaceValidationRules("User email can not contain any white space"),
+            $validationRules->minLengthValidationRules($minLength, "User email length can not less than  " . $minLength . "  character"),
+            $validationRules->maxLengthValidationRules($maxLength, "User email length can not more than  " . $maxLength . "  character"),
+            $validationRules->emailValidationRules(),
         );
     }
 
+    public function password_rules() {
+        $minLength = 8;
+        $maxLength = 80;
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Password can not be null"),
+            $validationRules->noWhiteSpaceValidationRules("Password can not contain any white space"),
+            $validationRules->minLengthValidationRules($minLength, "Password length can not less than  " . $minLength . "  character"),
+            $validationRules->maxLengthValidationRules($maxLength, "Password length can not more than  " . $maxLength . "  character"),
+            $validationRules->passwordValidationRules("Invalid password"),
+        );
+    }
+
+    /*
+     * Array key mapping
+     * Array key mapping with request parameter and database column
+     * Array left side is - request parameter
+     * Array right side is - database column
+     */
     public function keyMapping() {
         return array(
             $this->device_type  => "device_type",

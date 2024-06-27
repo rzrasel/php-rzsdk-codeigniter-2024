@@ -3,9 +3,12 @@ namespace RzSDK\HTTPRequest;
 ?>
 <?php
 enum ValidationType: string {
-    case NOT_NULL = "not_null";
-    case EMAIL  = "email";
-    case PASSWORD  = "password";
+    case EMAIL      = "email";
+    case MAX_LENGTH = "max_length";
+    case MIN_LENGTH = "min_length";
+    case NOT_NULL   = "not_null";
+    case PASSWORD   = "password";
+    case NO_SPACE   = "no_space";
 }
 ?>
 <?php
