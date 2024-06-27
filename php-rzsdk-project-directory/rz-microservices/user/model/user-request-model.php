@@ -2,7 +2,7 @@
 namespace RzSDK\Model\User;
 ?>
 <?php
-class UserRegistrationRequestModel {
+class UserRequestModel {
     public $deviceType  = "device_type";
     public $authType    = "auth_type";
     public $agentType   = "agent_type";
@@ -23,15 +23,37 @@ class UserRegistrationRequestModel {
     }
 
     private function arrayKeyMap() {
-        $keyMapping = [
+        $keyMapping = $this->propertyKeyMapping();
+        //$key = array_keys($keyMapping);
+        $values = array_values($keyMapping);
+        /* return array(
             "deviceType"    => "device_type",
             "authType"      => "auth_type",
             "agentType"     => "agent_type",
             "email"         => "user_email",
             "password"      => "password",
-        ];
+        ); */
 
-        return $keyMapping;
+        return array(
+            "deviceType"    => $values[0],
+            "authType"      => $values[1],
+            "agentType"     => $values[2],
+            "email"         => $values[3],
+            "password"      => $values[4],
+        );
+    }
+
+    public function propertyKeyMapping() {
+        /* $keyMapping = $this->arrayKeyMap();
+        $key = array_keys($keyMapping);
+        $values = array_values($keyMapping); */
+        return array(
+            "device_type"   => "deviceType",
+            "auth_type"     => "authType",
+            "agent_type"    => "agentType",
+            "user_email"    => "email",
+            "password"      => "password",
+        );
     }
 }
 ?>

@@ -3,7 +3,7 @@ namespace RzSDK\Import;
 ?>
 <?php
 $baseInclude = "model/";
-require_once($baseInclude . "user-registration-request-model.php");
+require_once($baseInclude . "user-request-model.php");
 ?>
 <?php
 $baseInclude = "";
