@@ -5,8 +5,6 @@ require_once("include.php");
 <?php
 use RzSDK\Curl\Curl;
 use RzSDK\HTTPResponse\LaunchResponse;
-use RzSDK\Response\Response;
-use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
 use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\User\Registration\UserRegistrationRegexValidation;

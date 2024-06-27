@@ -10,12 +10,14 @@ class DebugLog {
         echo "<div style=\"line-height: 16px; margin: auto; background: #4eaf51; color: #fdfdf9; border: 1px solid #3a833d; padding: 10px; border-radius: 10px;\">";
         //echo "<div style=\"margin: auto; background: #ef1e62; color: #fffbff; border: 1px solid #b2164b; padding: 10px; border-radius: 10px;\">";
         //echo "<div style=\"overflow-wrap: break-word; word-wrap: break-word; -ms-word-break: break-all; word-break: break-all; word-break: break-word; -ms-hyphens: auto; -moz-hyphens: auto; -webkit-hyphens: auto; hyphens: auto;\">";
-        if(is_array($message) || is_object($message) || is_instance($message)) {
+        //is_instance($message)
+        if(is_array($message) || is_object($message)) {
             //echo "<pre>";
             print_r($message);
             //echo "</pre>";
         } else {
-            echo $message;
+            //echo $message;
+            print_r($message);
         }
         echo "<br />";
 
