@@ -84,31 +84,10 @@ $data = array(
         "col3" => "data3",
         "col4" => true,
 );
-$columns = trim(implode(", ", array_keys($data)));
-$values = "";
-foreach (array_values($data) as $item) {
-    if(empty($item)) {
-        $values .= "NULL, ";
-    } else if(is_int($item) || is_numeric($item)) {
-        $values .= "" . $item . ", ";
-    } else if(is_bool($item)) {
-        if($item) {
-            $values .= "TRUE, ";
-        } else {
-            $values .= "FALSE, ";
-        }
-    } else {
-        $values .= "'" . $item . "', ";
-    }
-}
-$values = trim(trim($values), ",");
-$sqlQuery = "INSERT INTO table_name ({$columns}) VALUES ({$values});";
-DebugLog::log($sqlQuery);
 $sqlQueryBuilder = new SqlQueryBuilder();
 $sqlQuery = $sqlQueryBuilder->insert("table_name")
     ->values($data)
     ->build();
-
 DebugLog::log($sqlQuery);
 ?>
 <?php
