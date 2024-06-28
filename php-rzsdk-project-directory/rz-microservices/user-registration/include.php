@@ -8,6 +8,6 @@ require_once($baseInclude . "user-registration-request-model.php");
 ?>
 <?php
 $baseInclude = "";
-require_once($baseInclude . "user-registration-process.php");
-require_once($baseInclude . "user-registration-regex-validation.php");
+//require_once($baseInclude . "user-registration-process.php");
+//require_once($baseInclude . "user-registration-regex-validation.php");
 ?>

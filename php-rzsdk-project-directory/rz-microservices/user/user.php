@@ -84,31 +84,6 @@ class User {
         );
     }
 
-    /*public function executeOld01() {
-        if(!empty($_POST)) {
-            $userRequestModel = new UserRequestModel();
-            $userRequestModel->agentType = $_POST[$userRequestModel->agentType];
-            $userRequestModel->authType = $_POST[$userRequestModel->authType];
-            $userRequestModel->deviceType = $_POST[$userRequestModel->deviceType];
-            $userRequestModel->email = $_POST[$userRequestModel->email];
-            $userRequestModel->password = $_POST[$userRequestModel->password];
-            $dataModel = $userRequestModel->toArrayKeyMapping($userRequestModel);
-
-            if(!$this->regexValidation($userRequestModel)) {
-                return;
-            }
-            if($this->getDbUser($userRequestModel)) {
-                return;
-            }
-            //$this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
-        }
-    }*/
-
-    /*private function regexValidation(UserRequestModel $userRequestModel) {
-        $userRegistrationRegexValidation = new UserRegistrationRegexValidation();
-        return $userRegistrationRegexValidation->execute($userRequestModel);
-    }*/
-
     private function getDatabaseUser($userRegiRequestModel, $postedDataSet) {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);

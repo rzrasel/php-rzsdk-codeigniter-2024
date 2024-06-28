@@ -42,6 +42,12 @@ class UserRegistrationRequestModel {
         return $array;
     }
 
+    /*
+     * Array key mapping
+     * Array key mapping with request parameter and database column
+     * Array left side is - request parameter
+     * Array right side is - database column
+     */
     private function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
         $key = array_keys($keyMapping);
@@ -63,6 +69,12 @@ class UserRegistrationRequestModel {
         );
     }
 
+    /*
+     * Array key mapping
+     * Array key mapping with request parameter and database column
+     * Array left side is - database column
+     * Array right side is - request parameter
+     */
     public function propertyKeyMapping() {
         /* $keyMapping = $this->arrayKeyMap();
         $key = array_keys($keyMapping);
