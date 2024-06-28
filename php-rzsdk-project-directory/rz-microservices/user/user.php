@@ -18,6 +18,10 @@ class User {
         $this->execute();
     }
 
+    private function doDatabaseTask($userRegiRequestModel, $postedDataSet) {
+        //
+    }
+
     public function execute() {
         if(!empty($_POST)) {
             //DebugLog::log($_POST);
@@ -31,6 +35,8 @@ class User {
             //DebugLog::log($userRequestModel);
             $postedDataSet = $userRequestModel->toArrayKeyMapping($userRequestModel);
             //DebugLog::log($postedDataSet);
+            $this->doDatabaseTask($userRequestModel, $postedDataSet);
+
             if($this->getDatabaseUser($userRequestModel, $postedDataSet)) {
                 return;
             }

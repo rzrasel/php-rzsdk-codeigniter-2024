@@ -20,6 +20,7 @@ class DebugLog {
             print_r($message);
         }
         echo "<br />";
+        echo "<br />";
 
         $debugBacktrace = debug_backtrace();
         $printData = "File " . $debugBacktrace[0]["file"];

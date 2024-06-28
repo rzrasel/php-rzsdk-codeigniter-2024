@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\SqlQuery;
+namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
 class InsertQuery {

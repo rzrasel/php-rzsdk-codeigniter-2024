@@ -5,6 +5,7 @@ namespace RzSDK\Import;
 $baseInclude = "model/";
 require_once($baseInclude . "user-info-database-model.php");
 require_once($baseInclude . "user-registration-database-model.php");
+require_once($baseInclude . "user-password-database-model.php");
 require_once($baseInclude . "user-registration-request-model.php");
 ?>
 <?php

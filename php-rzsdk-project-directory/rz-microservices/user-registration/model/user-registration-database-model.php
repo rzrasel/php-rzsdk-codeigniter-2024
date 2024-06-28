@@ -3,7 +3,6 @@ namespace RzSDK\Model\User\Registration;
 ?>
 <?php
 use RzSDK\DatabaseSpace\UserRegistrationTable;
-use RzSDK\Identification\UniqueIntId;
 use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
 use RzSDK\Log\DebugLog;
@@ -12,12 +11,9 @@ use RzSDK\Log\DebugLog;
 class UserRegistrationDatabaseModel {
     //
 
-    public function assignDatabaseData(UserRegistrationRequestModel $userRegiRequestModel) {
+    public function getInsertSql(UserRegistrationRequestModel $userRegiRequestModel, $userId, $dateTime) {
         $userRegiTable = new UserRegistrationTable();
-        $uniqueIntId = new UniqueIntId();
         $clientDevice = new ClientDevice();
-        $userId = $uniqueIntId->getId();
-        $dateTime = date("Y-m-d H:i:s");
         //
         $userRegiTable->user_regi_id    = $userId;
         $userRegiTable->email           = $userRegiRequestModel->email;

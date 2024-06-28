@@ -8,7 +8,7 @@ use RzSDK\User\Registration\CurlUserRegistration;
 use RzSDK\User\Login\CurlUserLogin;
 use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
-use RzSDK\SqlQuery\SqlQueryBuilder;
+use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\Generator\GenDatabaseSchema;
 ?>
 <?php
@@ -74,6 +74,10 @@ foreach($data as $line) {
 } */
 ?>
 <?php
+$sqlQueryBuilder = new SqlQueryBuilder();
+$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
+//$sqlQuery = $sqlQueryBuilder->select(array("user_id", "user_email"))->build();
+DebugLog::log($sqlQuery);
 ?>
 <?php
 $genDatabaseSchema = new GenDatabaseSchema();

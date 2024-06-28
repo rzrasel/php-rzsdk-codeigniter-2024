@@ -17,8 +17,12 @@ use RzSDK\HTTPRequest\UserRegistrationRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Model\User\Registration\UserInfoDatabaseModel;
 use RzSDK\Model\User\Registration\UserRegistrationDatabaseModel;
+use RzSDK\Model\User\Registration\UserPasswordDatabaseModel;
 use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
-use RzSDK\SqlQuery\SqlQueryBuilder;
+use RzSDK\Identification\UniqueIntId;
+use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
+use RzSDK\DateTime\DateDiffType;
+use RzSDK\DateTime\DateTime;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -36,17 +40,33 @@ class UserRegistration {
 
     private function doDatabaseTask($userRegiRequestModel, $postedDataSet) {
         //
+        $userRegiTable = DbUserTable::$userRegistration;
+        $userInfoTable = DbUserTable::$userInfo;
+        $userPasswordTable = DbUserTable::$userPassword;
+        $uniqueIntId = new UniqueIntId();
+        //
+        $userId = $uniqueIntId->getId();
+        $dateTime = DateTime::getCurrentDateTime();
+        //
         $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
-        $userRegiDbDataSet = $userRegiDatabaseModel->assignDatabaseData($userRegiRequestModel);
+        $userRegiDbDataSet = $userRegiDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
         $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->insert("user_registration")
+        $sqlQuery = $sqlQueryBuilder->insert($userRegiTable)
             ->values($userRegiDbDataSet)
             ->build();
         //DebugLog::log($sqlQuery);
+        //
         $userInfoDatabaseModel = new UserInfoDatabaseModel();
-        $userInfoDbDataSet = $userInfoDatabaseModel->assignDatabaseData($userRegiRequestModel);
-        $sqlQuery = $sqlQueryBuilder->insert("user_info")
+        $userInfoDbDataSet = $userInfoDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
+        $sqlQuery = $sqlQueryBuilder->insert($userInfoTable)
             ->values($userInfoDbDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        //
+        $userPasswordDatabaseModel = new UserPasswordDatabaseModel();
+        $userPasswordDbDataSet = $userPasswordDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
+        $sqlQuery = $sqlQueryBuilder->insert($userPasswordTable)
+            ->values($userPasswordDbDataSet)
             ->build();
         DebugLog::log($sqlQuery);
     }

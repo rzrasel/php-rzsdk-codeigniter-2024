@@ -1,14 +1,16 @@
 <?php
-namespace RzSDK\SqlQuery;
+namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
-use RzSDK\SqlQuery\InsertQuery;
+use RzSDK\SqlQueryBuilder\InsertQuery;
+use RzSDK\SqlQueryBuilder\SelectQuery;
 ?>
 <?php
 class SqlQueryBuilder {
     public function __construct() {}
 
-    public function select() {
+    public function select(array $columns = array()) {
+        return (new SelectQuery())->setColumns($columns);
     }
 
     public function insert(string $table) {

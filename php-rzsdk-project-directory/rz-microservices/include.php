@@ -3,16 +3,29 @@ namespace RzSDK\Import;
 ?>
 <?php
 $baseInclude = "rz-sdk-library/";
+//
+$baseInclude = "rz-sdk-library/database/";
+require_once($baseInclude . "sqlite-connection.php");
+//
+$baseInclude = "rz-sdk-library/";
 require_once($baseInclude . "curl/curl.php");
 require_once($baseInclude . "validation/regular-validation.php");
 require_once($baseInclude . "validation/email-validation.php");
 require_once($baseInclude . "validation/password-validation.php");
-require_once($baseInclude . "database/sqlite-connection.php");
-require_once($baseInclude . "database/insert-query.php");
-require_once($baseInclude . "database/sql-query-builder.php");
-require_once($baseInclude . "debug-log/debug-log.php");
+//
+$baseInclude = "rz-sdk-library/sql-query-builder/";
+require_once($baseInclude . "insert-query.php");
+require_once($baseInclude . "select-query.php");
+require_once($baseInclude . "sql-query-builder.php");
+//
+$baseInclude = "rz-sdk-library/debug-log/";
+require_once($baseInclude . "debug-log.php");
+//
+$baseInclude = "rz-sdk-library/";
 require_once($baseInclude . "detect-client/client-device.php");
 require_once($baseInclude . "detect-client/client-ip.php");
+require_once($baseInclude . "date-time/date-diff-type.php");
+require_once($baseInclude . "date-time/date-time.php");
 require_once($baseInclude . "response/response.php");
 require_once($baseInclude . "utils/site-url.php");
 require_once($baseInclude . "identification/unique-int-id.php");
