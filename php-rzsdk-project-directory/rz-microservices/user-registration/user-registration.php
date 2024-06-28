@@ -15,8 +15,10 @@ use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\Validation\BuildValidationRules;
 use RzSDK\HTTPRequest\UserRegistrationRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
+use RzSDK\Model\User\Registration\UserInfoDatabaseModel;
 use RzSDK\Model\User\Registration\UserRegistrationDatabaseModel;
 use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
+use RzSDK\SqlQuery\SqlQueryBuilder;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -34,12 +36,19 @@ class UserRegistration {
 
     private function doDatabaseTask($userRegiRequestModel, $postedDataSet) {
         //
-        $databaseDataSet = $userRegiRequestModel->toDatabaseArrayKeyMapping($userRegiRequestModel);
-        //DebugLog::log($databaseDataSet);
-        //
         $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
-        //$userRegiDatabaseModel->test($userRegiRequestModel, $databaseDataSet);
-        $userRegiDatabaseModel->test2($userRegiRequestModel, $databaseDataSet);
+        $userRegiDbDataSet = $userRegiDatabaseModel->assignDatabaseData($userRegiRequestModel);
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->insert("user_registration")
+            ->values($userRegiDbDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        $userInfoDatabaseModel = new UserInfoDatabaseModel();
+        $userInfoDbDataSet = $userInfoDatabaseModel->assignDatabaseData($userRegiRequestModel);
+        $sqlQuery = $sqlQueryBuilder->insert("user_info")
+            ->values($userInfoDbDataSet)
+            ->build();
+        DebugLog::log($sqlQuery);
     }
 
     public function execute() {

@@ -6,7 +6,7 @@ class UniqueIntId {
     //private currentMicrotime = round(microtime(true) * 1000);
     //private currentMicrotime;
     public function __construct() {
-        echo __CLASS__ . " == " . __METHOD__;
+        //echo __CLASS__ . " == " . __METHOD__;
     }
 
     public function getMicrotime() {
@@ -31,4 +31,6 @@ class UniqueIntId {
         return $this->getMicrotime() . "" . $this->getRandomDigits(5, false);
     }
 }
+?>
+<?php
 ?>

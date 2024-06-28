@@ -39,7 +39,13 @@ class InsertQuery {
     private function bindValues() {
         $values = "";
         foreach (array_values($this->tableData) as $item) {
-            if(empty($item)) {
+            if(is_bool($item)) {
+                if($item) {
+                    $values .= "TRUE, ";
+                } else {
+                    $values .= "FALSE, ";
+                }
+            } else if(empty($item)) {
                 $values .= "NULL, ";
             } else if(is_int($item) || is_numeric($item)) {
                 $values .= "" . $item . ", ";

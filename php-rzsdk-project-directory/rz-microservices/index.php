@@ -2,7 +2,6 @@
 require_once("include.php");
 ?>
 <?php
-
 use RzSDK\Log\DebugLog;
 use RzSDK\URL\SiteUrl;
 use RzSDK\User\Registration\CurlUserRegistration;
@@ -11,7 +10,6 @@ use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
 use RzSDK\SqlQuery\SqlQueryBuilder;
 use RzSDK\Generator\GenDatabaseSchema;
-
 ?>
 <?php
 /* $clientDevice = new ClientDevice();
@@ -78,7 +76,7 @@ foreach($data as $line) {
 <?php
 //https://github.com/iamludal/mysql-querybuilder
 //SQL Query Builder
-$data = array(
+/*$data = array(
         "col1" => "",
         "col2" => 50.70,
         "col3" => "data3",
@@ -88,7 +86,7 @@ $sqlQueryBuilder = new SqlQueryBuilder();
 $sqlQuery = $sqlQueryBuilder->insert("table_name")
     ->values($data)
     ->build();
-DebugLog::log($sqlQuery);
+DebugLog::log($sqlQuery);*/
 ?>
 <?php
 $genDatabaseSchema = new GenDatabaseSchema();
