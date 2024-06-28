@@ -14,8 +14,8 @@ class UserRequestModel {
             $keyMapping = $this->arrayKeyMap();
         }
         $array = [];
-        foreach ($keyMapping as $oldKey => $newKey) {
-            if (property_exists($object, $oldKey)) {
+        foreach($keyMapping as $oldKey => $newKey) {
+            if(property_exists($object, $oldKey)) {
                 $array[$newKey] = $object->$oldKey;
             }
         }
@@ -24,8 +24,8 @@ class UserRequestModel {
 
     private function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
-        //$key = array_keys($keyMapping);
-        $values = array_values($keyMapping);
+        $key = array_keys($keyMapping);
+        //$values = array_values($keyMapping);
         /* return array(
             "deviceType"    => "device_type",
             "authType"      => "auth_type",
@@ -35,11 +35,11 @@ class UserRequestModel {
         ); */
 
         return array(
-            "deviceType"    => $values[0],
-            "authType"      => $values[1],
-            "agentType"     => $values[2],
-            "email"         => $values[3],
-            "password"      => $values[4],
+            "deviceType"    => $key[0],
+            "authType"      => $key[1],
+            "agentType"     => $key[2],
+            "email"         => $key[3],
+            "password"      => $key[4],
         );
     }
 

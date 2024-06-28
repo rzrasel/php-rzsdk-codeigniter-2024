@@ -28,6 +28,8 @@ class Info {
         $this->type = $infoType->value;
     }
 }
+?>
+<?php
 enum InfoType: string {
     case ALERT      = "alert";
     case ERROR      = "error";

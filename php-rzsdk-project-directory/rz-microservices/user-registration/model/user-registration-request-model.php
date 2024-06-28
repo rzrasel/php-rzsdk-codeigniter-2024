@@ -2,6 +2,9 @@
 namespace RzSDK\Model\User\Registration;
 ?>
 <?php
+use RzSDK\Log\DebugLog;
+?>
+<?php
 class UserRegistrationRequestModel {
     public $deviceType  = "device_type";
     public $authType    = "auth_type";
@@ -14,7 +17,7 @@ class UserRegistrationRequestModel {
             $keyMapping = $this->arrayKeyMap();
         }
         $array = [];
-        foreach ($keyMapping as $oldKey => $newKey) {
+        foreach($keyMapping as $oldKey => $newKey) {
             if (property_exists($object, $oldKey)) {
                 $array[$newKey] = $object->$oldKey;
             }
@@ -22,10 +25,27 @@ class UserRegistrationRequestModel {
         return $array;
     }
 
+    public function toArrayKeyForceMapping($dataObject, $keyMapping = array()) {
+        if(empty($keyMapping)) {
+            $keyMapping = $this->arrayKeyMap();
+        }
+        DebugLog::log($keyMapping);
+        $array = [];
+        $dataSetArray = get_object_vars($dataObject);
+        //DebugLog::log($dataSetArray);
+        //$dataSetArray = json_decode(json_encode($dataSetArray), true);
+        foreach($keyMapping as $oldKey => $newKey) {
+            if(array_key_exists($oldKey, $dataSetArray)) {
+                $array[$newKey] = $dataSetArray[$oldKey];
+            }
+        }
+        return $array;
+    }
+
     private function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
-        //$key = array_keys($keyMapping);
-        $values = array_values($keyMapping);
+        $key = array_keys($keyMapping);
+        //$values = array_values($keyMapping);
         /* return array(
             "deviceType"    => "device_type",
             "authType"      => "auth_type",
@@ -35,11 +55,11 @@ class UserRegistrationRequestModel {
         ); */
 
         return array(
-            "deviceType"    => $values[0],
-            "authType"      => $values[1],
-            "agentType"     => $values[2],
-            "email"         => $values[3],
-            "password"      => $values[4],
+            "deviceType"    => $key[0],
+            "authType"      => $key[1],
+            "agentType"     => $key[2],
+            "email"         => $key[3],
+            "password"      => $key[4],
         );
     }
 

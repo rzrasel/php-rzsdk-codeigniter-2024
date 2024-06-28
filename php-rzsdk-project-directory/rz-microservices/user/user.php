@@ -22,19 +22,26 @@ class User {
 
     public function execute() {
         if(!empty($_POST)) {
+            //DebugLog::log($_POST);
             $isValidated = $this->isValidated($_POST);
-            DebugLog::log($isValidated);
+            //DebugLog::log($isValidated);
             if(!$isValidated["is_validate"]) {
                 return;
             }
             //
             $userRequestModel = $isValidated["data_set"];
-            DebugLog::log($userRequestModel);
+            //DebugLog::log($userRequestModel);
+            $postedDataSet = $userRequestModel->toArrayKeyMapping($userRequestModel);
+            //DebugLog::log($postedDataSet);
+            if($this->getDatabaseUser($userRequestModel, $postedDataSet)) {
+                return;
+            }
+            //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $postedDataSet);
         }
     }
 
     public function isValidated($dataSet) {
-        DebugLog::log($dataSet);
+        //DebugLog::log($dataSet);
         $buildValidationRules = new BuildValidationRules();
         $userRequest = new UserRequest();
         $userParamList = $userRequest->getQuery();
@@ -43,7 +50,6 @@ class User {
         //$requestValue = array();
         //DebugLog::log($userParamList);
         $isValidated = true;
-        $returnValue = null;
         foreach($userParamList as $value) {
             //Extract requested values from $_POST
             if(array_key_exists($value, $dataSet)) {
@@ -52,7 +58,7 @@ class User {
             } else {
                 //Error array key not exist, return
                 $this->response(null,
-                    "Error! need to request by all parameter",
+                    "Error! need to request by all parameter " . $value,
                     InfoType::ERROR,
                     $dataSet);
                 $isValidated = false;
@@ -73,15 +79,14 @@ class User {
                 }
             }
         }
-        $returnValue = $userRequestModel;
-        DebugLog::log($returnValue);
+        //DebugLog::log($userRequestModel);
         return array(
             "is_validate"   => $isValidated,
-            "data_set"          => $returnValue,
+            "data_set"          => $userRequestModel,
         );
     }
 
-    public function executeOld01() {
+    /*public function executeOld01() {
         if(!empty($_POST)) {
             $userRequestModel = new UserRequestModel();
             $userRequestModel->agentType = $_POST[$userRequestModel->agentType];
@@ -99,19 +104,19 @@ class User {
             }
             //$this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
         }
-    }
+    }*/
 
-    private function regexValidation(UserRequestModel $userRequestModel) {
+    /*private function regexValidation(UserRequestModel $userRequestModel) {
         $userRegistrationRegexValidation = new UserRegistrationRegexValidation();
         return $userRegistrationRegexValidation->execute($userRequestModel);
-    }
+    }*/
 
-    private function getDbUser(UserRegistrationRequestModel $userRegiRequestModel) {
+    private function getDatabaseUser($userRegiRequestModel, $postedDataSet) {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
-        $dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
+        //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         $connection = new SqliteConnection($dbFullPath);
         $sqlQuery = "SELECT * "
-        . "FROM user "
+        . "FROM user_info "
         . "WHERE"
         . " email = '{$userRegiRequestModel->email}'"
         . ";";
@@ -131,10 +136,10 @@ class User {
             if(!empty($dbData)) {
                 //echo "user table is empty";
                 //$this->response($dbData, new Info("Successful user found", InfoType::SUCCESS), $dataModel);
-                $this->response(null,
+                $this->response($dbData,
                     "Successful user found",
                     InfoType::SUCCESS,
-                    $dataModel);
+                    $postedDataSet);
                 return true;
             }
         }
@@ -159,10 +164,10 @@ class User {
             if(!empty($dbData)) {
                 //echo "user_registration table is empty";
                 //$this->response($dbData, new Info("Successful user found", InfoType::SUCCESS), $dataModel);
-                $this->response(null,
+                $this->response($dbData,
                     "Successful user found",
                     InfoType::SUCCESS,
-                    $dataModel);
+                    $postedDataSet);
                 return true;
             }
         }
@@ -170,7 +175,7 @@ class User {
         $this->response(null,
             "Error user not found",
             InfoType::ERROR,
-            $dataModel);
+            $postedDataSet);
         return false;
     }
 

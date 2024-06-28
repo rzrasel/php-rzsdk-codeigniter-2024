@@ -8,6 +8,7 @@ use RzSDK\Response\InfoType;
 use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\User\Type\UserAuthType;
 use function RzSDK\User\Type\getUserAuthTypeByValue;
+use function RzSDK\Response\getInfoTypeByValue;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
@@ -20,9 +21,13 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserRegistration {
+    //
+    //private UserRegistrationRequestModel $userRegiRequestModel;
+    //
     public function __construct() {
         /* DebugLog::log($_SERVER["HTTP_USER_AGENT"]);
         DebugLog::log($_SERVER); */
+        //$userRegiRequestModel = new UserRegistrationRequestModel();
         $this->execute();
     }
 
@@ -33,32 +38,36 @@ class UserRegistration {
                 return;
             }
             //
+            //$userRegiRequestModel = new UserRegistrationRequestModel();
             $userRegiRequestModel = $isValidated["data_set"];
-            $dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
+            //DebugLog::log($userRegiRequestModel);
+            $postedDataSet = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
+            //DebugLog::log($postedDataSet);
 
             $enumValue = $userRegiRequestModel->authType;
             $userAuthType = getUserAuthTypeByValue($enumValue);
 
             if(!empty($userAuthType)) {
                 if($userAuthType == UserAuthType::EMAIL) {
-                    $this->registeredByEmail($userRegiRequestModel, $dataModel);
+                    $this->registeredByEmail($userRegiRequestModel, $postedDataSet);
                 } else {
                     $this->response(null,
                         "Error! request parameter not matched out of type",
                         InfoType::ERROR,
-                        $dataModel);
+                        $postedDataSet);
                 }
             } else {
                 $this->response(null,
                     "Error! request parameter not matched",
                     InfoType::ERROR,
-                    $dataModel);
+                    $postedDataSet);
             }
             //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $dataModel);
         }
     }
 
-    public function isValidated($dataSet) {
+    public function isValidated($requestDataSet) {
+        //DebugLog::log($requestDataSet);
         $buildValidationRules = new BuildValidationRules();
         $userRegiRequest = new UserRegistrationRequest();
         $regiParamList = $userRegiRequest->getQuery();
@@ -67,18 +76,18 @@ class UserRegistration {
         //$requestValue = array();
         //DebugLog::log($regiParamList);
         $isValidated = true;
-        $returnValue = null;
+        //$returnValue = null;
         foreach($regiParamList as $value) {
             //Extract requested values from $_POST
-            if(array_key_exists($value, $dataSet)) {
-                $paramValue = $dataSet[$value];
+            if(array_key_exists($value, $requestDataSet)) {
+                $paramValue = $requestDataSet[$value];
                 $userRegiRequestModel->{$keyMapping[$value]} = $paramValue;
             } else {
                 //Error array key not exist, return
                 $this->response(null,
                     "Error! need to request by all parameter",
                     InfoType::ERROR,
-                    $dataSet);
+                    $requestDataSet);
                 $isValidated = false;
             }
             //Execute and check validation rules
@@ -92,32 +101,32 @@ class UserRegistration {
                     $this->response(null,
                         $isValidated["message"],
                         InfoType::ERROR,
-                        $dataSet);
+                        $requestDataSet);
                     $isValidated = false;
                 }
             }
         }
-        $returnValue = $userRegiRequestModel;
-        //DebugLog::log($returnValue);
+        //$returnValue = $userRegiRequestModel;
+        //DebugLog::log($userRegiRequestModel);
         return array(
             "is_validate"   => $isValidated,
-            "data_set"          => $returnValue,
+            "data_set"          => $userRegiRequestModel,
         );
     }
 
-    private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, $paramData) {
+    private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, $postedDataSet) {
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         /*if(!$this->regexValidation($userRegiRequestModel)) {
             return;
         }*/
-        if($this->haveDatabaseUser($paramData)) {
+        if($this->haveDatabaseUser($postedDataSet)) {
             $this->response(null,
                 "User already exists",
                 InfoType::ERROR,
-                $paramData);
+                $postedDataSet);
             return;
         }
-        //$this->doUserResitration($userRegiRequestModel, $paramData);
+        $this->doUserResitration($userRegiRequestModel, $postedDataSet);
     }
 
     /*private function regexValidation(UserRegistrationRequestModel $userRegiRequestModel) {
@@ -125,18 +134,28 @@ class UserRegistration {
         return $userRegistrationRegexValidation->execute($userRegiRequestModel);
     }*/
 
-    private function haveDatabaseUser($paramData) {
+    private function haveDatabaseUser($postedDataSet) {
         $url = dirname(ROOT_URL) . "/user/user.php";
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
-        //
+        //DebugLog::log($postedDataSet);
         $curl = new Curl($url);
-        $result = $curl->exec(true, $paramData) . "";
+        $result = $curl->exec(true, $postedDataSet) . "";
         $result = json_decode($result, true);
-        DebugLog::log($result);
+        //DebugLog::log($result);
         $responseData = json_decode($result["body"], true);
+        //DebugLog::log($responseData);
         if(empty($responseData["body"])) {
+            //echo "False Data";
             return false;
         }
+        $responseInfoType = $responseData["info"]["type"];
+        //DebugLog::log($responseInfoType);
+        $responseType = getInfoTypeByValue($responseInfoType);
+        //DebugLog::log($responseType);
+        if($responseType == InfoType::ERROR) {
+            return false;
+        }
+        //echo "True Data";
         return true;
     }
 
