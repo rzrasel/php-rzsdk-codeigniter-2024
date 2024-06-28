@@ -22,7 +22,7 @@ class UserRequestModel {
         return $array;
     }
 
-    private function arrayKeyMap() {
+    public function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
         $key = array_keys($keyMapping);
         //$values = array_values($keyMapping);

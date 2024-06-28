@@ -5,7 +5,6 @@ require_once("include.php");
 <?php
 use RzSDK\Curl\Curl;
 use RzSDK\Response\InfoType;
-use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\User\Type\UserAuthType;
 use function RzSDK\User\Type\getUserAuthTypeByValue;
 use function RzSDK\Response\getInfoTypeByValue;
@@ -16,6 +15,8 @@ use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\Validation\BuildValidationRules;
 use RzSDK\HTTPRequest\UserRegistrationRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
+use RzSDK\Model\User\Registration\UserRegistrationDatabaseModel;
+use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -31,6 +32,16 @@ class UserRegistration {
         $this->execute();
     }
 
+    private function doDatabaseTask($userRegiRequestModel, $postedDataSet) {
+        //
+        $databaseDataSet = $userRegiRequestModel->toDatabaseArrayKeyMapping($userRegiRequestModel);
+        //DebugLog::log($databaseDataSet);
+        //
+        $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
+        //$userRegiDatabaseModel->test($userRegiRequestModel, $databaseDataSet);
+        $userRegiDatabaseModel->test2($userRegiRequestModel, $databaseDataSet);
+    }
+
     public function execute() {
         if(!empty($_POST)) {
             $isValidated = $this->isValidated($_POST);
@@ -43,6 +54,7 @@ class UserRegistration {
             //DebugLog::log($userRegiRequestModel);
             $postedDataSet = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
             //DebugLog::log($postedDataSet);
+            $this->doDatabaseTask($userRegiRequestModel, $postedDataSet);
 
             $enumValue = $userRegiRequestModel->authType;
             $userAuthType = getUserAuthTypeByValue($enumValue);

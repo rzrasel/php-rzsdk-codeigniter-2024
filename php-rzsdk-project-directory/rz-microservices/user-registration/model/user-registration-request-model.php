@@ -2,6 +2,7 @@
 namespace RzSDK\Model\User\Registration;
 ?>
 <?php
+use RzSDK\HTTPRequest\UserRegistrationRequest;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -29,7 +30,7 @@ class UserRegistrationRequestModel {
         if(empty($keyMapping)) {
             $keyMapping = $this->arrayKeyMap();
         }
-        DebugLog::log($keyMapping);
+        //DebugLog::log($keyMapping);
         $array = [];
         $dataSetArray = get_object_vars($dataObject);
         //DebugLog::log($dataSetArray);
@@ -42,13 +43,38 @@ class UserRegistrationRequestModel {
         return $array;
     }
 
+    public function toDatabaseArrayKeyMapping($object, $keyMapping = array()) {
+        if(empty($keyMapping)) {
+            $keyMapping = $this->arrayKeyMap();
+        }
+        //DebugLog::log($keyMapping);
+        $requestedDataSet = [];
+        foreach($keyMapping as $oldKey => $newKey) {
+            if (property_exists($object, $oldKey)) {
+                $requestedDataSet[$newKey] = $object->$oldKey;
+            }
+        }
+        //DebugLog::log($requestedDataSet);
+        $userRegiRequest = new UserRegistrationRequest();
+        $keyMapping = $userRegiRequest->keyMapping();
+        //DebugLog::log($keyMapping);
+        $databaseDataSet = [];
+        foreach($keyMapping as $oldKey => $newKey) {
+            if(array_key_exists($oldKey, $requestedDataSet)) {
+                $databaseDataSet[$newKey] = $requestedDataSet[$oldKey];
+            }
+        }
+        //DebugLog::log($databaseDataSet);
+        return $databaseDataSet;
+    }
+
     /*
      * Array key mapping
      * Array key mapping with request parameter and database column
      * Array left side is - request parameter
      * Array right side is - database column
      */
-    private function arrayKeyMap() {
+    public function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
         $key = array_keys($keyMapping);
         //$values = array_values($keyMapping);
