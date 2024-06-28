@@ -3,15 +3,13 @@ require_once("../include.php");
 require_once("include.php");
 ?>
 <?php
-use RzSDK\Response\Response;
-use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\Model\User\UserRequestModel;
-use RzSDK\User\UserRegistrationRegexValidation;
 use RzSDK\Validation\BuildValidationRules;
 use RzSDK\HTTPRequest\UserRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
+use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -115,11 +113,13 @@ class User {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         $connection = new SqliteConnection($dbFullPath);
+        $sqlUserTable = DbUserTable::$userInfo;
         $sqlQuery = "SELECT * "
-        . "FROM user_info "
+        . "FROM {$sqlUserTable} "
         . "WHERE"
         . " email = '{$userRegiRequestModel->email}'"
         . ";";
+        //echo $sqlQuery;
         $dbData = array();
         $dbResult = $connection->query($sqlQuery);
         if($dbResult != null) {
@@ -144,11 +144,13 @@ class User {
             }
         }
         //
+        $sqlUserRegiTable = DbUserTable::$userRegistration;
         $sqlQuery = "SELECT * "
-        . "FROM user_registration "
+        . "FROM {$sqlUserRegiTable} "
         . "WHERE"
         . " email = '{$userRegiRequestModel->email}'"
         . ";";
+        //echo $sqlQuery;
         $dbResult = $connection->query($sqlQuery);
         if($dbResult != null) {
             foreach($dbResult as $row) {
