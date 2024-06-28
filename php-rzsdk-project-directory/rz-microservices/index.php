@@ -74,19 +74,6 @@ foreach($data as $line) {
 } */
 ?>
 <?php
-//https://github.com/iamludal/mysql-querybuilder
-//SQL Query Builder
-/*$data = array(
-        "col1" => "",
-        "col2" => 50.70,
-        "col3" => "data3",
-        "col4" => true,
-);
-$sqlQueryBuilder = new SqlQueryBuilder();
-$sqlQuery = $sqlQueryBuilder->insert("table_name")
-    ->values($data)
-    ->build();
-DebugLog::log($sqlQuery);*/
 ?>
 <?php
 $genDatabaseSchema = new GenDatabaseSchema();
