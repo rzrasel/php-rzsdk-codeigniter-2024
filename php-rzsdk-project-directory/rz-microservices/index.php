@@ -79,16 +79,24 @@ $sqlQueryBuilder = new SqlQueryBuilder();
 //$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
 $sqlQuery = $sqlQueryBuilder->select(
     array(
-        array(
+        "user" => array(
             "user_id" => "id",
             "email" => "email",
+        ),
+        "user_password" => array(
+            "user_id" => "pid",
+            "password" => "password",
         )
     ))
     ->from(array("user_info" => "user"))
+    //->from("user_info")
+    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
+    ->innerJoin(array("user_info" => "user", "user_password" => "user_password"),
+        array("user_id", "user_id"))
     ->where(
         array(
             "user" => array("email = 'email@gmail.com'", "status = TRUE",)
-    ), false)
+    ), true)
     ->build();
 DebugLog::log($sqlQuery);
 ?>

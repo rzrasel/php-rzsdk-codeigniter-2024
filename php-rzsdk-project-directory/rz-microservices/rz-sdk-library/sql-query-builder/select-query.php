@@ -2,10 +2,15 @@
 namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
+
+use RzSDK\Log\DebugLog;
+
 class SelectQuery {
     //
     protected $table;
     protected $columns;
+    protected $joinTables;
+    protected $joinColums;
     protected $where;
     protected $whereAnd;
     private $sqlQuery;
@@ -20,6 +25,12 @@ class SelectQuery {
         return $this;
     }
 
+    public function innerJoin(array $joinTables, array $joinColums) {
+        $this->joinTables = $joinTables;
+        $this->joinColums = $joinColums;
+        return $this;
+    }
+
     public function where(array $where, $isAnd = true) {
         $this->where = $where;
         $this->whereAnd = $isAnd;
@@ -29,6 +40,7 @@ class SelectQuery {
     public function build() {
         $this->sqlQuery = "SELECT {$this->bindColumns()}"
             . " FROM {$this->bindTable()}"
+            . " {$this->bindInnerJoin()}"
             . " {$this->bindWhere()}"
             . "";
         $this->sqlQuery = preg_replace("/\s+/u", " ", $this->sqlQuery);
@@ -90,6 +102,58 @@ class SelectQuery {
         } else {
             return trim($this->table);
         }
+    }
+
+    private function bindInnerJoin() {
+        $retVal = "INNER JOIN ";
+        /*if($this->isAssociative($this->joinTables)) {
+            //
+        } else {
+            foreach ($this->where as $key => $value) {
+                if(is_int($key)) {
+                    //
+                }
+            }
+        }*/
+        /*$leftTable = "";
+        $leftAlias = "";
+        $rightTable = "";
+        $rightAlias = "";
+        foreach ($this->where as $key => $value) {
+            $leftTable = $value;
+            $rightTable = $value;
+            $leftAlias = "";
+            $rightAlias = "";
+            $retVal .= "{$value} ";
+            if(!is_int($key)) {
+                $leftTable = $value;
+                $rightTable = $value;
+                $leftAlias = "";
+                $rightAlias = $value;
+            }
+        }*/
+        if($this->isAssociative($this->joinTables)) {
+            $table = array();
+            $alias = array();
+            foreach ($this->joinTables as $key => $value) {
+                $table[] = $key;
+                $alias[] = $value;
+            }
+            $retVal .= "{$table[1]} AS {$alias[1]} "
+                . " ON"
+                . " {$alias[0]}.{$this->joinColums[0]} "
+                . " ="
+                . " {$alias[1]}.{$this->joinColums[1]} "
+                . "";
+        } else {
+            $retVal .= "{$this->joinTables[0]} "
+                . " ON"
+                . " {$this->joinTables[0]}.{$this->joinColums[0]} "
+                . " ="
+                . " {$this->joinTables[1]}.{$this->joinColums[1]} "
+                . "";
+        }
+        return $retVal;
     }
 
     private function bindWhere() {
