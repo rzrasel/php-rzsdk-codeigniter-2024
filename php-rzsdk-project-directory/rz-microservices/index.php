@@ -75,8 +75,21 @@ foreach($data as $line) {
 ?>
 <?php
 $sqlQueryBuilder = new SqlQueryBuilder();
-$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
 //$sqlQuery = $sqlQueryBuilder->select(array("user_id", "user_email"))->build();
+//$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
+$sqlQuery = $sqlQueryBuilder->select(
+    array(
+        array(
+            "user_id" => "id",
+            "email" => "email",
+        )
+    ))
+    ->from(array("user_info" => "user"))
+    ->where(
+        array(
+            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
+    ), false)
+    ->build();
 DebugLog::log($sqlQuery);
 ?>
 <?php

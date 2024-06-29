@@ -26,4 +26,5 @@ class SqlQueryBuilder {
 ?>
 <?php
 //https://github.com/iamludal/mysql-querybuilder
+//https://github.com/nilportugues/php-sql-query-builder/tree/master
 ?>
