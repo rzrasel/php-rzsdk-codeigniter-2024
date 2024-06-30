@@ -4,6 +4,10 @@ namespace RzSDK\Import;
 <?php
 $baseInclude = "rz-sdk-library/";
 //
+$baseInclude = "rz-sdk-library/utils/";
+require_once($baseInclude . "site-url.php");
+require_once($baseInclude . "array-utils.php");
+//
 $baseInclude = "rz-sdk-library/database/";
 require_once($baseInclude . "sqlite-connection.php");
 //
@@ -14,6 +18,10 @@ require_once($baseInclude . "validation/email-validation.php");
 require_once($baseInclude . "validation/password-validation.php");
 //
 $baseInclude = "rz-sdk-library/sql-query-builder/";
+require_once($baseInclude . "module/select-column-sql.php");
+require_once($baseInclude . "module/select-order-by-sql.php");
+require_once($baseInclude . "module/select-limit-sql.php");
+require_once($baseInclude . "module/select-offset-sql.php");
 require_once($baseInclude . "insert-query.php");
 require_once($baseInclude . "select-query.php");
 require_once($baseInclude . "sql-query-builder.php");
@@ -27,7 +35,6 @@ require_once($baseInclude . "detect-client/client-ip.php");
 require_once($baseInclude . "date-time/date-diff-type.php");
 require_once($baseInclude . "date-time/date-time.php");
 require_once($baseInclude . "response/response.php");
-require_once($baseInclude . "utils/site-url.php");
 require_once($baseInclude . "identification/unique-int-id.php");
 ?>
 <?php

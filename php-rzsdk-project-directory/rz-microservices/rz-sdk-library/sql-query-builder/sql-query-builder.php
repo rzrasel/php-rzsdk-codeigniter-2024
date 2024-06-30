@@ -9,8 +9,12 @@ use RzSDK\SqlQueryBuilder\SelectQuery;
 class SqlQueryBuilder {
     public function __construct() {}
 
-    public function select(array $columns = array()) {
+    public function selectMultidimensional(array $columns = array()) {
         return (new SelectQuery())->setColumns($columns);
+    }
+
+    public function select(string $table, array $columns = array()) {
+        return (new SelectQuery())->select($table, $columns);
     }
 
     public function insert(string $table) {

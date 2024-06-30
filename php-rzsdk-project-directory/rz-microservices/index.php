@@ -77,7 +77,7 @@ foreach($data as $line) {
 $sqlQueryBuilder = new SqlQueryBuilder();
 //$sqlQuery = $sqlQueryBuilder->select(array("user_id", "user_email"))->build();
 //$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
-$sqlQuery = $sqlQueryBuilder->select(
+$sqlQuery = $sqlQueryBuilder->selectMultidimensional(
     array(
         "user" => array(
             "user_id" => "id",
@@ -91,13 +91,33 @@ $sqlQuery = $sqlQueryBuilder->select(
     ->from(array("user_info" => "user"))
     //->from("user_info")
     //->innerJoin(array("user_info", "user_password"), array("email", "email"))
-    ->innerJoin(array("user_info" => "user", "user_password" => "user_password"),
+    ->innerJoin(
+        array("user_info" => "user", "user_password" => "user_password"),
         array("user_id", "user_id"))
     ->where(
         array(
             "user" => array("email = 'email@gmail.com'", "status = TRUE",)
     ), true)
+    ->orderBy("user.modified_date", "ASC")
+    ->limit(10)
+    ->offset(5)
     ->build();
+DebugLog::log($sqlQuery);
+$sqlQuery = $sqlQueryBuilder
+    ->select( "user",
+        array(
+            "user_id" => "id",
+            "email" => "email",
+        )
+    )
+    ->select("password",
+        array(
+            "user_id",
+            "password",
+        )
+    )
+    ->from("user_info", "user")
+    ->buildNew();
 DebugLog::log($sqlQuery);
 ?>
 <?php

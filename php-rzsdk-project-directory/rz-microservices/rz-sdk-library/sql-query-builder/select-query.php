@@ -2,12 +2,23 @@
 namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
-
+use RzSDK\Utils\ArrayUtils;
+use RzSDK\SqlQueryBuilder\SelectColumnSql;
+use RzSDK\SqlQueryBuilder\SelectOrderBySql;
+use RzSDK\SqlQueryBuilder\SelectLimitSql;
+use RzSDK\SqlQueryBuilder\SelectOffsetSql;
 use RzSDK\Log\DebugLog;
-
+?>
+<?php
 class SelectQuery {
     //
-    protected $table;
+    use SelectColumnSql;
+    use SelectOrderBySql;
+    use SelectLimitSql;
+    use SelectOffsetSql;
+    //
+    protected $fromTable;
+    protected $fromTableAlias;
     protected $columns;
     protected $joinTables;
     protected $joinColums;
@@ -20,8 +31,9 @@ class SelectQuery {
         return $this;
     }
 
-    public function from($table) {
-        $this->table = $table;
+    public function from($table, $alias = "") {
+        $this->fromTable = $table;
+        $this->fromTableAlias = $alias;
         return $this;
     }
 
@@ -38,21 +50,32 @@ class SelectQuery {
     }
 
     public function build() {
-        $this->sqlQuery = "SELECT {$this->bindColumns()}"
+        $this->sqlQuery = "SELECT {$this->bindColumnsOld()}"
             . " FROM {$this->bindTable()}"
             . " {$this->bindInnerJoin()}"
             . " {$this->bindWhere()}"
-            . "";
+            . " {$this->toOrderBySql()}"
+            . " {$this->toLimitSql()}"
+            . " {$this->toOffsetSql()}"
+            . " ";
         $this->sqlQuery = preg_replace("/\s+/u", " ", $this->sqlQuery);
         return trim($this->sqlQuery) . ";";
     }
 
-    private function bindColumns() {
+    public function buildNew() {
+        $this->sqlQuery = "SELECT {$this->toSelectedColumn()}"
+            . " FROM {$this->bindTable()}"
+            . " ";
+        $this->sqlQuery = preg_replace("/\s+/u", " ", $this->sqlQuery);
+        return trim($this->sqlQuery) . ";";
+    }
+
+    private function bindColumnsOld() {
         if(empty($this->columns)) {
             return "*";
         }
         //
-        if($this->isMultidimensional($this->columns)) {
+        if(ArrayUtils::isMultidimensional($this->columns)) {
             // Checking if array is multidimensional or not
             $column = "";
             foreach ($this->columns as $key => $value) {
@@ -70,7 +93,7 @@ class SelectQuery {
         if(!empty($table)) {
             $table = "{$table}.";
         }
-        if($this->isAssociative($array)) {
+        if(ArrayUtils::isAssociative($array)) {
             // Associative array
             $column = "";
             foreach($array as $key => $value) {
@@ -89,50 +112,27 @@ class SelectQuery {
     }
 
     private function bindTable() {
-        if(is_array($this->table)) {
+        if(is_array($this->fromTable)) {
             $retVal = "";
-            if($this->isAssociative($this->table)) {
-                foreach($this->table as $key => $value) {
+            if(ArrayUtils::isAssociative($this->fromTable)) {
+                foreach($this->fromTable as $key => $value) {
                     $retVal .= "{$key} AS {$value}, ";
                 }
                 return trim(trim($retVal), ",");
             } else {
-                return trim(implode(", ", array_values($this->table)));
+                return trim(implode(", ", array_values($this->fromTable)));
             }
         } else {
-            return trim($this->table);
+            if(!empty($this->fromTableAlias)) {
+                return trim($this->fromTable) . " AS " . trim($this->fromTableAlias);
+            }
+            return trim($this->fromTable);
         }
     }
 
     private function bindInnerJoin() {
         $retVal = "INNER JOIN ";
-        /*if($this->isAssociative($this->joinTables)) {
-            //
-        } else {
-            foreach ($this->where as $key => $value) {
-                if(is_int($key)) {
-                    //
-                }
-            }
-        }*/
-        /*$leftTable = "";
-        $leftAlias = "";
-        $rightTable = "";
-        $rightAlias = "";
-        foreach ($this->where as $key => $value) {
-            $leftTable = $value;
-            $rightTable = $value;
-            $leftAlias = "";
-            $rightAlias = "";
-            $retVal .= "{$value} ";
-            if(!is_int($key)) {
-                $leftTable = $value;
-                $rightTable = $value;
-                $leftAlias = "";
-                $rightAlias = $value;
-            }
-        }*/
-        if($this->isAssociative($this->joinTables)) {
+        if(ArrayUtils::isAssociative($this->joinTables)) {
             $table = array();
             $alias = array();
             foreach ($this->joinTables as $key => $value) {
@@ -158,9 +158,9 @@ class SelectQuery {
 
     private function bindWhere() {
         $where = "WHERE ";
-        if($this->isMultidimensional($this->where)) {
+        if(ArrayUtils::isMultidimensional($this->where)) {
             // Checking if array is multidimensional or not
-            /*if($this->isAssociative($this->columns)) {
+            /*if(ArrayUtils::isAssociative($this->columns)) {
                 //
             } else {
                 return trim(implode("AND ", array_values($this->columns)));
@@ -190,7 +190,7 @@ class SelectQuery {
         if(!$isAnd) {
             $and = "OR";
         }
-        if($this->isAssociative($array)) {
+        if(ArrayUtils::isAssociative($array)) {
             // Associative array
             /*$column = "";
             foreach($array as $key => $value) {
@@ -207,30 +207,6 @@ class SelectQuery {
             }
             return trim(trim($column), $and);
         }
-    }
-
-    public function isMultidimensional(array $array) {
-        if(!is_array($array)) {
-            return false;
-        }
-        if(count(array_filter($array,'is_array'))) {
-            return true;
-        }
-        return false;
-    }
-
-    public function isAssociative(array $array) {
-        if(!is_array($array)) {
-            return false;
-        }
-        $keys = array_keys($array);
-        /*if(array_is_list($this->columns)) {
-            //
-        }*/
-        if($keys !== range(0, count($array) - 1)) {
-            return true;
-        }
-        return false;
     }
 }
 ?>
