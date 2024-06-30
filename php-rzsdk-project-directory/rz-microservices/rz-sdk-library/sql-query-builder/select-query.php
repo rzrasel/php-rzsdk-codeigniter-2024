@@ -4,6 +4,8 @@ namespace RzSDK\SqlQueryBuilder;
 <?php
 use RzSDK\Utils\ArrayUtils;
 use RzSDK\SqlQueryBuilder\SelectColumnSql;
+use RzSDK\SqlQueryBuilder\SelectMultidimensionColumnSql;
+use RzSDK\SqlQueryBuilder\SelectFromTableSql;
 use RzSDK\SqlQueryBuilder\SelectOrderBySql;
 use RzSDK\SqlQueryBuilder\SelectLimitSql;
 use RzSDK\SqlQueryBuilder\SelectOffsetSql;
@@ -13,29 +15,24 @@ use RzSDK\Log\DebugLog;
 class SelectQuery {
     //
     use SelectColumnSql;
+    use SelectMultidimensionColumnSql;
+    use SelectFromTableSql;
     use SelectOrderBySql;
     use SelectLimitSql;
     use SelectOffsetSql;
     //
-    protected $fromTable;
-    protected $fromTableAlias;
-    protected $columns;
+    protected $isMultidimension = true;
+    //protected $columns;
     protected $joinTables;
     protected $joinColums;
     protected $where;
     protected $whereAnd;
     private $sqlQuery;
     //
-    function setColumns($columns) {
+    /*function setColumns($columns) {
         $this->columns = $columns;
         return $this;
-    }
-
-    public function from($table, $alias = "") {
-        $this->fromTable = $table;
-        $this->fromTableAlias = $alias;
-        return $this;
-    }
+    }*/
 
     public function innerJoin(array $joinTables, array $joinColums) {
         $this->joinTables = $joinTables;
@@ -50,8 +47,10 @@ class SelectQuery {
     }
 
     public function build() {
-        $this->sqlQuery = "SELECT {$this->bindColumnsOld()}"
-            . " FROM {$this->bindTable()}"
+        $this->sqlQuery = "SELECT"
+            . " {$this->toSelectedMultiColumn()}"
+            . " {$this->toSelectedColumn()}"
+            . " FROM {$this->toFromTableSql()}"
             . " {$this->bindInnerJoin()}"
             . " {$this->bindWhere()}"
             . " {$this->toOrderBySql()}"
@@ -62,75 +61,10 @@ class SelectQuery {
         return trim($this->sqlQuery) . ";";
     }
 
-    public function buildNew() {
-        $this->sqlQuery = "SELECT {$this->toSelectedColumn()}"
-            . " FROM {$this->bindTable()}"
-            . " ";
-        $this->sqlQuery = preg_replace("/\s+/u", " ", $this->sqlQuery);
-        return trim($this->sqlQuery) . ";";
-    }
-
-    private function bindColumnsOld() {
-        if(empty($this->columns)) {
-            return "*";
-        }
-        //
-        if(ArrayUtils::isMultidimensional($this->columns)) {
-            // Checking if array is multidimensional or not
-            $column = "";
-            foreach ($this->columns as $key => $value) {
-                if(is_int($key)) {
-                    $key = "";
-                }
-                $column .= $this->getSelectColumn($value, $key) . ", ";
-            }
-            return trim(trim($column), ",");
-        }
-        return $this->getSelectColumn($this->columns);
-    }
-
-    private function getSelectColumn(array $array, $table = "") {
-        if(!empty($table)) {
-            $table = "{$table}.";
-        }
-        if(ArrayUtils::isAssociative($array)) {
-            // Associative array
-            $column = "";
-            foreach($array as $key => $value) {
-                $column .= "{$table}{$key} AS {$value}, ";
-            }
-            return trim(trim($column), ",");
-        } else {
-            // Sequential array
-            //return trim(implode(", ", array_values($array)));
-            $column = "";
-            foreach($array as $value) {
-                $column .= "{$table}{$value}, ";
-            }
-            return trim(trim($column), ",");
-        }
-    }
-
-    private function bindTable() {
-        if(is_array($this->fromTable)) {
-            $retVal = "";
-            if(ArrayUtils::isAssociative($this->fromTable)) {
-                foreach($this->fromTable as $key => $value) {
-                    $retVal .= "{$key} AS {$value}, ";
-                }
-                return trim(trim($retVal), ",");
-            } else {
-                return trim(implode(", ", array_values($this->fromTable)));
-            }
-        } else {
-            if(!empty($this->fromTableAlias)) {
-                return trim($this->fromTable) . " AS " . trim($this->fromTableAlias);
-            }
-            return trim($this->fromTable);
-        }
-    }
-
     private function bindInnerJoin() {
+        if(empty($this->joinTables)) {
+            return "";
+        }
         $retVal = "INNER JOIN ";
         if(ArrayUtils::isAssociative($this->joinTables)) {
             $table = array();
@@ -157,6 +91,9 @@ class SelectQuery {
     }
 
     private function bindWhere() {
+        if(empty($this->where)) {
+            return "";
+        }
         $where = "WHERE ";
         if(ArrayUtils::isMultidimensional($this->where)) {
             // Checking if array is multidimensional or not

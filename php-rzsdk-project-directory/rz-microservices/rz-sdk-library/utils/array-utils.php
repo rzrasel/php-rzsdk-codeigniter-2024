@@ -2,6 +2,9 @@
 namespace RzSDK\Utils;
 ?>
 <?php
+use Exception;
+?>
+<?php
 class ArrayUtils {
     public static function isMultidimensional(array $array) {
         if(!is_array($array)) {
@@ -14,6 +17,9 @@ class ArrayUtils {
     }
 
     public static function isAssociative(array $array) {
+        if(empty($array) || is_null($array)) {
+            throw new \Exception("Error");
+        }
         if(!is_array($array)) {
             return false;
         }

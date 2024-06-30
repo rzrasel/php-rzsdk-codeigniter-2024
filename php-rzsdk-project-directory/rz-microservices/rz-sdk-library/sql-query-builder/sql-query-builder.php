@@ -10,7 +10,7 @@ class SqlQueryBuilder {
     public function __construct() {}
 
     public function selectMultidimensional(array $columns = array()) {
-        return (new SelectQuery())->setColumns($columns);
+        return (new SelectQuery())->selectMultidimension($columns);
     }
 
     public function select(string $table, array $columns = array()) {

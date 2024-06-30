@@ -117,7 +117,7 @@ $sqlQuery = $sqlQueryBuilder
         )
     )
     ->from("user_info", "user")
-    ->buildNew();
+    ->build();
 DebugLog::log($sqlQuery);
 ?>
 <?php

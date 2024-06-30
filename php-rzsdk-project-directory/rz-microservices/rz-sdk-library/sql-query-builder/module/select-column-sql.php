@@ -11,6 +11,7 @@ trait SelectColumnSql {
     private $selectTable = [];
 
     public function select(string $table, array $column = array()): self {
+        $this->isMultidimension = false;
         if(empty($column)) {
             return $this;
         }
