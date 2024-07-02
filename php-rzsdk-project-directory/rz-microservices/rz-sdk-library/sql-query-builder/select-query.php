@@ -6,6 +6,7 @@ use RzSDK\Utils\ArrayUtils;
 use RzSDK\SqlQueryBuilder\SelectColumnSql;
 use RzSDK\SqlQueryBuilder\SelectMultidimensionColumnSql;
 use RzSDK\SqlQueryBuilder\SelectFromTableSql;
+use RzSDK\SqlQueryBuilder\SelectWhereSql;
 use RzSDK\SqlQueryBuilder\SelectOrderBySql;
 use RzSDK\SqlQueryBuilder\SelectLimitSql;
 use RzSDK\SqlQueryBuilder\SelectOffsetSql;
@@ -17,6 +18,7 @@ class SelectQuery {
     use SelectColumnSql;
     use SelectMultidimensionColumnSql;
     use SelectFromTableSql;
+    use SelectWhereSql;
     use SelectOrderBySql;
     use SelectLimitSql;
     use SelectOffsetSql;
@@ -25,8 +27,8 @@ class SelectQuery {
     //protected $columns;
     protected $joinTables;
     protected $joinColums;
-    protected $where;
-    protected $whereAnd;
+    /*protected $where;
+    protected $whereAnd;*/
     private $sqlQuery;
     //
     /*function setColumns($columns) {
@@ -40,11 +42,11 @@ class SelectQuery {
         return $this;
     }
 
-    public function where(array $where, $isAnd = true) {
+    /*public function where($table, array $where, $isAnd) {
         $this->where = $where;
         $this->whereAnd = $isAnd;
         return $this;
-    }
+    }*/
 
     public function build() {
         $this->sqlQuery = "SELECT"
@@ -52,7 +54,7 @@ class SelectQuery {
             . " {$this->toSelectedColumn()}"
             . " FROM {$this->toFromTableSql()}"
             . " {$this->bindInnerJoin()}"
-            . " {$this->bindWhere()}"
+            . " {$this->toWhereSql()}"
             . " {$this->toOrderBySql()}"
             . " {$this->toLimitSql()}"
             . " {$this->toOffsetSql()}"
@@ -90,19 +92,19 @@ class SelectQuery {
         return $retVal;
     }
 
-    private function bindWhere() {
+    /*private function bindWhere() {
         if(empty($this->where)) {
             return "";
         }
         $where = "WHERE ";
         if(ArrayUtils::isMultidimensional($this->where)) {
             // Checking if array is multidimensional or not
-            /*if(ArrayUtils::isAssociative($this->columns)) {
+            /-*if(ArrayUtils::isAssociative($this->columns)) {
                 //
             } else {
                 return trim(implode("AND ", array_values($this->columns)));
             }
-            return trim(trim($where), "AND");*/
+            return trim(trim($where), "AND");*-/
             $column = "";
             foreach ($this->where as $key => $value) {
                 if(is_int($key)) {
@@ -117,9 +119,9 @@ class SelectQuery {
             $where .= "{$value} AND ";
         }
         return trim(trim($where), "AND");
-    }
+    }*/
 
-    private function getWhereColumn(array $array, $isAnd, $table = "") {
+    /*private function getWhereColumn(array $array, $isAnd, $table = "") {
         if(!empty($table)) {
             $table = "{$table}.";
         }
@@ -129,11 +131,11 @@ class SelectQuery {
         }
         if(ArrayUtils::isAssociative($array)) {
             // Associative array
-            /*$column = "";
+            /-*$column = "";
             foreach($array as $key => $value) {
                 $column .= "{$table}{$key} AS {$value}, ";
             }
-            return trim(trim($column), ",");*/
+            return trim(trim($column), ",");*-/
             return "ERROR, associative array not working";
         } else {
             // Sequential array
@@ -144,6 +146,6 @@ class SelectQuery {
             }
             return trim(trim($column), $and);
         }
-    }
+    }*/
 }
 ?>

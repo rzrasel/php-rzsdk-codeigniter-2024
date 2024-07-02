@@ -94,7 +94,7 @@ $sqlQuery = $sqlQueryBuilder->selectMultidimensional(
     ->innerJoin(
         array("user_info" => "user", "user_password" => "user_password"),
         array("user_id", "user_id"))
-    ->where(
+    ->where("",
         array(
             "user" => array("email = 'email@gmail.com'", "status = TRUE",)
     ), true)
@@ -117,6 +117,18 @@ $sqlQuery = $sqlQueryBuilder
         )
     )
     ->from("user_info", "user")
+    ->where("user",
+        array(
+            "user_id_user_info = 1111",
+            "email_user_info = 2222"
+        )
+    )
+    ->where("password",
+        array(
+            "user_id_password = 3333",
+            "password_password = 4444"
+        ), false
+    )
     ->build();
 DebugLog::log($sqlQuery);
 ?>
