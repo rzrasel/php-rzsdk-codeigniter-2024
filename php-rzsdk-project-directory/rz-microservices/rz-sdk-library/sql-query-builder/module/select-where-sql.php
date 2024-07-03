@@ -15,6 +15,7 @@ trait SelectWhereSql {
             return $this;
         }
         if(ArrayUtils::isMultidimensional($where)) {
+            //$table = trim($table);
             $this->where = $where;
             $this->whereAnd = $isAnd;
         } else {
@@ -53,7 +54,7 @@ trait SelectWhereSql {
                     $key = "";
                 }
                 $andOr = $this->getAndOr($this->whereAnd, $counter);
-                $column .= $this->getWhereColumnNew($value, $andOr, $key) . "{$andOr} ";
+                $column .= $this->getWhereColumn($key, $value, $andOr) . "{$andOr} ";
                 $counter++;
             }
             $where = $where . $column;
@@ -66,7 +67,7 @@ trait SelectWhereSql {
         return trim(trim($where), $andOr);
     }
 
-    private function getWhereColumnNew(array $array, $andOr, $table = "") {
+    private function getWhereColumn($table, array $array, $andOr) {
         if(!empty($table)) {
             $table = "{$table}.";
         }

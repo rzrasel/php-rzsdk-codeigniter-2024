@@ -4,7 +4,7 @@ namespace RzSDK\SqlQueryBuilder;
 <?php
 use RzSDK\Utils\ArrayUtils;
 use RzSDK\SqlQueryBuilder\SelectColumnSql;
-use RzSDK\SqlQueryBuilder\SelectMultidimensionColumnSql;
+//use RzSDK\SqlQueryBuilder\SelectMultidimensionColumnSql;
 use RzSDK\SqlQueryBuilder\SelectFromTableSql;
 use RzSDK\SqlQueryBuilder\SelectWhereSql;
 use RzSDK\SqlQueryBuilder\SelectOrderBySql;
@@ -16,14 +16,14 @@ use RzSDK\Log\DebugLog;
 class SelectQuery {
     //
     use SelectColumnSql;
-    use SelectMultidimensionColumnSql;
+    //use SelectMultidimensionColumnSql;
     use SelectFromTableSql;
     use SelectWhereSql;
     use SelectOrderBySql;
     use SelectLimitSql;
     use SelectOffsetSql;
     //
-    protected $isMultidimension = true;
+    //protected $isMultidimension = true;
     //protected $columns;
     protected $joinTables;
     protected $joinColums;
@@ -50,8 +50,8 @@ class SelectQuery {
 
     public function build() {
         $this->sqlQuery = "SELECT"
-            . " {$this->toSelectedMultiColumn()}"
-            . " {$this->toSelectedColumn()}"
+            //. " {$this->toSelectedMultiColumn()}"
+            . " {$this->toSelectStatement()}"
             . " FROM {$this->toFromTableSql()}"
             . " {$this->bindInnerJoin()}"
             . " {$this->toWhereSql()}"

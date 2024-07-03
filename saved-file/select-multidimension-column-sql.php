@@ -12,6 +12,7 @@ trait SelectMultidimensionColumnSql {
     public function selectMultidimension(array $columns = array()): self {
         $this->isMultidimension = true;
         $this->selectMultiColumn = $columns;
+        DebugLog::log($this->selectMultiColumn);
         return $this;
     }
 
