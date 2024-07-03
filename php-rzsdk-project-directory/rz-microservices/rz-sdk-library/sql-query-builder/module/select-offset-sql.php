@@ -10,7 +10,7 @@ trait SelectOffsetSql {
         return $this;
     }
 
-    private function toOffsetSql(): string {
+    private function toOffsetStatement(): string {
         if(empty($this->offset)) {
             return "";
         }

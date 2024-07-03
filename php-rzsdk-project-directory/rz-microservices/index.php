@@ -75,86 +75,11 @@ foreach($data as $line) {
 ?>
 <?php
 $sqlQueryBuilder = new SqlQueryBuilder();
-//$sqlQuery = $sqlQueryBuilder->select(array("user_id", "user_email"))->build();
-//$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
-$sqlQuery = $sqlQueryBuilder->select("",
-    array(
-        "user" => array(
-            "user_id" => "id",
-            "email" => "email",
-        ),
-        "user_password" => array(
-            "user_id" => "pid",
-            "password" => "password",
-        )
-    ))
-    ->from(array("user_info" => "user"))
-    //->from("user_info")
-    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
-    ->innerJoin(
-        array("user_info" => "user", "user_password" => "user_password"),
-        array("user_id", "user_id"))
-    ->where("",
-        array(
-            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
-    ), true)
-    ->orderBy("user.modified_date", "ASC")
-    ->limit(10)
-    ->offset(5)
-    ->build();
-DebugLog::log($sqlQuery);
-$sqlQuery = $sqlQueryBuilder->select( "",
-    array(
-        "user" => array(
-            "user_id" => "id",
-            "email" => "email",
-        ),
-        "user_password" => array(
-            "user_id" => "pid",
-            "password" => "password",
-        )
-    ))
-    ->from(array("user_info" => "user"))
-    //->from("user_info")
-    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
-    ->innerJoin(
-        array("user_info" => "user", "user_password" => "user_password"),
-        array("user_id", "user_id"))
-    ->where("",
-        array(
-            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
-        ), true)
-    ->orderBy("user.modified_date", "ASC")
-    ->limit(10)
-    ->offset(5)
-    ->build();
-DebugLog::log($sqlQuery);
 $sqlQuery = $sqlQueryBuilder
-    ->select( "user",
-        array(
-            "user_id" => "id",
-            "email" => "email",
-        )
-    )
-    ->select("password",
-        array(
-            "user_id",
-            "password",
-        )
-    )
+    ->select("")
     ->from("user_info", "user")
-    ->where("user",
-        array(
-            "user_id_user_info = 1111",
-            "email_user_info = 2222"
-        )
-    )
-    ->where("password",
-        array(
-            "user_id_password = 3333",
-            "password_password = 4444"
-        ), false
-    )
+    ->join("user", "user_password", "user_id", "user_id")
+    ->innerJoin("mobile", "mobile_password", "mobile_id", "mobile_id")
     ->build();
 DebugLog::log($sqlQuery);
 ?>

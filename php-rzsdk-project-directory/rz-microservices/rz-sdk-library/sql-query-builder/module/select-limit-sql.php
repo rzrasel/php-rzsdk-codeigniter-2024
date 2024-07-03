@@ -10,7 +10,7 @@ trait SelectLimitSql {
         return $this;
     }
 
-    private function toLimitSql(): string {
+    private function toLimitStatement(): string {
         if(empty($this->limit)) {
             return "";
         }

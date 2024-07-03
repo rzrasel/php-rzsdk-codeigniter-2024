@@ -7,7 +7,7 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 trait SelectColumnSql {
-    private $selectColumn = [];
+    private $selectColumns = [];
     private $selectTable;
 
     public function select(string $table, array $column = array()): self {
@@ -15,14 +15,14 @@ trait SelectColumnSql {
             return $this;
         }
         if(ArrayUtils::isMultidimensional($column)) {
+            $this->selectColumns = $column;
             $this->selectTable = trim($table);
-            $this->selectColumn = $column;
         } else {
             $table = trim($table);
             if(empty($table)) {
-                $this->selectColumn[] = $column;
+                $this->selectColumns[] = $column;
             } else {
-                $this->selectColumn[$table] = $column;
+                $this->selectColumns[$table] = $column;
             }
         }
         return $this;
@@ -30,18 +30,18 @@ trait SelectColumnSql {
 
     private function toSelectStatement(): string {
         //DebugLog::log($this->selectColumn);
-        if(empty($this->selectColumn) || count($this->selectColumn) == 0) {
+        if(empty($this->selectColumns) || count($this->selectColumns) == 0) {
             return "*";
         }
         return $this->bindSelectedColumns();
     }
 
     private function bindSelectedColumns() {
-        if(ArrayUtils::isMultidimensional($this->selectColumn)) {
+        if(ArrayUtils::isMultidimensional($this->selectColumns)) {
             // Checking if array is multidimensional or not
             $column = "";
             //$counter = 0;
-            foreach ($this->selectColumn as $key => $value) {
+            foreach($this->selectColumns as $key => $value) {
                 $table = trim($key);
                 if(is_int($key)) {
                     //$key = "";

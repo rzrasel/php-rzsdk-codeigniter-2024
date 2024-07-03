@@ -17,7 +17,7 @@ trait SelectOrderBySql {
         return $this;
     }
 
-    private function toOrderBySql(): string {
+    private function toOrderByStatement(): string {
         if(empty($this->order)) {
             return "";
         }

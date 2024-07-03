@@ -16,20 +16,24 @@ trait SelectFromTableSql {
         return $this;
     }
 
-    private function toFromTableSql(): string {
+    private function toFromTableStatement(): string {
         if(is_array($this->fromTable)) {
             $retVal = "";
             if(ArrayUtils::isAssociative($this->fromTable)) {
                 foreach($this->fromTable as $key => $value) {
-                    $retVal .= "{$key} AS {$value}, ";
+                    if(is_int($key)) {
+                        $retVal .= "{$value}, ";
+                    } else {
+                        $retVal .= "{$key} AS {$value}, ";
+                    }
                 }
                 return trim(trim($retVal), ",");
             } else {
                 return trim(implode(", ", array_values($this->fromTable)));
             }
         } else {
-            if(!empty($this->fromTableAlias)) {
-                return trim($this->fromTable) . " AS " . trim($this->fromTableAlias);
+            if(!empty($this->fromAlias)) {
+                return trim($this->fromTable) . " AS " . trim($this->fromAlias);
             }
             return trim($this->fromTable);
         }

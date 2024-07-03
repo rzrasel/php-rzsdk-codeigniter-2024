@@ -7,7 +7,8 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 trait SelectWhereSql {
-    protected $where;
+    protected $whereColumns;
+    protected $whereTable;
     protected $whereAnd;
 
     public function where($table, array $where, $isAnd = true): self {
@@ -16,29 +17,30 @@ trait SelectWhereSql {
         }
         if(ArrayUtils::isMultidimensional($where)) {
             //$table = trim($table);
-            $this->where = $where;
+            $this->whereColumns = $where;
+            $this->whereTable = trim($table);
             $this->whereAnd = $isAnd;
         } else {
             $table = trim($table);
             $this->whereAnd[] = $isAnd;
             if(empty($table)) {
-                $this->where[] = $where;
+                $this->whereColumns[] = $where;
             } else {
-                $this->where[$table] = $where;
+                $this->whereColumns[$table] = $where;
             }
         }
         //DebugLog::log($this->whereNew);
         return $this;
     }
 
-    private function toWhereSql() {
-        if(empty($this->where)) {
+    private function toWhereStatement() {
+        if(empty($this->whereColumns)) {
             return "";
         }
         /*DebugLog::log($this->whereNew);
         DebugLog::log($this->whereAndNew);*/
         $where = "WHERE ";
-        if(ArrayUtils::isMultidimensional($this->where)) {
+        if(ArrayUtils::isMultidimensional($this->whereColumns)) {
             // Checking if array is multidimensional or not
             /*if(ArrayUtils::isAssociative($this->columns)) {
                 //
@@ -49,20 +51,32 @@ trait SelectWhereSql {
             $column = "";
             $counter = 0;
             $andOr = "AND";
-            foreach ($this->where as $key => $value) {
+            foreach($this->whereColumns as $key => $value) {
+                $table = trim($key);
                 if(is_int($key)) {
-                    $key = "";
+                    //$key = "";
+                    $table = $this->selectTable;
                 }
                 $andOr = $this->getAndOr($this->whereAnd, $counter);
-                $column .= $this->getWhereColumn($key, $value, $andOr) . "{$andOr} ";
+                $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";
                 $counter++;
             }
             $where = $where . $column;
             return trim(trim($where), $andOr);
         }
+        $table = $this->selectTable;
+        if(!empty($table)) {
+            $table = "{$table}.";
+        }
         $andOr = $this->getAndOr($this->whereAnd);
-        foreach($this->where as $value) {
-            $where .= "{$value} {$andOr} ";
+        foreach($this->where as $key => $value) {
+            $key = trim($key);
+            $value = trim($value);
+            if(!is_string($key) && !empty($key)) {
+                //$key = "";
+                $table = "{$key}.";
+            }
+            $where .= "{$table}{$value} {$andOr} ";
         }
         return trim(trim($where), $andOr);
     }

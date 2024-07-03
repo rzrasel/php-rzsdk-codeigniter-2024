@@ -4,8 +4,8 @@ namespace RzSDK\SqlQueryBuilder;
 <?php
 use RzSDK\Utils\ArrayUtils;
 use RzSDK\SqlQueryBuilder\SelectColumnSql;
-//use RzSDK\SqlQueryBuilder\SelectMultidimensionColumnSql;
 use RzSDK\SqlQueryBuilder\SelectFromTableSql;
+use RzSDK\SqlQueryBuilder\SelectJoinSql;
 use RzSDK\SqlQueryBuilder\SelectWhereSql;
 use RzSDK\SqlQueryBuilder\SelectOrderBySql;
 use RzSDK\SqlQueryBuilder\SelectLimitSql;
@@ -16,136 +16,142 @@ use RzSDK\Log\DebugLog;
 class SelectQuery {
     //
     use SelectColumnSql;
-    //use SelectMultidimensionColumnSql;
     use SelectFromTableSql;
+    use SelectJoinSql;
     use SelectWhereSql;
     use SelectOrderBySql;
     use SelectLimitSql;
     use SelectOffsetSql;
     //
-    //protected $isMultidimension = true;
-    //protected $columns;
-    protected $joinTables;
-    protected $joinColums;
-    /*protected $where;
-    protected $whereAnd;*/
     private $sqlQuery;
     //
-    /*function setColumns($columns) {
-        $this->columns = $columns;
-        return $this;
-    }*/
-
-    public function innerJoin(array $joinTables, array $joinColums) {
-        $this->joinTables = $joinTables;
-        $this->joinColums = $joinColums;
-        return $this;
-    }
-
-    /*public function where($table, array $where, $isAnd) {
-        $this->where = $where;
-        $this->whereAnd = $isAnd;
-        return $this;
-    }*/
 
     public function build() {
         $this->sqlQuery = "SELECT"
             //. " {$this->toSelectedMultiColumn()}"
             . " {$this->toSelectStatement()}"
-            . " FROM {$this->toFromTableSql()}"
-            . " {$this->bindInnerJoin()}"
-            . " {$this->toWhereSql()}"
-            . " {$this->toOrderBySql()}"
-            . " {$this->toLimitSql()}"
-            . " {$this->toOffsetSql()}"
+            . " FROM {$this->toFromTableStatement()}"
+            . " {$this->toInnerJoinStatement()}"
+            . " {$this->toWhereStatement()}"
+            . " {$this->toOrderByStatement()}"
+            . " {$this->toLimitStatement()}"
+            . " {$this->toOffsetStatement()}"
             . " ";
         $this->sqlQuery = preg_replace("/\s+/u", " ", $this->sqlQuery);
         return trim($this->sqlQuery) . ";";
     }
-
-    private function bindInnerJoin() {
-        if(empty($this->joinTables)) {
-            return "";
-        }
-        $retVal = "INNER JOIN ";
-        if(ArrayUtils::isAssociative($this->joinTables)) {
-            $table = array();
-            $alias = array();
-            foreach ($this->joinTables as $key => $value) {
-                $table[] = $key;
-                $alias[] = $value;
-            }
-            $retVal .= "{$table[1]} AS {$alias[1]} "
-                . " ON"
-                . " {$alias[0]}.{$this->joinColums[0]} "
-                . " ="
-                . " {$alias[1]}.{$this->joinColums[1]} "
-                . "";
-        } else {
-            $retVal .= "{$this->joinTables[0]} "
-                . " ON"
-                . " {$this->joinTables[0]}.{$this->joinColums[0]} "
-                . " ="
-                . " {$this->joinTables[1]}.{$this->joinColums[1]} "
-                . "";
-        }
-        return $retVal;
-    }
-
-    /*private function bindWhere() {
-        if(empty($this->where)) {
-            return "";
-        }
-        $where = "WHERE ";
-        if(ArrayUtils::isMultidimensional($this->where)) {
-            // Checking if array is multidimensional or not
-            /-*if(ArrayUtils::isAssociative($this->columns)) {
-                //
-            } else {
-                return trim(implode("AND ", array_values($this->columns)));
-            }
-            return trim(trim($where), "AND");*-/
-            $column = "";
-            foreach ($this->where as $key => $value) {
-                if(is_int($key)) {
-                    $key = "";
-                }
-                $column .= $this->getWhereColumn($value, $this->whereAnd, $key) . "AND ";
-            }
-            $where = $where . $column;
-            return trim(trim($where), "AND");
-        }
-        foreach($this->where as $value) {
-            $where .= "{$value} AND ";
-        }
-        return trim(trim($where), "AND");
-    }*/
-
-    /*private function getWhereColumn(array $array, $isAnd, $table = "") {
-        if(!empty($table)) {
-            $table = "{$table}.";
-        }
-        $and = "AND";
-        if(!$isAnd) {
-            $and = "OR";
-        }
-        if(ArrayUtils::isAssociative($array)) {
-            // Associative array
-            /-*$column = "";
-            foreach($array as $key => $value) {
-                $column .= "{$table}{$key} AS {$value}, ";
-            }
-            return trim(trim($column), ",");*-/
-            return "ERROR, associative array not working";
-        } else {
-            // Sequential array
-            //return trim(implode(", ", array_values($array)));
-            $column = "";
-            foreach($array as $value) {
-                $column .= "{$table}{$value} {$and} ";
-            }
-            return trim(trim($column), $and);
-        }
-    }*/
 }
+?>
+<?php
+?>
+<?php
+/*$sqlQueryBuilder = new SqlQueryBuilder();
+//$sqlQuery = $sqlQueryBuilder->select(array("user_id", "user_email"))->build();
+//$sqlQuery = $sqlQueryBuilder->select(array("user_id" => "id", "user_email" => "email"))->build();
+$sqlQuery = $sqlQueryBuilder->select("",
+    array(
+        "user" => array(
+            "user_id" => "id",
+            "email" => "email",
+        ),
+        "user_password" => array(
+            "user_id" => "pid",
+            "password" => "password",
+        )
+    ))
+    ->from(array("user_info" => "user"))
+    //->from("user_info")
+    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
+    ->innerJoin(
+        array("user_info" => "user"), array("user_password" => "password"),
+        "user_id", "user_id")
+    ->where("",
+        array(
+            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
+        ), true)
+    ->orderBy("user.modified_date", "ASC")
+    ->limit(10)
+    ->offset(5)
+    ->build();
+DebugLog::log($sqlQuery);
+$sqlQuery = $sqlQueryBuilder->select("",
+    array(
+        "user" => array(
+            "user_id" => "id",
+            "email" => "email",
+        ),
+        "user_password" => array(
+            "user_id" => "pid",
+            "password" => "password",
+        )
+    ))
+    ->from(array("user_info" => "user"))
+    //->from("user_info")
+    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
+    ->innerJoin(
+        array("user_info" => "user"), array("user_password" => "user_password"),
+        "user_id", "user_id")
+    ->where("",
+        array(
+            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
+        ), true)
+    ->orderBy("user.modified_date", "ASC")
+    ->limit(10)
+    ->offset(5)
+    ->build();
+DebugLog::log($sqlQuery);
+$sqlQuery = $sqlQueryBuilder->select( "",
+    array(
+        "user" => array(
+            "user_id" => "id",
+            "email" => "email",
+        ),
+        "user_password" => array(
+            "user_id" => "pid",
+            "password" => "password",
+        )
+    ))
+    ->from(array("user_info" => "user"))
+    //->from("user_info")
+    //->innerJoin(array("user_info", "user_password"), array("email", "email"))
+    ->innerJoin(
+        array("user_info" => "user"), array("user_password" => "user_password"),
+        "user_id", "user_id")
+    ->where("",
+        array(
+            "user" => array("email = 'email@gmail.com'", "status = TRUE",)
+        ), true)
+    ->orderBy("user.modified_date", "ASC")
+    ->limit(10)
+    ->offset(5)
+    ->build();
+DebugLog::log($sqlQuery);
+$sqlQuery = $sqlQueryBuilder
+    ->select( "user",
+        array(
+            "user_id" => "id",
+            "email" => "email",
+        )
+    )
+    ->select("password",
+        array(
+            "user_id",
+            "password",
+        )
+    )
+    ->from("user_info", "user")
+    ->where("user",
+        array(
+            "user_id_user_info = 1111",
+            "email_user_info = 2222"
+        )
+    )
+    ->where("password",
+        array(
+            "user_id_password = 3333",
+            "password_password = 4444"
+        ), false
+    )
+    ->build();
+DebugLog::log($sqlQuery);*/
 ?>
