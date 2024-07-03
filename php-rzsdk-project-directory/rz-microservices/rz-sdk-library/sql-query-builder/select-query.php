@@ -7,6 +7,7 @@ use RzSDK\SqlQueryBuilder\SelectColumnSql;
 use RzSDK\SqlQueryBuilder\SelectFromTableSql;
 use RzSDK\SqlQueryBuilder\SelectJoinSql;
 use RzSDK\SqlQueryBuilder\SelectWhereSql;
+use RzSDK\SqlQueryBuilder\SelectGroupBySql;
 use RzSDK\SqlQueryBuilder\SelectOrderBySql;
 use RzSDK\SqlQueryBuilder\SelectLimitSql;
 use RzSDK\SqlQueryBuilder\SelectOffsetSql;
@@ -19,6 +20,7 @@ class SelectQuery {
     use SelectFromTableSql;
     use SelectJoinSql;
     use SelectWhereSql;
+    use SelectGroupBySql;
     use SelectOrderBySql;
     use SelectLimitSql;
     use SelectOffsetSql;
