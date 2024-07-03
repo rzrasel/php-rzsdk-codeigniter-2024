@@ -28,7 +28,6 @@ class SelectQuery {
 
     public function build() {
         $this->sqlQuery = "SELECT"
-            //. " {$this->toSelectedMultiColumn()}"
             . " {$this->toSelectStatement()}"
             . " FROM {$this->toFromTableStatement()}"
             . " {$this->toInnerJoinStatement()}"
