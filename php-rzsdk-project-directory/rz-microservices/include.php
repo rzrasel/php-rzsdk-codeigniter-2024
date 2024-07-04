@@ -22,6 +22,7 @@ require_once($baseInclude . "module/select-column-sql.php");
 require_once($baseInclude . "module/select-from-table-sql.php");
 require_once($baseInclude . "module/select-join-sql.php");
 require_once($baseInclude . "module/select-where-sql.php");
+require_once($baseInclude . "module/select-group-by-sql.php");
 require_once($baseInclude . "module/select-order-by-sql.php");
 require_once($baseInclude . "module/select-limit-sql.php");
 require_once($baseInclude . "module/select-offset-sql.php");
