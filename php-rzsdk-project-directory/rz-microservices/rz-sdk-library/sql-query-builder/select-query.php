@@ -34,6 +34,7 @@ class SelectQuery {
             . " FROM {$this->toFromTableStatement()}"
             . " {$this->toInnerJoinStatement()}"
             . " {$this->toWhereStatement()}"
+            . " {$this->toGroupByStatement()}"
             . " {$this->toOrderByStatement()}"
             . " {$this->toLimitStatement()}"
             . " {$this->toOffsetStatement()}"
@@ -74,7 +75,8 @@ $sqlQuery = $sqlQueryBuilder->select("",
     ->limit(10)
     ->offset(5)
     ->build();
-DebugLog::log($sqlQuery);
+DebugLog::log($sqlQuery);*/
+/*$sqlQueryBuilder = new SqlQueryBuilder();
 $sqlQuery = $sqlQueryBuilder->select("",
     array(
         "user" => array(
@@ -100,7 +102,8 @@ $sqlQuery = $sqlQueryBuilder->select("",
     ->limit(10)
     ->offset(5)
     ->build();
-DebugLog::log($sqlQuery);
+DebugLog::log($sqlQuery);*/
+/*$sqlQueryBuilder = new SqlQueryBuilder();
 $sqlQuery = $sqlQueryBuilder->select( "",
     array(
         "user" => array(
@@ -153,6 +156,16 @@ $sqlQuery = $sqlQueryBuilder
             "password_password = 4444"
         ), false
     )
+    ->build();
+DebugLog::log($sqlQuery);*/
+/*$sqlQueryBuilder = new SqlQueryBuilder();
+$sqlQuery = $sqlQueryBuilder
+    ->select()
+    ->from("user_info", "user")
+    ->join("user", "user_password", "user_id", "user_id")
+    ->innerJoin("mobile", "mobile_password", "mobile_id", "mobile_id")
+    ->groupBy("test1")
+    ->groupBy("test2")
     ->build();
 DebugLog::log($sqlQuery);*/
 ?>

@@ -8,9 +8,12 @@ use RzSDK\Log\DebugLog;
 <?php
 trait SelectColumnSql {
     private $selectColumns = [];
+    private $rawSelectSql;
     private $selectTable;
 
-    public function select(string $table, array $column = array()): self {
+    //public function select(string $table = "", array $column = array()): self {}
+    public function __construct(string $table = "", array $column = array()) {
+        $this->rawSelectSql = $table;
         if(empty($column)) {
             return $this;
         }
@@ -31,12 +34,18 @@ trait SelectColumnSql {
     private function toSelectStatement(): string {
         //DebugLog::log($this->selectColumn);
         if(empty($this->selectColumns) || count($this->selectColumns) == 0) {
+            if(!empty($this->rawSelectSql)) {
+                return $this->rawSelectSql;
+            }
             return "*";
         }
         return $this->bindSelectedColumns();
     }
 
     private function bindSelectedColumns() {
+        if(empty($this->selectTable)) {
+            return "";
+        }
         if(ArrayUtils::isMultidimensional($this->selectColumns)) {
             // Checking if array is multidimensional or not
             $column = "";

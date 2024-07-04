@@ -8,17 +8,18 @@ class InsertQuery {
     protected $tableData;
     private $sqlQuery;
     //
-    public function __construct() {}
+    //public function __construct() {}
 
-    function setTable($table) {
+    //function setTable($table) {
+    function __construct($table) {
         $this->table = $table;
         return $this;
     }
 
-    public function values(array $row) {
-        if (array_values($row) == $row)
+    public function values(array $column) {
+        if (array_values($column) == $column)
             throw new InvalidArgumentException("Value should be an associative array");
-        $this->tableData = $row;
+        $this->tableData = $column;
         return $this;
     }
 

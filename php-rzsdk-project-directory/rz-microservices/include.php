@@ -26,8 +26,10 @@ require_once($baseInclude . "module/select-group-by-sql.php");
 require_once($baseInclude . "module/select-order-by-sql.php");
 require_once($baseInclude . "module/select-limit-sql.php");
 require_once($baseInclude . "module/select-offset-sql.php");
-require_once($baseInclude . "insert-query.php");
+require_once($baseInclude . "module/update-set-sql.php");
 require_once($baseInclude . "select-query.php");
+require_once($baseInclude . "insert-query.php");
+require_once($baseInclude . "update-query.php");
 require_once($baseInclude . "sql-query-builder.php");
 //
 $baseInclude = "rz-sdk-library/debug-log/";

@@ -1,7 +1,7 @@
 <?php
 namespace RzSDK\SqlQueryBuilder;
 ?>
-    <?php
+<?php
 use RzSDK\Utils\ArrayUtils;
 use RzSDK\Log\DebugLog;
 ?>
@@ -11,7 +11,7 @@ trait SelectWhereSql {
     protected $whereTable;
     protected $whereAnd;
 
-    public function where($table, array $where, $isAnd = true): self {
+    public function where($table = "", array $where = array(), $isAnd = true): self {
         if(empty($where)) {
             return $this;
         }
@@ -37,8 +37,8 @@ trait SelectWhereSql {
         if(empty($this->whereColumns)) {
             return "";
         }
-        /*DebugLog::log($this->whereNew);
-        DebugLog::log($this->whereAndNew);*/
+        //DebugLog::log($this->whereColumns);
+        //DebugLog::log($this->whereAndNew);
         $where = "WHERE ";
         if(ArrayUtils::isMultidimensional($this->whereColumns)) {
             // Checking if array is multidimensional or not
@@ -55,7 +55,8 @@ trait SelectWhereSql {
                 $table = trim($key);
                 if(is_int($key)) {
                     //$key = "";
-                    $table = $this->selectTable;
+                    //$table = $this->selectTable;
+                    $table = $this->whereTable;
                 }
                 $andOr = $this->getAndOr($this->whereAnd, $counter);
                 $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";
@@ -87,12 +88,30 @@ trait SelectWhereSql {
         }
         if(ArrayUtils::isAssociative($array)) {
             // Associative array
-            /*$column = "";
+            $column = "";
             foreach($array as $key => $value) {
-                $column .= "{$table}{$key} AS {$value}, ";
+                $operator = "=";
+                $firstCharacter = trim($value);
+                $firstCharacter = substr($firstCharacter, 0, 1);
+                $pattern = "/^[=><]$/i";
+                if(preg_match($pattern, $firstCharacter, $matches)) {
+                    //DebugLog::log($matches[0]);
+                    $operator = $matches[0];
+                    $value = ltrim(substr($value, 1));
+                }
+                //DebugLog::log($firstCharacter);
+                if(is_bool($value)) {
+                    $value = "TRUE";
+                } else if(is_int($value)) {
+                    $value = $value;
+                } else {
+                    $value = "'{$value}'";
+                }
+                $column .= " {$table}{$key} {$operator} {$value} {$andOr} ";
             }
-            return trim(trim($column), ",");*/
-            return "ERROR, associative array not working";
+            //return trim($column, "{$andOr}");
+            return trim(trim($column), $andOr);
+            //return "ERROR, associative array not working";
         } else {
             // Sequential array
             //return trim(implode(", ", array_values($array)));
