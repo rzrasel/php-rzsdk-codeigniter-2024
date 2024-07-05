@@ -62,7 +62,7 @@ require_once($baseInclude . "user-request.php");
 require_once($baseInclude . "user-registration-request.php");
 ?>
 <?php
-$baseInclude = "user/";
+$baseInclude = "user-info/";
 //require_once($baseInclude . "model/user-model.php");
 ?>
 <?php

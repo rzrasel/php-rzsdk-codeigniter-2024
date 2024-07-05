@@ -133,7 +133,7 @@ class UserRegistration {
                 $postedDataSet);
             return;
         }
-        $this->bindRegistrationSqlQuery($userRegiRequestModel);
+        $this->bindUserRegistrationSqlQuery($userRegiRequestModel);
         $this->response(null,
             "Successful registration completed",
             InfoType::SUCCESS,
@@ -141,7 +141,7 @@ class UserRegistration {
     }
 
     private function isExistsUserInDatabase($postedDataSet) {
-        $url = dirname(ROOT_URL) . "/user/user.php";
+        $url = dirname(ROOT_URL) . "/user-info/user-info.php";
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         //DebugLog::log($postedDataSet);
         $curl = new Curl($url);
@@ -165,7 +165,7 @@ class UserRegistration {
         return true;
     }
 
-    private function bindRegistrationSqlQuery($userRegiRequestModel) {
+    private function bindUserRegistrationSqlQuery($userRegiRequestModel) {
         $uniqueIntId = new UniqueIntId();
         $userId = $uniqueIntId->getId();
         $dateTime = DateTime::getCurrentDateTime();
