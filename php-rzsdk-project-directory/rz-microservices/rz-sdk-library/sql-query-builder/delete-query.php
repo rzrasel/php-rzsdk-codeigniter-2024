@@ -33,3 +33,12 @@ class DeleteQuery {
     }
 }
 ?>
+<?php
+/*$sqlQueryBuilder = new SqlQueryBuilder();
+$sqlQuery = $sqlQueryBuilder
+    ->delete("user_info")
+    ->where("", array("ttttt" => "kljjl lkjj"))
+    ->where("", array("test2" => "44444"))
+    ->build();
+DebugLog::log($sqlQuery);*/
+?>

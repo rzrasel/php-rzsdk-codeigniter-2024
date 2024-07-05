@@ -38,39 +38,6 @@ class UserRegistration {
         $this->execute();
     }
 
-    private function doDatabaseTask($userRegiRequestModel, $postedDataSet) {
-        //
-        $userRegiTable = DbUserTable::$userRegistration;
-        $userInfoTable = DbUserTable::$userInfo;
-        $userPasswordTable = DbUserTable::$userPassword;
-        $uniqueIntId = new UniqueIntId();
-        //
-        $userId = $uniqueIntId->getId();
-        $dateTime = DateTime::getCurrentDateTime();
-        //
-        $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
-        $userRegiDbDataSet = $userRegiDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
-        $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->insert($userRegiTable)
-            ->values($userRegiDbDataSet)
-            ->build();
-        //DebugLog::log($sqlQuery);
-        //
-        $userInfoDatabaseModel = new UserInfoDatabaseModel();
-        $userInfoDbDataSet = $userInfoDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
-        $sqlQuery = $sqlQueryBuilder->insert($userInfoTable)
-            ->values($userInfoDbDataSet)
-            ->build();
-        //DebugLog::log($sqlQuery);
-        //
-        $userPasswordDatabaseModel = new UserPasswordDatabaseModel();
-        $userPasswordDbDataSet = $userPasswordDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
-        $sqlQuery = $sqlQueryBuilder->insert($userPasswordTable)
-            ->values($userPasswordDbDataSet)
-            ->build();
-        DebugLog::log($sqlQuery);
-    }
-
     public function execute() {
         if(!empty($_POST)) {
             $isValidated = $this->isValidated($_POST);
@@ -83,7 +50,6 @@ class UserRegistration {
             //DebugLog::log($userRegiRequestModel);
             $postedDataSet = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
             //DebugLog::log($postedDataSet);
-            $this->doDatabaseTask($userRegiRequestModel, $postedDataSet);
 
             $enumValue = $userRegiRequestModel->authType;
             $userAuthType = getUserAuthTypeByValue($enumValue);
@@ -160,22 +126,21 @@ class UserRegistration {
         /*if(!$this->regexValidation($userRegiRequestModel)) {
             return;
         }*/
-        if($this->haveDatabaseUser($postedDataSet)) {
+        if($this->isExistsUserInDatabase($postedDataSet)) {
             $this->response(null,
                 "User already exists",
                 InfoType::ERROR,
                 $postedDataSet);
             return;
         }
-        $this->doUserResitration($userRegiRequestModel, $postedDataSet);
+        $this->bindRegistrationSqlQuery($userRegiRequestModel);
+        $this->response(null,
+            "Successful registration completed",
+            InfoType::SUCCESS,
+            $postedDataSet);
     }
 
-    /*private function regexValidation(UserRegistrationRequestModel $userRegiRequestModel) {
-        $userRegistrationRegexValidation = new UserRegistrationRegexValidation();
-        return $userRegistrationRegexValidation->execute($userRegiRequestModel);
-    }*/
-
-    private function haveDatabaseUser($postedDataSet) {
+    private function isExistsUserInDatabase($postedDataSet) {
         $url = dirname(ROOT_URL) . "/user/user.php";
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         //DebugLog::log($postedDataSet);
@@ -200,15 +165,83 @@ class UserRegistration {
         return true;
     }
 
-    private function doUserResitration(UserRegistrationRequestModel $userRegiRequestModel, $paramData) {
+    private function bindRegistrationSqlQuery($userRegiRequestModel) {
+        $uniqueIntId = new UniqueIntId();
+        $userId = $uniqueIntId->getId();
+        $dateTime = DateTime::getCurrentDateTime();
+        //
+        $dbConn = $this->getSqlConnection();
+        //
+        $sqlQuery = $this->getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime);
+        $this->doRunInsertSql($dbConn, $sqlQuery);
+        $sqlQuery = $this->getInsertUserInfoSql($userRegiRequestModel, $userId, $dateTime);
+        $this->doRunInsertSql($dbConn, $sqlQuery);
+        $sqlQuery = $this->getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime);
+        $this->doRunInsertSql($dbConn, $sqlQuery);
+    }
+
+    private function getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime) {
+        $userRegiTable = DbUserTable::$userRegistration;
+        $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
+        $userRegiDbDataSet = $userRegiDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->insert($userRegiTable)
+            ->values($userRegiDbDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        return $sqlQuery;
+    }
+
+    private function getInsertUserInfoSql($userRegiRequestModel, $userId, $dateTime) {
+        $userInfoTable = DbUserTable::$userInfo;
+        $userInfoDatabaseModel = new UserInfoDatabaseModel();
+        $userInfoDbDataSet = $userInfoDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->insert($userInfoTable)
+            ->values($userInfoDbDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        return $sqlQuery;
+    }
+
+    private function getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime) {
+        $userPasswordTable = DbUserTable::$userPassword;
+        $userPasswordDatabaseModel = new UserPasswordDatabaseModel();
+        $userPasswordDbDataSet = $userPasswordDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->insert($userPasswordTable)
+            ->values($userPasswordDbDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        return $sqlQuery;
+    }
+
+    private function doRunInsertSql($dbConn, $sqlQuery) {
+        return $dbConn->query($sqlQuery);
+    }
+
+    private function getSqlConnection() {
+        $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
+        return new SqliteConnection($dbFullPath);
+    }
+
+    private function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
+    }
+
+    /*private function doUserResitrationOld(UserRegistrationRequestModel $userRegiRequestModel, $paramData) {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         $connection = new SqliteConnection($dbFullPath);
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         $userId = time();
         $dateTime = date("Y-m-d H:i:s");
         $clientDevice = new ClientDevice();
-        /* DebugLog::log($_SERVER["HTTP_USER_AGENT"]);
-        DebugLog::log($_SERVER); */
+        /-* DebugLog::log($_SERVER["HTTP_USER_AGENT"]);
+        DebugLog::log($_SERVER); *-/
         $sqlTable = DbUserTable::$userRegistration;
         $sqlQuery = "INSERT INTO {$sqlTable} VALUES("
         . "'" . $userId . "',"
@@ -245,7 +278,6 @@ class UserRegistration {
         . ");";
         //echo $sqlQuery;
         $dbResult = $connection->query($sqlQuery);
-        //https://reintech.io/blog/php-password-hashing-securely-storing-verifying-passwords
         $password = password_hash($userRegiRequestModel->password, PASSWORD_DEFAULT);
         $sqlTable = DbUserTable::$userPassword;
         $sqlQuery = "INSERT INTO {$sqlTable} VALUES("
@@ -263,17 +295,12 @@ class UserRegistration {
             "Successful registration completed",
             InfoType::SUCCESS,
             $paramData);
-    }
-
-    private function response($body, $message, InfoType $infoType, $parameter = null) {
-        $launchResponse = new LaunchResponse();
-        $launchResponse->setBody($body)
-            ->setInfo($message, $infoType)
-            ->setParameter($parameter)
-            ->execute();
-    }
+    }*/
 }
 ?>
 <?php
 $userRegistration = new UserRegistration();
+?>
+<?php
+//https://reintech.io/blog/php-password-hashing-securely-storing-verifying-passwords
 ?>

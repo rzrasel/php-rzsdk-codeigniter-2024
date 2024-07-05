@@ -169,3 +169,15 @@ $sqlQuery = $sqlQueryBuilder
     ->build();
 DebugLog::log($sqlQuery);*/
 ?>
+<?php
+/*$sqlQueryBuilder = new SqlQueryBuilder();
+$sqlQuery = $sqlQueryBuilder
+    ->select()
+    ->from("user_info", "user")
+    ->join("user", "user_password", "user_id", "user_id")
+    ->innerJoin("mobile", "mobile_password", "mobile_id", "mobile_id")
+    ->groupBy("test1")
+    ->groupBy("test2")
+    ->build();
+DebugLog::log($sqlQuery);*/
+?>
