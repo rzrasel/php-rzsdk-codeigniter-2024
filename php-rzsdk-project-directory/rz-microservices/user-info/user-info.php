@@ -9,7 +9,7 @@ use RzSDK\Model\User\UserInfo\UserInfoDatabaseModel;
 use RzSDK\Model\User\UserInfo\UserRegistrationDatabaseModel;
 use RzSDK\Model\User\UserInfo\UserInfoRequestModel;
 use RzSDK\Validation\BuildValidationRules;
-use RzSDK\HTTPRequest\UserRequest;
+use RzSDK\HTTPRequest\UserInfoRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
@@ -21,7 +21,7 @@ class UserInfo {
         $this->execute();
     }
 
-    private function doDatabaseTask($userInfoRequestModel, $postedDataSet) {
+    /*private function doDatabaseTask($userInfoRequestModel, $postedDataSet) {
         //DebugLog::log($userInfoRequestModel);
         //DebugLog::log($userInfoRequestModel->arrayKeyMap());
         $userInfoTable = DbUserTable::$userInfo;
@@ -43,7 +43,7 @@ class UserInfo {
             ->where("", array($userEmail => $userInfoRequestModel->email))
             ->build();
         DebugLog::log($sqlQuery);
-    }
+    }*/
 
     public function execute() {
         if(!empty($_POST)) {
@@ -71,8 +71,8 @@ class UserInfo {
     public function isValidated($dataSet) {
         //DebugLog::log($dataSet);
         $buildValidationRules = new BuildValidationRules();
-        $userRequest = new UserRequest();
-        $userParamList = $userRequest->getQuery();
+        $userInfoRequest = new UserInfoRequest();
+        $userParamList = $userInfoRequest->getQuery();
         $userInfoRequestModel = new UserInfoRequestModel();
         $keyMapping = $userInfoRequestModel->propertyKeyMapping();
         //$requestValue = array();

@@ -25,6 +25,7 @@ class UserLogin {
 
     public function execute() {
         if(!empty($_POST)) {
+            //DebugLog::log($_POST);
             $userRegiRequestModel = new UserRegistrationRequestModel();
             $userRegiRequestModel->agentType = $_POST[$userRegiRequestModel->agentType];
             $userRegiRequestModel->authType = $_POST[$userRegiRequestModel->authType];

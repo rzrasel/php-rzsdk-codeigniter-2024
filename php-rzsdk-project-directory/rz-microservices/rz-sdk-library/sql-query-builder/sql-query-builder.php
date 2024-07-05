@@ -2,8 +2,10 @@
 namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
-use RzSDK\SqlQueryBuilder\InsertQuery;
 use RzSDK\SqlQueryBuilder\SelectQuery;
+use RzSDK\SqlQueryBuilder\InsertQuery;
+use RzSDK\SqlQueryBuilder\UpdateQuery;
+use RzSDK\SqlQueryBuilder\DeleteQuery;
 ?>
 <?php
 class SqlQueryBuilder {

@@ -6,7 +6,7 @@ use RzSDK\Validation\PrepareValidationRules;
 use RzSDK\HTTPRequest\ValidationType;
 ?>
 <?php
-class UserRequest {
+class UserInfoRequest {
     //
     public $device_type = "device_type";
     public $auth_type   = "auth_type";
