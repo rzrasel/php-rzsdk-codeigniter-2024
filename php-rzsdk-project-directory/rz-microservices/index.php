@@ -84,10 +84,22 @@ $sqlQuery = $sqlQueryBuilder
     ->groupBy("test2")
     ->build();
 DebugLog::log($sqlQuery);
+?>
+<?php
+$sqlQueryBuilder = new SqlQueryBuilder();
 $sqlQuery = $sqlQueryBuilder
     ->update("user_info")
     ->set(array("test1" => "test2"))
     ->set(array("test1" => true))
+    ->where("", array("ttttt" => "kljjl lkjj"))
+    ->where("", array("test2" => "44444"))
+    ->build();
+DebugLog::log($sqlQuery);
+?>
+<?php
+$sqlQueryBuilder = new SqlQueryBuilder();
+$sqlQuery = $sqlQueryBuilder
+    ->delete("user_info")
     ->where("", array("ttttt" => "kljjl lkjj"))
     ->where("", array("test2" => "44444"))
     ->build();

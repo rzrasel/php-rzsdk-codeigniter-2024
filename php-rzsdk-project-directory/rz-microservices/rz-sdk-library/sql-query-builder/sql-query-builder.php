@@ -23,15 +23,14 @@ class SqlQueryBuilder {
         return new UpdateQuery($table);
     }
 
-    /*public function from() {
+    public function delete(string $table) {
+        return new DeleteQuery($table);
     }
-
-    public function build() {
-    }*/
 }
 ?>
 <?php
 //$sqlQueryBuilder = new SqlQueryBuilder();
 //https://github.com/iamludal/mysql-querybuilder
 //https://github.com/nilportugues/php-sql-query-builder/tree/master
+//https://learnsql.com/blog/how-to-use-aliases-with-sql-join/
 ?>

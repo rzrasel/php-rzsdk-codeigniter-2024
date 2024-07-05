@@ -30,6 +30,7 @@ require_once($baseInclude . "module/update-set-sql.php");
 require_once($baseInclude . "select-query.php");
 require_once($baseInclude . "insert-query.php");
 require_once($baseInclude . "update-query.php");
+require_once($baseInclude . "delete-query.php");
 require_once($baseInclude . "sql-query-builder.php");
 //
 $baseInclude = "rz-sdk-library/debug-log/";
