@@ -3,6 +3,7 @@ namespace RzSDK\Import;
 ?>
 <?php
 defined("RZ_SDK_BASEPATH") or define("RZ_SDK_BASEPATH", trim(trim(__DIR__, "/")));
+defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", "rz-sdk-library");
 defined("RZ_SDK_DIR_FILE_PATH") or define("RZ_SDK_DIR_FILE_PATH", "directory-path-file.json");
 $rzSdkFolder = "rz-sdk-library";
 defined("RZ_SDK_WRAPPER") or define("RZ_SDK_WRAPPER", str_replace("\\", "/", $rzSdkFolder));
@@ -69,6 +70,8 @@ $baseInclude = "http-query/";
 require_once($baseInclude . "validation-type.php");
 require_once($baseInclude . "user-info-request.php");
 require_once($baseInclude . "user-registration-request.php");
+require_once($baseInclude . "user-login-request.php");
+require_once($baseInclude . "user-authentication-request.php");
 ?>
 <?php
 $baseInclude = "user-info/";

@@ -122,7 +122,7 @@ class UserRegistration {
         );
     }
 
-    private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, $postedDataSet) {
+    private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, array $postedDataSet) {
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         /*if(!$this->regexValidation($userRegiRequestModel)) {
             return;
@@ -149,6 +149,9 @@ class UserRegistration {
         $result = $curl->exec(true, $postedDataSet) . "";
         $result = json_decode($result, true);
         //DebugLog::log($result);
+        if(!is_array($result)) {
+            return false;
+        }
         $responseData = json_decode($result["body"], true);
         //DebugLog::log($responseData);
         if(empty($responseData["body"])) {

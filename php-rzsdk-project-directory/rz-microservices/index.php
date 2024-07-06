@@ -91,6 +91,27 @@ $curlUserRegistration = new CurlUserRegistration(SiteUrl::getBaseUrl());
 //$curlUserRegistration->example();
 ?>
 <?php
+/*function getArrayByValue($value, array $array) {
+    if(empty($array)) {
+        return null;
+    }
+    $result = array();
+    $isFound = false;
+    foreach($array as $key => $item) {
+        if($value == $item) {
+            $isFound = true;
+            $result[$key] = $item;
+        }
+    }
+    return ($isFound) ? $result : null;
+}
+$a=array("a"=>"red", "b"=>"green", "c"=>"blue", "d"=>"red");
+$data = array_search("red",$a);
+DebugLog::log($data);
+$data = getArrayByValue("red", $a);
+DebugLog::log($data);*/
+?>
+<?php
 $curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
 ?>
 <?php
