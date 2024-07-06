@@ -12,6 +12,7 @@ use RzSDK\User\Login\UserLoginRegexValidation;
 use RzSDK\User\Type\UserAuthType;
 use function RzSDK\User\Type\getUserAuthTypeByValue;
 use RzSDK\Database\SqliteConnection;
+use RzSDK\Response\InfoTypeExtension;
 use RzSDK\Log\DebugLog;
 
 use function RzSDK\Response\getInfoTypeByValue;
@@ -85,7 +86,7 @@ class UserLogin {
         //DebugLog::log($bodyData);
         //DebugLog::log($infoData);
         $enumValue = $infoData["type"];
-        $infoType = getInfoTypeByValue($enumValue);
+        $infoType = InfoTypeExtension::getInfoTypeByValue($enumValue);
 
         if(!empty($infoType)) {
             if($infoType == InfoType::SUCCESS) {

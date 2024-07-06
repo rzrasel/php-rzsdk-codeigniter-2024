@@ -22,6 +22,7 @@ use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\DateTime\DateDiffType;
+use RzSDK\Response\InfoTypeExtension;
 use RzSDK\DateTime\DateTime;
 use RzSDK\Log\DebugLog;
 
@@ -156,7 +157,7 @@ class UserRegistration {
         }
         $responseInfoType = $responseData["info"]["type"];
         //DebugLog::log($responseInfoType);
-        $responseType = getInfoTypeByValue($responseInfoType);
+        $responseType = InfoTypeExtension::getInfoTypeByValue($responseInfoType);
         //DebugLog::log($responseType);
         if($responseType == InfoType::ERROR) {
             return false;

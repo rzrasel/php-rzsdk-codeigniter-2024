@@ -22,11 +22,13 @@ class AutoloaderHelper {
     }
 
     protected function getDirectoryToPath($directory, $directories = array(), &$results = array()) {
+        $directory = trim($directory);
         $directory = rtrim($directory, "/");
         if(is_array($directories)) {
             //$this->log($directories);
             $results = array();
             foreach($directories as $key => $value) {
+                $key = trim($key);
                 if(is_array($value)) {
                     //echo "{$key} - {$value} from if";
                     $path = empty($directory) ? "{$key}/" : "{$directory}/{$key}/";
@@ -39,12 +41,14 @@ class AutoloaderHelper {
                     }
                     //$this->log($retVal);
                 } else {
+                    $value = trim($value);
                     $path = empty($directory) ? "{$value}/" : "{$directory}/{$value}/";
                     $path = rtrim($path, "/");
                     $results[] = $path;
                 }
             }
         } else {
+            $directories = trim($directories);
             $path = empty($directory) ? "{$directories}/" : "{$directory}/{$directories}/";
             $path = rtrim($path, "/");
             $results[] = $path;
@@ -56,16 +60,16 @@ class AutoloaderHelper {
     public function getExistedFilePath($directories, $file) {
         // With $extension = ".php"
         if(is_array($directories)) {
-            echo "<br /><br />";
+            //echo "<br /><br />";
             foreach($directories as $directory) {
                 $directory = rtrim($directory, "/") . "/" . $file;
-                echo "{$directory}<br />";
+                //echo "All File: {$directory}<br />";
                 if($this->isFileExists($directory)) {
-                    //echo "exist {$directory}<br />";
+                    //echo "Existed File: {$directory}<br />";
                     return $directory;
                 }
             }
-            echo "<br /><br />";
+            //echo "<br /><br />";
         } else {
             $directory = rtrim($directories, "/") . "/" . $file;
             if(empty($directories)) {
@@ -85,6 +89,16 @@ class AutoloaderHelper {
             return true;
         }
         return false;
+    }
+
+    public function write($filePath, $fileData) {
+        $filePointer = fopen($filePath, "w");
+        fwrite($filePointer, $fileData);
+        fclose($filePointer);
+    }
+
+    public function read($filePath) {
+        return file_get_contents($filePath);
     }
 }
 ?>

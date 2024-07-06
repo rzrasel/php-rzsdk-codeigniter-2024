@@ -13,21 +13,21 @@ $baseInclude = "rz-sdk-library/";
 $baseInclude = "rz-sdk-library/autoloader/";
 require_once($baseInclude . "autoloader.php");
 //
-$baseInclude = "rz-sdk-library/utils/";
+/*$baseInclude = "rz-sdk-library/utils/";
 require_once($baseInclude . "site-url.php");
-require_once($baseInclude . "array-utils.php");
+require_once($baseInclude . "array-utils.php");*/
 //
-$baseInclude = "rz-sdk-library/database/";
-//require_once($baseInclude . "sqlite-connection.php");
+/*$baseInclude = "rz-sdk-library/database/";
+require_once($baseInclude . "sqlite-connection.php");*/
 //
-$baseInclude = "rz-sdk-library/";
+/*$baseInclude = "rz-sdk-library/";
 require_once($baseInclude . "curl/curl.php");
 require_once($baseInclude . "validation/regular-validation.php");
 require_once($baseInclude . "validation/email-validation.php");
-require_once($baseInclude . "validation/password-validation.php");
+require_once($baseInclude . "validation/password-validation.php");*/
 //
-$baseInclude = "rz-sdk-library/sql-query-builder/";
-/*require_once($baseInclude . "module/select-column-sql.php");
+/*$baseInclude = "rz-sdk-library/sql-query-builder/";
+require_once($baseInclude . "module/select-column-sql.php");
 require_once($baseInclude . "module/select-from-table-sql.php");
 require_once($baseInclude . "module/select-join-sql.php");
 require_once($baseInclude . "module/select-where-sql.php");
@@ -39,19 +39,19 @@ require_once($baseInclude . "module/update-set-sql.php");
 require_once($baseInclude . "select-query.php");
 require_once($baseInclude . "insert-query.php");
 require_once($baseInclude . "update-query.php");
-require_once($baseInclude . "delete-query.php");*/
-//require_once($baseInclude . "sql-query-builder.php");
+require_once($baseInclude . "delete-query.php");
+require_once($baseInclude . "sql-query-builder.php");*/
 //
-$baseInclude = "rz-sdk-library/debug-log/";
-require_once($baseInclude . "debug-log.php");
+/*$baseInclude = "rz-sdk-library/debug-log/";
+require_once($baseInclude . "debug-log.php");*/
 //
-$baseInclude = "rz-sdk-library/";
+/*$baseInclude = "rz-sdk-library/";
 require_once($baseInclude . "detect-client/client-device.php");
 require_once($baseInclude . "detect-client/client-ip.php");
 require_once($baseInclude . "date-time/date-diff-type.php");
 require_once($baseInclude . "date-time/date-time.php");
-require_once($baseInclude . "response/response.php");
 require_once($baseInclude . "identification/unique-int-id.php");
+require_once($baseInclude . "response/response.php");*/
 ?>
 <?php
 $baseInclude = "table-space/";

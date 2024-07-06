@@ -34,11 +34,15 @@ class Autoloader extends AutoloaderHelper {
         if(!empty($this->directories)) {
             //$pathList = parent::getDirectoryToPath("", $this->directories);
             $pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
-            //echo "<br /><br /><br /><br />";
-            //$this->log($pathList);
-            //echo "<br /><br /><br /><br />";
+            /*echo "<br /><br /><br /><br />";
+            $this->log($pathList);
+            echo "<br /><br /><br /><br />";*/
             //echo "<br />";
             $filePath = parent::getExistedFilePath($pathList, $fileName);
+            if(empty($filePath)) {
+                $pathList = parent::getDirectoryToPath("rz-sdk-library", $this->directories);
+                $filePath = parent::getExistedFilePath($pathList, $fileName);
+            }
             /*echo "<br />";
             echo $filePath;
             echo "<br /><br /><br /><br />";*/
@@ -47,10 +51,17 @@ class Autoloader extends AutoloaderHelper {
         }
         if(!empty($filePath)) {
             $this->existedFilePath = $filePath;
-            //echo $this->existedFilePath;
+            //echo "Require Once File: {$this->existedFilePath}";
             require_once($filePath);
         }
-        //require_once("../rz-sdk-library/utils/site-url.php");
+        $writePath = "rz-sdk-library/utils/site-url.txt";
+        /*$writeData = "Test Data {$writePath}";
+        parent::write($writePath, $writeData);
+        $read = parent::read($writePath);
+        echo "read:-------------{$read}";*/
+        $writePath = str_replace(".txt", ".php", $writePath);
+        //require_once("../rz-sdk-library/database/sqlite-connection.php");
+        //require_once($writePath);
     }
 
     private function log($message) {
