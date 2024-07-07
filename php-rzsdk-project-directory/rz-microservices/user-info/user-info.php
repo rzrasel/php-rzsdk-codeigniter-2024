@@ -117,11 +117,11 @@ class UserInfo {
     private function bindUserInfoSqlQuery($userInfoRequestModel, $postedDataSet) {
         //DebugLog::log($userInfoRequestModel);
         //
-        $dbConn = $this->getSqlConnection();
+        $dbConn = $this->getDbConnection();
         //
         //$userInfoRequestModel->email = $userInfoRequestModel->email . "(ajsfdjf)";
         $sqlQuery = $this->getSelectUserInfoSql($userInfoRequestModel);
-        $dbResult = $this->doRunSelectSql($dbConn, $sqlQuery);
+        $dbResult = $this->doRunSelectQuery($dbConn, $sqlQuery);
         $userInfoDatabaseModel = new UserInfoDatabaseModel();
         $userInfoTable = $userInfoDatabaseModel->fillDbColumn($dbResult);
         //DebugLog::log($userInfoTable->getColumnWithKey());
@@ -133,7 +133,7 @@ class UserInfo {
         } else {
             //$userInfoRequestModel->email = str_replace("(ajsfdjf)", "", $userInfoRequestModel->email);
             $sqlQuery = $this->getSelectUserRegiSql($userInfoRequestModel);
-            $dbResult = $this->doRunSelectSql($dbConn, $sqlQuery);
+            $dbResult = $this->doRunSelectQuery($dbConn, $sqlQuery);
             $userRegistrationDatabaseModel = new UserRegistrationDatabaseModel();
             $userRegiTable = $userRegistrationDatabaseModel->fillDbColumn($dbResult);
             //DebugLog::log($userRegiTable->getColumnWithKey());
@@ -177,11 +177,11 @@ class UserInfo {
         return $sqlQuery;
     }
 
-    private function doRunSelectSql($dbConn, $sqlQuery) {
+    private function doRunSelectQuery($dbConn, $sqlQuery) {
         return $dbConn->query($sqlQuery);
     }
 
-    private function getSqlConnection() {
+    private function getDbConnection() {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         return new SqliteConnection($dbFullPath);
     }

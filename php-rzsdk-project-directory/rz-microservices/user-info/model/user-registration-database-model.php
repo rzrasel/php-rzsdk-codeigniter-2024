@@ -6,8 +6,7 @@ use RzSDK\DatabaseSpace\UserRegistrationTable;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class UserRegistrationDatabaseModel
-{
+class UserRegistrationDatabaseModel {
     /*public $fullName        = "full_name";
     public $firstName       = "first_name";
     public $midName         = "mid_name";

@@ -68,6 +68,8 @@ class UserInfoDatabaseModel {
             if($counter < 1) {
                 return null;
             }
+        } else {
+            return null;
         }
         return $userInfoTable;
     }

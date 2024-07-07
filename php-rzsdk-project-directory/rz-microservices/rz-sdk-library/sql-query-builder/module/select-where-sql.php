@@ -26,7 +26,23 @@ trait SelectWhereSql {
             if(empty($table)) {
                 $this->whereColumns[] = $where;
             } else {
-                $this->whereColumns[$table] = $where;
+                if(!empty($this->whereColumns)) {
+                    if (array_key_exists($table, $this->whereColumns)) {
+                        /*$this->whereColumns[$table] = array();
+                        $combineWhereColumns = array();
+                        foreach($this->whereColumns as $key => $value) {
+                            $combineWhereColumns[$key] = $value;
+                        }*/
+                        //$this->whereColumns[$table][] = array_merge($this->whereColumns[$table], $where);
+                        /*$arrayValue = array_values($where);
+                        $this->whereColumns[$table][] = $arrayValue;*/
+                    } else {
+                        $this->whereColumns[$table] = $where;
+                    }
+                } else {
+                    $this->whereColumns[$table] = $where;
+                }
+                //$this->whereColumns[$table] = $where;
             }
         }
         //DebugLog::log($this->whereNew);

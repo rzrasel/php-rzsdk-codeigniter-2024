@@ -174,14 +174,14 @@ class UserRegistration {
         $userId = $uniqueIntId->getId();
         $dateTime = DateTime::getCurrentDateTime();
         //
-        $dbConn = $this->getSqlConnection();
+        $dbConn = $this->getDbConnection();
         //
         $sqlQuery = $this->getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime);
-        $this->doRunInsertSql($dbConn, $sqlQuery);
+        $this->doRunInsertQuery($dbConn, $sqlQuery);
         $sqlQuery = $this->getInsertUserInfoSql($userRegiRequestModel, $userId, $dateTime);
-        $this->doRunInsertSql($dbConn, $sqlQuery);
+        $this->doRunInsertQuery($dbConn, $sqlQuery);
         $sqlQuery = $this->getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime);
-        $this->doRunInsertSql($dbConn, $sqlQuery);
+        $this->doRunInsertQuery($dbConn, $sqlQuery);
     }
 
     private function getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime) {
@@ -220,11 +220,11 @@ class UserRegistration {
         return $sqlQuery;
     }
 
-    private function doRunInsertSql($dbConn, $sqlQuery) {
+    private function doRunInsertQuery($dbConn, $sqlQuery) {
         return $dbConn->query($sqlQuery);
     }
 
-    private function getSqlConnection() {
+    private function getDbConnection() {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         return new SqliteConnection($dbFullPath);
     }

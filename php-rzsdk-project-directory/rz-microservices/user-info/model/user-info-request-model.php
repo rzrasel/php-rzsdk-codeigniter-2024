@@ -6,16 +6,14 @@ namespace RzSDK\Model\User\UserInfo;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class UserInfoRequestModel
-{
+class UserInfoRequestModel {
     public $deviceType = "device_type";
     public $authType = "auth_type";
     public $agentType = "agent_type";
     public $email = "user_email";
     public $password = "password";
 
-    public function toArrayKeyMapping($object, $keyMapping = array())
-    {
+    public function toArrayKeyMapping($object, $keyMapping = array()) {
         if (empty($keyMapping)) {
             $keyMapping = $this->arrayKeyMap();
         }
@@ -68,8 +66,7 @@ class UserInfoRequestModel
      * Array left side is - request parameter
      * Array right side is - database column
      */
-    public function arrayKeyMap()
-    {
+    public function arrayKeyMap() {
         $keyMapping = $this->propertyKeyMapping();
         $key = array_keys($keyMapping);
         //$values = array_values($keyMapping);
@@ -96,8 +93,7 @@ class UserInfoRequestModel
      * Array left side is - database column
      * Array right side is - request parameter
      */
-    public function propertyKeyMapping()
-    {
+    public function propertyKeyMapping() {
         /* $keyMapping = $this->arrayKeyMap();
         $key = array_keys($keyMapping);
         $values = array_values($keyMapping); */

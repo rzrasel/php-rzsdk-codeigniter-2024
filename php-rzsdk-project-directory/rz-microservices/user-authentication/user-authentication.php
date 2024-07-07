@@ -14,6 +14,8 @@ use RzSDK\Validation\BuildValidationRules;
 use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\User\Type\UserAuthType;
 use function RzSDK\User\Type\getUserAuthTypeByValue;
+use RzSDK\Model\User\Authentication\UserAuthenticationDatabaseModel;
+use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -24,8 +26,31 @@ class UserAuthentication {
     }
 
     private function doDatabaseTask($userAuthenticationRequestModel, $postedDataSet) {
-        DebugLog::log($userAuthenticationRequestModel);
-        DebugLog::log($userAuthenticationRequestModel->arrayKeyMap());
+        /*DebugLog::log($userAuthenticationRequestModel);
+        DebugLog::log($userAuthenticationRequestModel->arrayKeyMap());*/
+
+        /*$userInfoTable = DbUserTable::$userInfo;
+        $userInfoAlias = "user";
+        $userPasswordTable = DbUserTable::$userPassword;
+        $userPasswordAlias = "password";
+        $UserAuthDatabaseModel = new UserAuthenticationDatabaseModel();
+        $userInfoUserId = $UserAuthDatabaseModel->getUserInfoColumnName("user_id");
+        $userInfoEmail = $UserAuthDatabaseModel->getUserInfoColumnName("email");
+        $userInfoStatus = $UserAuthDatabaseModel->getUserInfoColumnName("status");
+        $userPasswordUserId = $UserAuthDatabaseModel->getUserPasswordColumnName("user_id");
+        $userPasswordStatus = $UserAuthDatabaseModel->getUserPasswordColumnName("status");
+        $userInfoWhereEmail = "{$userInfoEmail} = '{$userAuthenticationRequestModel->email}'";
+        $userInfoWhereStatus = "{$userInfoStatus} = TRUE";
+        $userPasswordWhereStatus = "{$userPasswordStatus} = TRUE";
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->select()
+            ->from(array($userInfoTable => $userInfoAlias))
+            ->innerJoin(array($userInfoTable => $userInfoAlias), array($userPasswordTable => $userPasswordAlias), $userInfoUserId, $userPasswordUserId)
+            ->where($userInfoAlias, array($userInfoWhereEmail))
+            ->where($userInfoAlias, array($userInfoWhereStatus))
+            ->where($userPasswordAlias, array($userPasswordWhereStatus))
+            ->build();
+        DebugLog::log($sqlQuery);*/
     }
 
     public function execute() {
@@ -39,7 +64,7 @@ class UserAuthentication {
             //DebugLog::log($userRegiRequestModel);
             $postedDataSet = $userAuthenticationRequestModel->toArrayKeyMapping($userAuthenticationRequestModel);
             //DebugLog::log($postedDataSet);
-            $this->doDatabaseTask($userAuthenticationRequestModel, $postedDataSet);
+            //$this->doDatabaseTask($userAuthenticationRequestModel, $postedDataSet);
 
             $enumValue = $userAuthenticationRequestModel->authType;
             $userAuthType = getUserAuthTypeByValue($enumValue);
@@ -111,20 +136,78 @@ class UserAuthentication {
     }
 
     private function userAuthenticationByEmail($userAuthenticationRequestModel, $postedDataSet) {
-        $this->getDbUserAuthentication($userAuthenticationRequestModel, $postedDataSet);
+        $userAuthDataSet = $this->getDbUserAuthentication($userAuthenticationRequestModel);
+        if(empty($userAuthDataSet)) {
+            //DebugLog::log("debug_log_print");
+            $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
+            return false;
+        }
+
+        $postedPassword = $userAuthenticationRequestModel->password;
+        $hashedPassword = $userAuthDataSet->password;
+        if($this->isPasswordVerified($postedPassword, $hashedPassword)) {
+            $userAuthDataSet->password = $postedPassword;
+            $this->response($userAuthDataSet, new Info("Successful user found", InfoType::SUCCESS), $postedDataSet);
+            return true;
+        } else {
+            $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
+            return false;
+        }
     }
 
-    private function getDbUserAuthentication($userAuthenticationRequestModel, $postedDataSet) {
-        return $this->getDbUser($userAuthenticationRequestModel);
+    private function getDbUserAuthentication($userAuthenticationRequestModel) {
+        //return $this->getDbUser($userAuthenticationRequestModel);
+        $dbConn = $this->getDbConnection();
+        //
+        //$userAuthenticationRequestModel->email = $userAuthenticationRequestModel->email . "(ajsfdjf)";
+        $sqlQuery = $this->getUserAuthSql($userAuthenticationRequestModel);
+        //DebugLog::log($sqlQuery);
+        $dbResult = $this->doRunSelectQuery($dbConn, $sqlQuery);
+        $userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
+        $userAuthDataSet = $userAuthDatabaseModel->fillDbUserAuthentication($dbResult);
+        //DebugLog::log($userAuthDataSet);
+        return $userAuthDataSet;
     }
 
-    private function doRunSelectSql($dbConn, $sqlQuery) {
+    private function getUserAuthSql($userAuthenticationRequestModel) {
+        $userInfoTable = DbUserTable::$userInfo;
+        $userInfoAlias = "user";
+        $userPasswordTable = DbUserTable::$userPassword;
+        $userPasswordAlias = "password";
+        $userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
+        $userInfoUserId = $userAuthDatabaseModel->getUserInfoColumnName("user_id");
+        $userInfoEmail = $userAuthDatabaseModel->getUserInfoColumnName("email");
+        $userInfoStatus = $userAuthDatabaseModel->getUserInfoColumnName("status");
+        $userPasswordUserId = $userAuthDatabaseModel->getUserPasswordColumnName("user_id");
+        $userPasswordStatus = $userAuthDatabaseModel->getUserPasswordColumnName("status");
+        $userInfoWhereEmail = "{$userInfoEmail} = '{$userAuthenticationRequestModel->email}'";
+        $userInfoWhereStatus = "{$userInfoStatus} = TRUE";
+        $userPasswordWhereStatus = "{$userPasswordStatus} = TRUE";
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->select()
+            ->from(array($userInfoTable => $userInfoAlias))
+            ->innerJoin(array($userInfoTable => $userInfoAlias), array($userPasswordTable => $userPasswordAlias), $userInfoUserId, $userPasswordUserId)
+            ->where($userInfoAlias, array($userInfoWhereEmail, $userInfoWhereStatus))
+            ->where($userPasswordAlias, array($userPasswordWhereStatus))
+            ->build();
+        //DebugLog::log($sqlQuery);
+        return $sqlQuery;
+    }
+
+    private function doRunSelectQuery($dbConn, $sqlQuery) {
         return $dbConn->query($sqlQuery);
     }
 
-    private function getSqlConnection() {
+    private function getDbConnection() {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         return new SqliteConnection($dbFullPath);
+    }
+
+    private function isPasswordVerified($requestedPassword, $hashedPassword) {
+        if(password_verify($requestedPassword, $hashedPassword)) {
+            return true;
+        }
+        return false;
     }
 
     private function response($body, Info $info, $parameter = null) {
@@ -135,7 +218,7 @@ class UserAuthentication {
         echo $response->toJson();
     }
 
-    public function executeOld() {
+    /*public function executeOld() {
         if(!empty($_POST)) {
             $userRegiRequestModel = new UserRegistrationRequestModel();
             $userRegiRequestModel->agentType = $_POST[$userRegiRequestModel->agentType];
@@ -154,14 +237,14 @@ class UserAuthentication {
             }
             //$this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
         }
-    }
+    }*/
 
-    private function regexValidation(UserRegistrationRequestModel $userRegiRequestModel) {
+    /*private function regexValidation(UserRegistrationRequestModel $userRegiRequestModel) {
         $userRegistrationRegexValidation = new UserRegistrationRegexValidation();
         return $userRegistrationRegexValidation->execute($userRegiRequestModel);
-    }
+    }*/
 
-    private function getDbUser($userAuthenticationRequestModel) {
+    /*private function getDbUser($userAuthenticationRequestModel) {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         $dataModel = $userAuthenticationRequestModel->toArrayKeyMapping($userAuthenticationRequestModel);
         $connection = new SqliteConnection($dbFullPath);
@@ -199,7 +282,7 @@ class UserAuthentication {
         //DebugLog::log("debug_log_print");
         $this->response($dbData, new Info("Error user not found", InfoType::ERROR), $dataModel);
         return false;
-    }
+    }*/
 }
 ?>
 <?php

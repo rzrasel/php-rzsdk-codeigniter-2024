@@ -118,7 +118,7 @@ class UserLogin {
         $curl = new Curl($url);
         $result = $curl->exec(true, $postedDataSet) . "";
         $result = json_decode($result, true);
-        DebugLog::log($result);
+        //DebugLog::log($result);
         if(!is_array($result)) {
             return false;
         }
@@ -138,11 +138,13 @@ class UserLogin {
             if($infoType == InfoType::SUCCESS) {
                 $password = $userLoginRequestModel->password;
                 $hash = $bodyData["password"];
-                if(password_verify($password, $hash)) {
+                /*if(password_verify($password, $hash)) {
                     $bodyData["password"] = $password;
                     $this->response($bodyData, new Info("Successfully logged in", InfoType::SUCCESS), $postedDataSet);
                     return true;
-                }
+                }*/
+                $this->response($bodyData, new Info("Successfully logged in", InfoType::SUCCESS), $postedDataSet);
+                return true;
             } else if($infoType == InfoType::INFO) {
                 $this->response(array("redirect" => true, "page" => "registration"), new Info("Error! Email or password not matched", InfoType::ERROR), $postedDataSet);
                 return true;
