@@ -8,29 +8,31 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserRegistrationTableQuery extends UserRegistrationTable {
-    
-    public function __construct() {
+    private DbType $dbType;
+
+    public function __construct(DbType $dbType) {
+        $this->dbType = $dbType;
         //$this->execute(DbType::SQLITE);
     }
 
-    public function dropQuery(DbType $dbType) {
+    public function dropQuery() {
         $table = parent::$table;
         return "DROP TABLE IF EXISTS " . $table . ";";
     }
 
-    public function deleteQuery(DbType $dbType) {
+    public function deleteQuery() {
         $table = parent::$table;
         return "DELETE FROM " . $table . ";";
     }
 
-    public function execute(DbType $dbType) {
+    public function execute() {
         $table = parent::$table;
         $columns = $this->getColumn();
         $columnsWithKey = $this->getColumnWithKey();
         //DebugLog::log($column);
         //$this->{$column[0]}();
         $sqlQuery = "";
-        if($dbType == DbType::SQLITE) {
+        if($this->dbType == DbType::SQLITE) {
             $columProperties = $this->getSQLiteColumnProperty();
             if(count($columnsWithKey) != count($columProperties)) {
                 //DebugLog::log("Error column size is not same, column size: " . count($columnsWithKey) . ", column property size: " . count($columProperties));

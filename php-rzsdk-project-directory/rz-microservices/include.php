@@ -57,6 +57,11 @@ require_once($baseInclude . "response/response.php");*/
 <?php
 $baseInclude = "table-space/db-properties/";
 require_once($baseInclude . "db-type.php");
+require_once($baseInclude . "db-table-property.php");
+require_once($baseInclude . "db-column-properties.php");
+require_once($baseInclude . "db-column-constraints-properties.php");
+require_once($baseInclude . "db-column-constraint-type.php");
+require_once($baseInclude . "db-sql-query-generator.php");
 $baseInclude = "table-space/";
 require_once($baseInclude . "db-user-table.php");
 require_once($baseInclude . "user-registration-table.php");
@@ -65,6 +70,8 @@ require_once($baseInclude . "user-info-table.php");
 require_once($baseInclude . "user-info-table-query.php");
 require_once($baseInclude . "user-password-table.php");
 require_once($baseInclude . "user-password-table-query.php");
+require_once($baseInclude . "user-login-auth-log-table.php");
+require_once($baseInclude . "user-login-auth-log-table-query.php");
 ?>
 <?php
 $baseInclude = "http-query/";

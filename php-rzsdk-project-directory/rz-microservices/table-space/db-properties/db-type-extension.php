@@ -2,6 +2,9 @@
 namespace RzSDK\DatabaseSpace;
 ?>
 <?php
+use RzSDK\DatabaseSpace\DbType;
+?>
+<?php
 class DbTypeExtension {
     public static function getDbTypeByValue($value) {
         foreach (DbType::cases() as $case) {

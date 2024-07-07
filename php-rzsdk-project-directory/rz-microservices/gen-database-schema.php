@@ -3,6 +3,8 @@ namespace RzSDK\Generator;
 ?>
 <?php
 use RzSDK\DatabaseSpace\DbType;
+use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
+use RzSDK\DatabaseSpace\UserLoginAuthLogTableQuery;
 use RzSDK\DatabaseSpace\UserRegistrationTableQuery;
 use RzSDK\DatabaseSpace\UserInfoTableQuery;
 use RzSDK\DatabaseSpace\UserPasswordTableQuery;
@@ -17,21 +19,27 @@ class GenDatabaseSchema {
     }
 
     private function execute() {
-        $sqlQuery = "";
         $dbType = DbType::SQLITE;
-        $userRegistration = new UserRegistrationTableQuery();
+        $userRegistration = new UserRegistrationTableQuery($dbType);
         $userInfo = new UserInfoTableQuery();
         $userPassword = new UserPasswordTableQuery();
+        $userLoginAuthLogTable = new UserLoginAuthLogTableQuery($dbType);
 
         $sqlQuery = "";
-        $sqlQuery .= $userRegistration->dropQuery($dbType);
+        //
+        // Database drop sql query
+        $sqlQuery .= $userRegistration->dropQuery();
         $sqlQuery .= "<br />";
         $sqlQuery .= $userInfo->dropQuery($dbType);
         $sqlQuery .= "<br />";
         $sqlQuery .= $userPassword->dropQuery($dbType);
         $sqlQuery .= "<br />";
+        $sqlQuery .= $userLoginAuthLogTable->dropQuery();
         $sqlQuery .= "<br />";
-        $sqlQuery .= $userRegistration->execute($dbType);
+        //
+        // Database sql query
+        $sqlQuery .= "<br />";
+        $sqlQuery .= $userRegistration->execute();
         $sqlQuery .= "<br />";
         $sqlQuery .= "<br />";
         $sqlQuery .= $userInfo->execute($dbType);
@@ -39,13 +47,21 @@ class GenDatabaseSchema {
         $sqlQuery .= "<br />";
         $sqlQuery .= $userPassword->execute($dbType);
         $sqlQuery .= "<br />";
+        $sqlQuery .= $userLoginAuthLogTable->execute();
         $sqlQuery .= "<br />";
-        $sqlQuery .= $userRegistration->deleteQuery($dbType);
+        //
+        // Database delete sql query
+        $sqlQuery .= "<br />";
+        $sqlQuery .= $userRegistration->deleteQuery();
         $sqlQuery .= "<br />";
         $sqlQuery .= $userInfo->deleteQuery($dbType);
         $sqlQuery .= "<br />";
         $sqlQuery .= $userPassword->deleteQuery($dbType);
         $sqlQuery .= "<br />";
+        $sqlQuery .= $userLoginAuthLogTable->deleteQuery();
+        $sqlQuery .= "<br />";
+        //
+        // Print database sql query
         DebugLog::log($sqlQuery);
     }
 }
