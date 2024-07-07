@@ -34,3 +34,12 @@ class DbTableProperty {
     }
 }
 ?>
+<?php
+/*
+$dbTableProperty = (new DbTableProperty(parent::$table))
+    ->setColumProperty(new DbColumnProperties("user_id", "BIGINT(20) NOT NULL"))
+    ->setColumProperty(new DbColumnProperties("user_id", "BIGINT(20) NOT NULL"))
+    ->setColumProperty(new DbColumnProperties("user_id", "BIGINT(20) NOT NULL"))
+    ->setConstraintProperty(new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "user_id"));
+*/
+?>

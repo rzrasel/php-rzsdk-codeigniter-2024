@@ -39,11 +39,11 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            "user_id"      => "BIGINT(20) NOT NULL",
+            "user_id"           => "BIGINT(20) NOT NULL",
             "email"             => "TEXT NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
             "is_verified"       => "BOOLEAN NOT NULL DEFAULT FALSE",
-            "regi_date"         => "DATETIME NOT NULL",
+            "assign_date"       => "DATETIME NOT NULL",
             "device_type"       => "VARCHAR(32) NOT NULL",
             "auth_type"         => "VARCHAR(32) NOT NULL",
             "agent_type"        => "VARCHAR(32) NOT NULL",
@@ -62,24 +62,10 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
             $columnProperty = new DbColumnProperties($key, $value);
             $dbTableProperty->setColumProperty($columnProperty);
         }
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "user_id")
+        );
         return $dbTableProperty;
-        /*return (new DbTableProperty(parent::$table))
-            ->setColumProperty(
-                new DbColumnProperties("user_id",
-                    "BIGINT(20) NOT NULL")
-            )
-            ->setColumProperty(
-                new DbColumnProperties("user_id",
-                    "BIGINT(20) NOT NULL")
-            )
-            ->setColumProperty(
-                new DbColumnProperties("user_id",
-                    "BIGINT(20) NOT NULL")
-            )
-            ->setConstraintProperty(
-                new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY,
-                    "user_id")
-            );*/
     }
 }
 ?>

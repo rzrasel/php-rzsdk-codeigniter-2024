@@ -47,6 +47,7 @@ class GenDatabaseSchema {
         $sqlQuery .= "<br />";
         $sqlQuery .= $userPassword->execute($dbType);
         $sqlQuery .= "<br />";
+        $sqlQuery .= "<br />";
         $sqlQuery .= $userLoginAuthLogTable->execute();
         $sqlQuery .= "<br />";
         //
