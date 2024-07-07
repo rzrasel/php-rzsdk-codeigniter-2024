@@ -3,15 +3,15 @@ namespace RzSDK\DatabaseSpace;
 ?>
 <?php
 class UserPasswordTable {
-    public static $table = "user_password";
+    public static $table    = "user_password";
     //
-    public $user_id = "user_id";
-    public $password = "password";
-    public $status = "status";
-    public $modified_by = "modified_by";
-    public $created_by = "created_by";
-    public $modified_date = "modified_date";
-    public $created_date = "created_date";
+    public $user_id         = "user_id";
+    public $password        = "password";
+    public $status          = "status";
+    public $modified_by     = "modified_by";
+    public $created_by      = "created_by";
+    public $modified_date   = "modified_date";
+    public $created_date    = "created_date";
     //
 
     public function getColumn() {

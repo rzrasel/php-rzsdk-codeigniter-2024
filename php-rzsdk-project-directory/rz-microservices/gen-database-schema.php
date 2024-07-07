@@ -10,8 +10,10 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class GenDatabaseSchema {
-    public function __construct() {
-        //$this->execute();
+    public function __construct($isPrint = true) {
+        if($isPrint) {
+            $this->execute();
+        }
     }
 
     private function execute() {

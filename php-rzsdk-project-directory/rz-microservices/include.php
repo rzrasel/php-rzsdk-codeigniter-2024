@@ -55,8 +55,9 @@ require_once($baseInclude . "identification/unique-int-id.php");
 require_once($baseInclude . "response/response.php");*/
 ?>
 <?php
-$baseInclude = "table-space/";
+$baseInclude = "table-space/db-properties/";
 require_once($baseInclude . "db-type.php");
+$baseInclude = "table-space/";
 require_once($baseInclude . "db-user-table.php");
 require_once($baseInclude . "user-registration-table.php");
 require_once($baseInclude . "user-registration-table-query.php");

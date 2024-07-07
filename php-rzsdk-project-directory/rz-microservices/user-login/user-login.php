@@ -113,7 +113,7 @@ class UserLogin {
     }
 
     private function isExistsUserInDatabase(UserLoginRequestModel $userLoginRequestModel, array $postedDataSet) {
-        $url = dirname(ROOT_URL) . "/user-authentication/user-authentication.php";
+        $url = dirname(ROOT_URL) . "/user-password-authentication/user-authentication.php";
         //
         $curl = new Curl($url);
         $result = $curl->exec(true, $postedDataSet) . "";
