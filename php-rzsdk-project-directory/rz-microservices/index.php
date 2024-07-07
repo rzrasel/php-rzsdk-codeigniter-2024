@@ -76,7 +76,7 @@ foreach($data as $line) {
 <?php
 ?>
 <?php
-$genDatabaseSchema = new GenDatabaseSchema(true);
+$genDatabaseSchema = new GenDatabaseSchema(false);
 ?>
 <?php
 /* echo "getFullUrl() " . SiteUrl::getFullUrl();

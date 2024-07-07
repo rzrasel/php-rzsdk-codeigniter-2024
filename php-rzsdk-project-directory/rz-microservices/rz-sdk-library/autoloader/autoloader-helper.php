@@ -59,6 +59,7 @@ class AutoloaderHelper {
 
     public function getExistedFilePath($directories, $file) {
         // With $extension = ".php"
+        $retVal = array();
         if(is_array($directories)) {
             //echo "<br /><br />";
             foreach($directories as $directory) {
@@ -66,7 +67,7 @@ class AutoloaderHelper {
                 //echo "All File: {$directory}<br />";
                 if($this->isFileExists($directory)) {
                     //echo "Existed File: {$directory}<br />";
-                    return $directory;
+                    $retVal[] = $directory;
                 }
             }
             //echo "<br /><br />";
@@ -76,10 +77,10 @@ class AutoloaderHelper {
                 $directory = $file;
             }
             if($this->isFileExists($directory)) {
-                return $directory;
+                $retVal[] = $directory;
             }
         }
-        return null;
+        return $retVal;
     }
 
     public function isFileExists($path) {

@@ -52,7 +52,9 @@ class Autoloader extends AutoloaderHelper {
         if(!empty($filePath)) {
             $this->existedFilePath = $filePath;
             //echo "Require Once File: {$this->existedFilePath}";
-            require_once($filePath);
+            foreach($filePath as $file) {
+                require_once($file);
+            }
         }
         $writePath = "rz-sdk-library/utils/site-url.txt";
         /*$writeData = "Test Data {$writePath}";
