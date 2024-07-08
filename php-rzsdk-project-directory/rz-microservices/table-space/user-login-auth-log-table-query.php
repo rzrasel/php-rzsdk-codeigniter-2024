@@ -43,8 +43,10 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             "user_id"           => "BIGINT(20) NOT NULL",
+            "user_auth_log_id"  => "BIGINT(20) NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
             "assigned_date"     => "DATETIME NOT NULL",
+            "refresh_date"      => "DATETIME NOT NULL",
             "expired_date"      => "DATETIME NOT NULL",
             "encrypt_type"      => "VARCHAR(255) NOT NULL",
             "mcrypt_key"        => "TEXT NULL",
@@ -76,7 +78,7 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "user_id")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "user_auth_log_id")
         );
         return $dbTableProperty;
     }

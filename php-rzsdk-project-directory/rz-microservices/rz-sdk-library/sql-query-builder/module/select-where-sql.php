@@ -117,8 +117,12 @@ trait SelectWhereSql {
                 }
                 //DebugLog::log($firstCharacter);
                 if(is_bool($value)) {
-                    $value = "TRUE";
-                } else if(is_int($value)) {
+                    if($value) {
+                        $value = "TRUE";
+                    } else {
+                        $value = "FALSE";
+                    }
+                } else if(is_int($value) || is_float($value) || is_numeric($value)) {
                     $value = $value;
                 } else {
                     $value = "'{$value}'";

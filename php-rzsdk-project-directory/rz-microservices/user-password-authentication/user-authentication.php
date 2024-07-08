@@ -155,7 +155,7 @@ class UserAuthentication {
         }
         /*else {
             $userAuthDataSet->password = $postedPassword;
-            $this->response($userAuthDataSet, new Info("Successful user found", InfoType::SUCCESS), $postedDataSet);
+            $this->response($this->userAuthDatabaseModel, new Info("Successful user found", InfoType::SUCCESS), $postedDataSet);
             return true;
         }*/
         //DebugLog::log($this->userAuthDatabaseModel);
@@ -166,11 +166,11 @@ class UserAuthentication {
         //return $this->getDbUser($userAuthenticationRequestModel);
         $dbConn = $this->getDbConnection();
         //
+        $this->userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
         //$userAuthenticationRequestModel->email = $userAuthenticationRequestModel->email . "(ajsfdjf)";
         $sqlQuery = $this->getUserAuthSql($userAuthenticationRequestModel);
         //DebugLog::log($sqlQuery);
         $dbResult = $this->doRunSelectQuery($dbConn, $sqlQuery);
-        $this->userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
         $this->userAuthDatabaseModel = $this->userAuthDatabaseModel->fillDbUserAuthentication($dbResult);
         //DebugLog::log($this->userAuthDatabaseModel);
         return $this->userAuthDatabaseModel;

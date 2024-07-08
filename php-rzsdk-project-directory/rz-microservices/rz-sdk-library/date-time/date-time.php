@@ -36,7 +36,7 @@ class DateTime {
         return strtotime($newDate) - strtotime($oldDate);
     }
 
-    public static function getDifferent($newDate, $oldDate, DateDiffType $dateDiffType = DateDiffType::seconds) {
+    public static function getDifference($newDate, $oldDate, DateDiffType $dateDiffType = DateDiffType::seconds) {
         if(!self::isValidDate($newDate) || !self::isValidDate($oldDate)) {
             return null;
         }
@@ -44,7 +44,7 @@ class DateTime {
         /* echo $dateDiffType->name;
         echo $dateDiffType->value; */
 
-        $dateDiff = date_diff(date_create($newDate), date_create($oldDate))->s;
+        //$dateDiff = date_diff(date_create($newDate), date_create($oldDate))->s;
         if($dateDiffType == DateDiffType::years) {
             $dateDiff = date_diff(date_create($newDate), date_create($oldDate))->y;
         } else if($dateDiffType == DateDiffType::months) {

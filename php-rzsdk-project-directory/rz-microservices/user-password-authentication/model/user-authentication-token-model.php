@@ -13,6 +13,7 @@ use RzSDK\Log\DebugLog;
 <?php
 class UserAuthenticationTokenModel {
     public $user_id;
+    public $user_auth_id;
     public $unique_id;
     public $started_date;
     public $started_time;
@@ -29,17 +30,24 @@ class UserAuthenticationTokenModel {
         $this->expiryType = $expiryType;
     }
 
-    public function getUniqueId() {
+    public function getUniqueIntId() {
         $uniqueIntId = new UniqueIntId();
         return $uniqueIntId->getId();
     }
 
-    public function getDate() {
+    public function getCurrentDate() {
         return DateTime::getCurrentDateTime();
     }
 
     public function getDateToTime($date) {
         return DateTime::getDateToTime($date);
+    }
+
+    public function getDateDifference($newDate, $oldDate) {
+        return DateTime::getDifference($newDate, $oldDate);
+    }
+    public function getDateIntervalInSeconds($newDate, $oldDate) {
+        return DateTime::getIntervalInSeconds($newDate, $oldDate);
     }
 
     public function getExpiryDate($add = 7, DateDiffType $dateDiffType = DateDiffType::days) {
@@ -58,12 +66,14 @@ class UserAuthenticationTokenModel {
 
     public function setClassProperty($userId) {
         $toDate = DateTime::getCurrentDateTime();
+        $expiryDate = $this->getExpiryDate();
         $this->user_id = $userId;
-        $this->unique_id = $this->getUniqueId();
+        $this->user_auth_id = $this->getUniqueIntId();
+        $this->unique_id = $this->getUniqueIntId();
         $this->started_date = $toDate;
         $this->started_time = DateTime::getDateToTime($toDate);
-        $this->expiry_date = $toDate;
-        $this->expiry_time = DateTime::getDateToTime($toDate);
+        $this->expiry_date = $expiryDate;
+        $this->expiry_time = DateTime::getDateToTime($expiryDate);
     }
 
     public function getIdTokenKey() {
@@ -128,6 +138,7 @@ class UserAuthenticationTokenModel {
     public function tokenPropertyKeyMapping() {
         return array(
             "id_token_key" => array(
+                "a" => "user_auth_id",
                 "e" => "expiry_time",
                 "i" => "user_id",
                 "s" => "started_time",

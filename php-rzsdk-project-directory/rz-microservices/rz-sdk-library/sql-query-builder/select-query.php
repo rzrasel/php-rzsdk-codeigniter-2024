@@ -28,6 +28,8 @@ class SelectQuery {
     private $sqlQuery;
     //
 
+    //public function __construct(string $table = "", array $columns = array()) {}
+
     public function build() {
         $this->sqlQuery = "SELECT"
             . " {$this->toSelectStatement()}"

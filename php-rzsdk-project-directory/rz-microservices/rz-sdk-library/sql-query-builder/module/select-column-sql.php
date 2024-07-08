@@ -43,9 +43,9 @@ trait SelectColumnSql {
     }
 
     private function bindSelectedColumns() {
-        if(empty($this->selectTable)) {
+        /*if(empty($this->selectTable)) {
             return "";
-        }
+        }*/
         if(ArrayUtils::isMultidimensional($this->selectColumns)) {
             // Checking if array is multidimensional or not
             $column = "";

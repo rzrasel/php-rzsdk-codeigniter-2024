@@ -6,8 +6,10 @@ class UserLoginAuthLogTable {
     public static $table = "user_login_auth_log";
     //
     public $user_id = "user_id";
+    public $user_auth_log_id = "user_auth_log_id";
     public $status = "status";
     public $assigned_date = "assigned_date";
+    public $refresh_date = "refresh_date";
     public $expired_date = "expired_date";
     public $encrypt_type = "encrypt_type";
 

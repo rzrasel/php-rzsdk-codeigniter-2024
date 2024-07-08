@@ -56,6 +56,21 @@ class UserAuthenticationDatabaseModel {
         return $retValue;
     }
 
+    public function getColumn() {
+        $result = array_intersect_key(
+            get_object_vars($this),
+            get_mangled_object_vars($this)
+        );
+        return array_keys($result);
+    }
+
+    public function getColumnWithKey() {
+        return array_intersect_key(
+            get_object_vars($this),
+            get_mangled_object_vars($this)
+        );
+    }
+
     public function dbToModelKeyMapping() {
         return array(
             "user_id"   => "userId",

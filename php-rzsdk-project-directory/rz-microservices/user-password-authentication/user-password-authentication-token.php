@@ -7,6 +7,13 @@ use RzSDK\Model\User\Authentication\UserAuthenticationRequestModel;
 use RzSDK\Model\User\Authentication\UserAuthenticationDatabaseModel;
 use RzSDK\Model\User\Authentication\UserAuthenticationTokenDatabaseModel;
 use RzSDK\Model\User\Authentication\UserAuthenticationTokenModel;
+use RzSDK\Database\SqliteConnection;
+use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
+use RzSDK\DatabaseSpace\DbUserTable;
+use RzSDK\Response\Response;
+use RzSDK\Response\Info;
+use RzSDK\Response\InfoType;
+use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -27,8 +34,97 @@ class UserPasswordAuthenticationToken {
 
     public function execute() {
         $userAuthTokenDbModel = new UserAuthenticationTokenDatabaseModel();
-        $insertSqlData = $userAuthTokenDbModel->getInsertSqlData($this->userAuthRequestModel, $this->userAuthDatabaseModel);
-        DebugLog::log($insertSqlData);
+        $dbConn = $this->getDbConnection();
+        //
+        $sqlQuery = $this->getSelectSqlQuery($userAuthTokenDbModel);
+        //DebugLog::log($sqlQuery);
+        $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+        $userAuthTokenDbDataSet = $userAuthTokenDbModel->fillDbUserPasswordAuthToken($dbResult);
+        //DebugLog::log($userAuthTokenDbDataSet);
+        //
+        $responseAuthToken = "";
+        if(empty($userAuthTokenDbDataSet)) {
+            $sqlQuery = $this->getInsertSqlQuery($userAuthTokenDbModel);
+            //DebugLog::log($sqlQuery);
+            $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+            $responseAuthToken = $userAuthTokenDbModel->auth_token;
+        } else {
+            $isExpired = $userAuthSetDataSet = $userAuthTokenDbModel->isUserAuthTokenExpired($userAuthTokenDbDataSet);
+            if($isExpired) {
+                $sqlQuery = $this->getUpdateSqlQuery($userAuthTokenDbModel, $userAuthTokenDbDataSet, $isExpired);
+                //DebugLog::log($sqlQuery);
+                $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+                $userAuthTokenDbModel = new UserAuthenticationTokenDatabaseModel();
+                $sqlQuery = $this->getInsertSqlQuery($userAuthTokenDbModel);
+                //DebugLog::log($sqlQuery);
+                $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+                $responseAuthToken = $userAuthTokenDbModel->auth_token;
+                //DebugLog::log($responseAuthToken);
+                //$responseAuthToken = $userAuthTokenDbDataSet->auth_token;
+            } else {
+                $sqlQuery = $this->getUpdateSqlQuery($userAuthTokenDbModel, $userAuthTokenDbDataSet, $isExpired);
+                //DebugLog::log($sqlQuery);
+                $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+                $responseAuthToken = $userAuthTokenDbDataSet->auth_token;
+            }
+        }
+        $responseDataList = $this->userAuthDatabaseModel->getColumnWithKey();
+        $responseDataList["password"] = $this->userAuthRequestModel->password;
+        $responseDataList["user_auth_token"] = $responseAuthToken;
+        $this->response($responseDataList, new Info("Successful user found", InfoType::SUCCESS), $this->postedDataSet);
+    }
+
+    private function getSelectSqlQuery(UserAuthenticationTokenDatabaseModel $userAuthTokenDbModel) {
+        $userAuthTokenDbSet = $userAuthTokenDbModel->getSelectWhereSqlData($this->userAuthRequestModel, $this->userAuthDatabaseModel);
+        //DebugLog::log($userAuthTokenDbSet);
+        $userLoginAuthLogTable = DbUserTable::$userLoginAuthLog;
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->select()
+            ->from($userLoginAuthLogTable)
+            ->where("", $userAuthTokenDbSet)
+            ->limit(1)
+            ->offset(0)
+            ->orderBy("modified_date", "DESC")
+            ->build();
+        return $sqlQuery;
+    }
+
+    private function getInsertSqlQuery(UserAuthenticationTokenDatabaseModel $userAuthTokenDbModel) {
+        //$userAuthTokenDbModel = new UserAuthenticationTokenDatabaseModel();
+        $userAuthTokenDbSet = $userAuthTokenDbModel->getInsertSqlData($this->userAuthRequestModel, $this->userAuthDatabaseModel);
+        //DebugLog::log($insertSqlData);
+        $userLoginAuthLogTable = DbUserTable::$userLoginAuthLog;
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->insert($userLoginAuthLogTable)
+            ->values($userAuthTokenDbSet)
+            ->build();
+        return $sqlQuery;
+    }
+
+    private function getUpdateSqlQuery(UserAuthenticationTokenDatabaseModel $userAuthTokenDbModel, UserLoginAuthLogTable $userLoginAuthLogTable, $isExpired) {
+        //getUpdateSetSqlData
+        $userAuthSetDataSet = $userAuthTokenDbModel->getUpdateSetSqlData($this->userAuthRequestModel, $this->userAuthDatabaseModel, $isExpired);
+        $userAuthWhereDataSet = $userAuthTokenDbModel->getUpdateWhereSqlData($this->userAuthRequestModel, $this->userAuthDatabaseModel, $userLoginAuthLogTable);
+        //DebugLog::log($userAuthWhereDataSet);
+        $userLoginAuthLogTable = DbUserTable::$userLoginAuthLog;
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->update($userLoginAuthLogTable)
+            ->set($userAuthSetDataSet)
+            ->where("", $userAuthWhereDataSet)
+            ->build();
+        return $sqlQuery;
+    }
+
+    private function doRunDatabaseQuery($dbConn, $sqlQuery) {
+        return $dbConn->query($sqlQuery);
+    }
+
+    private function getDbConnection() {
+        $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
+        return new SqliteConnection($dbFullPath);
     }
 
     private function response($body, Info $info, $parameter = null) {

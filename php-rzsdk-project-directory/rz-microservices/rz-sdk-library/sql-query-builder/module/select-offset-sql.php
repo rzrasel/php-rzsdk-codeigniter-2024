@@ -11,8 +11,10 @@ trait SelectOffsetSql {
     }
 
     private function toOffsetStatement(): string {
-        if(empty($this->offset)) {
-            return "";
+        if(!is_int($this->offset) && !isset($this->offset)) {
+            if(empty($this->offset)) {
+                return "";
+            }
         }
         return "OFFSET $this->offset";
     }
