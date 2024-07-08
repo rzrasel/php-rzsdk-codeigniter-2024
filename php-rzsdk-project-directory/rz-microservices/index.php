@@ -9,6 +9,7 @@ use RzSDK\User\Login\CurlUserLogin;
 use RzSDK\Device\ClientDevice;
 use RzSDK\Device\ClientIp;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
+use RzSDK\Encryption\JwtManager;
 use RzSDK\Generator\GenDatabaseSchema;
 ?>
 <?php
@@ -76,7 +77,7 @@ foreach($data as $line) {
 <?php
 ?>
 <?php
-$genDatabaseSchema = new GenDatabaseSchema(false);
+$genDatabaseSchema = new GenDatabaseSchema(true);
 ?>
 <?php
 /* echo "getFullUrl() " . SiteUrl::getFullUrl();

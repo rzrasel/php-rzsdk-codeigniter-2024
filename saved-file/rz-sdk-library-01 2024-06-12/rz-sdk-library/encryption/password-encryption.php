@@ -16,8 +16,8 @@ class PasswordEncryption {
 
     public function getRehashedPassword($password, $hash) {
         if(password_verify($password, $hash)) {
-            if(password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => 12])) {
-                return password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
+            if(password_needs_rehash($hash, PASSWORD_DEFAULT, ["cost" => 12])) {
+                return password_hash($password, PASSWORD_DEFAULT, ["cost" => 12]);
             }
         }
         return null;

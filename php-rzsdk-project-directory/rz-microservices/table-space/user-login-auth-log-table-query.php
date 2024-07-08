@@ -40,11 +40,13 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             "user_id"           => "BIGINT(20) NOT NULL",
-            "email"             => "TEXT NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
-            "is_verified"       => "BOOLEAN NOT NULL DEFAULT FALSE",
             "assigned_date"     => "DATETIME NOT NULL",
             "expired_date"      => "DATETIME NOT NULL",
+            "encrypt_type"      => "VARCHAR(255) NOT NULL",
+            "mcrypt_key"        => "TEXT NULL",
+            "mcrypt_iv"         => "TEXT NULL",
+            "auth_token"        => "TEXT NOT NULL",
             "device_type"       => "VARCHAR(32) NOT NULL",
             "auth_type"         => "VARCHAR(32) NOT NULL",
             "agent_type"        => "VARCHAR(32) NOT NULL",
