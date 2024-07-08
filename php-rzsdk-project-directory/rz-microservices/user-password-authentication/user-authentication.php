@@ -21,6 +21,10 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserAuthentication {
+    private UserAuthenticationRequestModel $userAuthRequestModel;
+    private UserAuthenticationDatabaseModel $userAuthDatabaseModel;
+    //
+
     public function __construct() {
         $this->execute();
     }
@@ -60,18 +64,18 @@ class UserAuthentication {
             if(!$isValidated["is_validate"]) {
                 return;
             }
-            $userAuthenticationRequestModel = $isValidated["data_set"];
+            $this->userAuthRequestModel = $isValidated["data_set"];
             //DebugLog::log($userRegiRequestModel);
-            $postedDataSet = $userAuthenticationRequestModel->toArrayKeyMapping($userAuthenticationRequestModel);
+            $postedDataSet = $this->userAuthRequestModel->toArrayKeyMapping($this->userAuthRequestModel);
             //DebugLog::log($postedDataSet);
             //$this->doDatabaseTask($userAuthenticationRequestModel, $postedDataSet);
 
-            $enumValue = $userAuthenticationRequestModel->authType;
+            $enumValue = $this->userAuthRequestModel->authType;
             $userAuthType = getUserAuthTypeByValue($enumValue);
 
             if(!empty($userAuthType)) {
                 if($userAuthType == UserAuthType::EMAIL) {
-                    $this->userAuthenticationByEmail($userAuthenticationRequestModel, $postedDataSet);
+                    $this->userAuthenticationByEmail($this->userAuthRequestModel, $postedDataSet);
                 } else {
                     $this->response(null,
                         "Error! request parameter not matched out of type",
@@ -94,15 +98,15 @@ class UserAuthentication {
         $userAuthenticationRequest = new UserAuthenticationRequest();
         $authParamList = $userAuthenticationRequest->getQuery();
         //DebugLog::log($authParamList);
-        $userAuthenticationRequestModel = new UserAuthenticationRequestModel();
-        $keyMapping = $userAuthenticationRequestModel->propertyKeyMapping();
+        $this->userAuthRequestModel = new UserAuthenticationRequestModel();
+        $keyMapping = $this->userAuthRequestModel->propertyKeyMapping();
         //DebugLog::log($keyMapping);
         $isValidated = true;
         foreach($authParamList as $value) {
             //Extract requested values from $_POST
             if(array_key_exists($value, $requestDataSet)) {
                 $paramValue = $requestDataSet[$value];
-                $userAuthenticationRequestModel->{$keyMapping[$value]} = $paramValue;
+                $this->userAuthRequestModel->{$keyMapping[$value]} = $paramValue;
             } else {
                 //Error array key not exist, return
                 $this->response(null,
@@ -131,28 +135,31 @@ class UserAuthentication {
         //DebugLog::log($userRegiRequestModel);
         return array(
             "is_validate"   => $isValidated,
-            "data_set"          => $userAuthenticationRequestModel,
+            "data_set"          => $this->userAuthRequestModel,
         );
     }
 
-    private function userAuthenticationByEmail($userAuthenticationRequestModel, $postedDataSet) {
-        $userAuthDataSet = $this->getDbUserAuthentication($userAuthenticationRequestModel);
-        if(empty($userAuthDataSet)) {
+    private function userAuthenticationByEmail(UserAuthenticationRequestModel $userAuthRequestModel, $postedDataSet) {
+        $this->userAuthDatabaseModel = $this->getDbUserAuthentication($userAuthRequestModel);
+        if(empty($this->userAuthDatabaseModel)) {
             //DebugLog::log("debug_log_print");
             $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
             return false;
         }
 
-        $postedPassword = $userAuthenticationRequestModel->password;
-        $hashedPassword = $userAuthDataSet->password;
-        if($this->isPasswordVerified($postedPassword, $hashedPassword)) {
-            $userAuthDataSet->password = $postedPassword;
-            $this->response($userAuthDataSet, new Info("Successful user found", InfoType::SUCCESS), $postedDataSet);
-            return true;
-        } else {
+        $postedPassword = $userAuthRequestModel->password;
+        $hashedPassword = $this->userAuthDatabaseModel->password;
+        if(!$this->isPasswordVerified($postedPassword, $hashedPassword)) {
             $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
             return false;
         }
+        /*else {
+            $userAuthDataSet->password = $postedPassword;
+            $this->response($userAuthDataSet, new Info("Successful user found", InfoType::SUCCESS), $postedDataSet);
+            return true;
+        }*/
+        //DebugLog::log($this->userAuthDatabaseModel);
+        $userPasswordAuthToken = new UserPasswordAuthenticationToken($this->userAuthRequestModel, $this->userAuthDatabaseModel, $postedDataSet);
     }
 
     private function getDbUserAuthentication($userAuthenticationRequestModel) {
@@ -163,10 +170,10 @@ class UserAuthentication {
         $sqlQuery = $this->getUserAuthSql($userAuthenticationRequestModel);
         //DebugLog::log($sqlQuery);
         $dbResult = $this->doRunSelectQuery($dbConn, $sqlQuery);
-        $userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
-        $userAuthDataSet = $userAuthDatabaseModel->fillDbUserAuthentication($dbResult);
-        //DebugLog::log($userAuthDataSet);
-        return $userAuthDataSet;
+        $this->userAuthDatabaseModel = new UserAuthenticationDatabaseModel();
+        $this->userAuthDatabaseModel = $this->userAuthDatabaseModel->fillDbUserAuthentication($dbResult);
+        //DebugLog::log($this->userAuthDatabaseModel);
+        return $this->userAuthDatabaseModel;
     }
 
     private function getUserAuthSql($userAuthenticationRequestModel) {
@@ -217,72 +224,6 @@ class UserAuthentication {
         $response->parameter    = $parameter;
         echo $response->toJson();
     }
-
-    /*public function executeOld() {
-        if(!empty($_POST)) {
-            $userRegiRequestModel = new UserRegistrationRequestModel();
-            $userRegiRequestModel->agentType = $_POST[$userRegiRequestModel->agentType];
-            $userRegiRequestModel->authType = $_POST[$userRegiRequestModel->authType];
-            $userRegiRequestModel->deviceType = $_POST[$userRegiRequestModel->deviceType];
-            $userRegiRequestModel->email = $_POST[$userRegiRequestModel->email];
-            $userRegiRequestModel->password = $_POST[$userRegiRequestModel->password];
-            $dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
-
-            if(!$this->regexValidation($userRegiRequestModel)) {
-                return;
-            }
-            //DebugLog::log($this->getDbUser($userRegiRequestModel));
-            if($this->getDbUser($userRegiRequestModel)) {
-                return;
-            }
-            //$this->response(null, new Info("Successful registration completed", InfoType::SUCCESS), $dataModel);
-        }
-    }*/
-
-    /*private function regexValidation(UserRegistrationRequestModel $userRegiRequestModel) {
-        $userRegistrationRegexValidation = new UserRegistrationRegexValidation();
-        return $userRegistrationRegexValidation->execute($userRegiRequestModel);
-    }*/
-
-    /*private function getDbUser($userAuthenticationRequestModel) {
-        $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
-        $dataModel = $userAuthenticationRequestModel->toArrayKeyMapping($userAuthenticationRequestModel);
-        $connection = new SqliteConnection($dbFullPath);
-        $tableUser = DbUserTable::$userInfo;
-        $tableUserPass = DbUserTable::$userPassword;
-        $sqlQuery = "SELECT * FROM {$tableUser} AS user "
-        . "INNER JOIN {$tableUserPass} AS password "
-        . "ON"
-        . " user.user_id = password.user_id "
-        . "WHERE"
-        . " user.email = '{$userAuthenticationRequestModel->email}'"
-        . " AND user.status = '1'"
-        . " AND password.status = '1'"
-        . ";";
-        //echo $sqlQuery;
-        $dbData = array();
-        $dbResult = $connection->query($sqlQuery);
-        if($dbResult != null) {
-            foreach($dbResult as $row) {
-                $dbData["user_id"]  = $row["user_id"];
-                $dbData["email"]    = $row["email"];
-                $dbData["password"] = $row["password"];
-            }
-            //DebugLog::log("debug_log_print");
-            if(!empty($dbData)) {
-                //DebugLog::log("debug_log_print");
-                $this->response($dbData, new Info("Successful user found", InfoType::SUCCESS), $dataModel);
-                return true;
-            } else {
-                //DebugLog::log("debug_log_print");
-                $this->response($dbData, new Info("Error user not found", InfoType::INFO), $dataModel);
-                return false;
-            }
-        }
-        //DebugLog::log("debug_log_print");
-        $this->response($dbData, new Info("Error user not found", InfoType::ERROR), $dataModel);
-        return false;
-    }*/
 }
 ?>
 <?php

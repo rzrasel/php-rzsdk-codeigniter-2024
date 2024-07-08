@@ -118,7 +118,7 @@ class UserLogin {
         $curl = new Curl($url);
         $result = $curl->exec(true, $postedDataSet) . "";
         $result = json_decode($result, true);
-        //DebugLog::log($result);
+        DebugLog::log($result);
         if(!is_array($result)) {
             return false;
         }

@@ -30,6 +30,9 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
 
     public function execute() {
         $tableProperties = $this->getSQLiteColumnProperty();
+        if(empty($tableProperties)) {
+            return "Error from class " . __CLASS__ . " method " . __METHOD__;
+        }
         //DebugLog::log($tableProperties);
         $dbSqlQueryGenerator = new DbSqlQueryGenerator($tableProperties);
         $sqlQuery = $dbSqlQueryGenerator->build();
@@ -60,8 +63,15 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
             "modified_date"     => "DATETIME NOT NULL",
             "created_date"      => "DATETIME NOT NULL",
         );
+        $tableColumns = parent::getColumnWithKey();
+        if(count($tableColumns) != count($tablePropertyList)) {
+            return null;
+        }
         $dbTableProperty = new DbTableProperty(parent::$table);
         foreach($tablePropertyList as $key => $value){
+            if(!array_key_exists($key, $tableColumns)) {
+                return null;
+            }
             $columnProperty = new DbColumnProperties($key, $value);
             $dbTableProperty->setColumProperty($columnProperty);
         }

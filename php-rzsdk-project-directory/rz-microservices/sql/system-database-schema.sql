@@ -4,6 +4,7 @@
 DROP TABLE IF EXISTS user_registration;
 DROP TABLE IF EXISTS user_info;
 DROP TABLE IF EXISTS user_password;
+DROP TABLE IF EXISTS user_login_auth_log;
 
 CREATE TABLE IF NOT EXISTS user_registration (
     user_regi_id    BIGINT(20) NOT NULL,
@@ -52,9 +53,34 @@ CREATE TABLE IF NOT EXISTS user_password (
     CONSTRAINT pk_user_password_user_id PRIMARY KEY (user_id)
 );
 
+CREATE TABLE IF NOT EXISTS user_login_auth_log (
+    user_id            BIGINT(20) NOT NULL,
+    status             BOOLEAN NOT NULL DEFAULT TRUE,
+    assigned_date      DATETIME NOT NULL,
+    expired_date       DATETIME NOT NULL,
+    encrypt_type       VARCHAR(255) NOT NULL,
+    mcrypt_key         TEXT NULL,
+    mcrypt_iv          TEXT NULL,
+    auth_token         TEXT NOT NULL,
+    device_type        VARCHAR(32) NOT NULL,
+    auth_type          VARCHAR(32) NOT NULL,
+    agent_type         VARCHAR(32) NOT NULL,
+    regi_os            VARCHAR(32) NULL,
+    regi_device        VARCHAR(32) NULL,
+    regi_browser       VARCHAR(32) NULL,
+    regi_ip            VARCHAR(32) NOT NULL,
+    regi_http_agent    TEXT NOT NULL,
+    modified_by        BIGINT(20) NOT NULL,
+    created_by         BIGINT(20) NOT NULL,
+    modified_date      DATETIME NOT NULL,
+    created_date       DATETIME NOT NULL,
+    CONSTRAINT pk_user_login_auth_log_user_id PRIMARY KEY (user_id)
+);
+
 DELETE FROM user_registration;
 DELETE FROM user_info;
 DELETE FROM user_password;
+DELETE FROM user_login_auth_log;
 
 
 

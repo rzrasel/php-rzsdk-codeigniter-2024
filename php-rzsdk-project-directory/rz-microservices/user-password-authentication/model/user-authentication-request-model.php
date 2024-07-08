@@ -22,6 +22,10 @@ class UserAuthenticationRequestModel {
         return $array;
     }
 
+    public function toTypeCasting($object): self {
+        return $object;
+    }
+
     /*
      * Array key mapping
      * Array key mapping with request parameter and database column

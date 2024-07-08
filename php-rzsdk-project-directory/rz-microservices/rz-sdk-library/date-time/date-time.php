@@ -16,6 +16,10 @@ class DateTime {
         return round(microtime(true) * 1000);
     }
 
+    public static function getDateToTime($date) {
+        return strtotime($date);
+    }
+
     public static function getMicroToDate($microtime, $dateFormat = "Y-m-d H:i:s") {
         return date($dateFormat, $microtime);
     }

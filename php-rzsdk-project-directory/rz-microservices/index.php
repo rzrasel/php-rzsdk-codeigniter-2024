@@ -77,7 +77,9 @@ foreach($data as $line) {
 <?php
 ?>
 <?php
-$genDatabaseSchema = new GenDatabaseSchema(true);
+$isPrint = false;
+//$isPrint = true;
+$genDatabaseSchema = new GenDatabaseSchema($isPrint);
 ?>
 <?php
 /* echo "getFullUrl() " . SiteUrl::getFullUrl();
