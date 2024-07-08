@@ -27,7 +27,7 @@ class UserRegistrationDatabaseModel {
         $userRegiTable->regi_os         = $clientDevice->getOs();
         $userRegiTable->regi_device     = $clientDevice->getDevice();
 
-        $userRegiTable->regi_browser    = $clientDevice->getBrowser() ;
+        $userRegiTable->regi_browser    = $clientDevice->getBrowser();
         $userRegiTable->regi_ip         = ClientIp::ip();
         $userRegiTable->regi_http_agent = $clientDevice->getHttpAgent();
         $userRegiTable->modified_by     = $userId;

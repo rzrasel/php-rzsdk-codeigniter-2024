@@ -12,6 +12,10 @@ class DateTime {
         return date($dateFormat, time());
     }
 
+    public static function getCurrentTime() {
+        return strtotime(date("Y-m-d H:i:s", time()));
+    }
+
     public static function getCurrentMicrotime() {
         return round(microtime(true) * 1000);
     }

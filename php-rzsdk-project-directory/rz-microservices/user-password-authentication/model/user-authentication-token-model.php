@@ -34,6 +34,10 @@ class UserAuthenticationTokenModel {
         return $uniqueIntId->getId();
     }
 
+    public function getDate() {
+        return DateTime::getCurrentDateTime();
+    }
+
     public function getDateToTime($date) {
         return DateTime::getDateToTime($date);
     }

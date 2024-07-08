@@ -28,7 +28,6 @@ class UserLoginAuthLogTable {
     public $created_by = "created_by";
     public $modified_date = "modified_date";
     public $created_date = "created_date";
-    private $ke = "";
 
     public function getColumn() {
         $result = array_intersect_key(
