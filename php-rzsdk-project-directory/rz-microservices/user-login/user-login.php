@@ -5,6 +5,7 @@ require_once("include.php");
 <?php
 use RzSDK\Curl\Curl;
 use RzSDK\Response\Response;
+use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
 use RzSDK\Model\User\Login\UserLoginRequestModel;
@@ -107,7 +108,7 @@ class UserLogin {
 
     private function loginByEmail(UserLoginRequestModel $userLoginRequestModel, array $postedDataSet) {
         if(!$this->isExistsUserInDatabase($userLoginRequestModel, $postedDataSet)) {
-            $this->response(null, new Info("Error! Email or password not matched", InfoType::ERROR), $postedDataSet);
+            $this->response(null, "Error! Email or password not matched", InfoType::ERROR, $postedDataSet);
             return;
         }
     }
@@ -143,22 +144,22 @@ class UserLogin {
                     $this->response($bodyData, new Info("Successfully logged in", InfoType::SUCCESS), $postedDataSet);
                     return true;
                 }*/
-                $this->response($bodyData, new Info("Successfully logged in", InfoType::SUCCESS), $postedDataSet);
+                $this->response($bodyData, "Successfully logged in", InfoType::SUCCESS, $postedDataSet);
                 return true;
             } else if($infoType == InfoType::INFO) {
-                $this->response(array("redirect" => true, "page" => "registration"), new Info("Error! Email or password not matched", InfoType::ERROR), $postedDataSet);
+                $this->response(array("redirect" => true, "page" => "registration"), "Error! Email or password not matched", InfoType::ERROR, $postedDataSet);
                 return true;
             }
         }
         return false;
     }
 
-    private function response($body, Info $info, $parameter = null) {
-        $response = new Response();
-        $response->body         = $body;
-        $response->info         = $info;
-        $response->parameter    = $parameter;
-        echo $response->toJson();
+    private function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
     }
 
     /*public function executeOld() {

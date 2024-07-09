@@ -30,6 +30,7 @@ class CurlUserAuthTokenAuthentication {
         unset($result["error"]);
         DebugLog::log($result);
         if(!is_array($result)) {
+            $this->printResponse();
             return;
         }
         if(array_key_exists("body", $result)) {

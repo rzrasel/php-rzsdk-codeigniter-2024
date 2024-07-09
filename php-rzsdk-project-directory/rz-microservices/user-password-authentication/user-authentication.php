@@ -4,6 +4,7 @@ require_once("include.php");
 ?>
 <?php
 use RzSDK\Response\Response;
+use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
 use RzSDK\Database\SqliteConnection;
@@ -143,14 +144,14 @@ class UserAuthentication {
         $this->userAuthDatabaseModel = $this->getDbUserAuthentication($userAuthRequestModel);
         if(empty($this->userAuthDatabaseModel)) {
             //DebugLog::log("debug_log_print");
-            $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
+            $this->response(null, "Error user not found", InfoType::INFO, $postedDataSet);
             return false;
         }
 
         $postedPassword = $userAuthRequestModel->password;
         $hashedPassword = $this->userAuthDatabaseModel->password;
         if(!$this->isPasswordVerified($postedPassword, $hashedPassword)) {
-            $this->response(null, new Info("Error user not found", InfoType::INFO), $postedDataSet);
+            $this->response(null, "Error user not found", InfoType::INFO, $postedDataSet);
             return false;
         }
         /*else {
@@ -217,12 +218,12 @@ class UserAuthentication {
         return false;
     }
 
-    private function response($body, Info $info, $parameter = null) {
-        $response = new Response();
-        $response->body         = $body;
-        $response->info         = $info;
-        $response->parameter    = $parameter;
-        echo $response->toJson();
+    private function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
     }
 }
 ?>

@@ -11,6 +11,7 @@ use RzSDK\Database\SqliteConnection;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\Response\Response;
+use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Response\Info;
 use RzSDK\Response\InfoType;
 use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
@@ -71,7 +72,7 @@ class UserPasswordAuthenticationToken {
         $responseDataList = $this->userAuthDatabaseModel->getColumnWithKey();
         $responseDataList["password"] = $this->userAuthRequestModel->password;
         $responseDataList["user_auth_token"] = $responseAuthToken;
-        $this->response($responseDataList, new Info("Successful user found", InfoType::SUCCESS), $this->postedDataSet);
+        $this->response($responseDataList, "Successful user found", InfoType::SUCCESS, $this->postedDataSet);
     }
 
     private function getSelectSqlQuery(UserAuthenticationTokenDatabaseModel $userAuthTokenDbModel) {
@@ -128,12 +129,12 @@ class UserPasswordAuthenticationToken {
         return new SqliteConnection($dbFullPath);
     }
 
-    private function response($body, Info $info, $parameter = null) {
-        $response = new Response();
-        $response->body         = $body;
-        $response->info         = $info;
-        $response->parameter    = $parameter;
-        echo $response->toJson();
+    private function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
     }
 
     private function extra_01() {
