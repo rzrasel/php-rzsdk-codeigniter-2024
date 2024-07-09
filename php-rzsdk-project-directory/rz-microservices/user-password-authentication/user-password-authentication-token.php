@@ -87,6 +87,7 @@ class UserPasswordAuthenticationToken {
             ->offset(0)
             ->orderBy("modified_date", "DESC")
             ->build();
+        //DebugLog::log($sqlQuery);
         return $sqlQuery;
     }
 

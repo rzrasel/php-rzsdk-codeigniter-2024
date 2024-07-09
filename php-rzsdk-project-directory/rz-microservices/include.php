@@ -96,6 +96,7 @@ require_once($baseInclude . "user-auth-type.php");
 $baseInclude = "";
 require_once($baseInclude . "curl-user-login.php");
 require_once($baseInclude . "curl-user-registration.php");
+require_once($baseInclude . "curl-user-auth-token-authentication.php");
 require_once($baseInclude . "gen-database-schema.php");
 ?>
 <?php

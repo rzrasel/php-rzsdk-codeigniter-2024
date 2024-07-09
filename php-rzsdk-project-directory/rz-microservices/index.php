@@ -4,6 +4,7 @@ require_once("include.php");
 <?php
 use RzSDK\Log\DebugLog;
 use RzSDK\URL\SiteUrl;
+use RzSDK\User\Login\CurlUserAuthTokenAuthentication;
 use RzSDK\User\Registration\CurlUserRegistration;
 use RzSDK\User\Login\CurlUserLogin;
 use RzSDK\Device\ClientDevice;
@@ -75,6 +76,55 @@ foreach($data as $line) {
 } */
 ?>
 <?php
+/*
+$firstCharacter = "[{<>}] [(<>)] {{Friday}}t{od{a}y{{Sunday}}";
+$firstCharacter = "{<#>} [{<>}] {(<=)} [(<>)] [{<>}] [(<>)] {{Friday}}t{od{a}y{{Sunday}}";
+$firstCharacter = "{(<>)} Regular expression tester with syntax highlighting";
+$firstCharacter = "    {<>} Regular expression tester with syntax highlighting";
+//$firstCharacter = strtok($firstCharacter, " ");
+//$firstCharacter = substr($firstCharacter, 0, strpos($firstCharacter, " "));
+DebugLog::log($firstCharacter);
+$strPos = strpos($firstCharacter, "{<>}");
+DebugLog::log($strPos);
+$strPos = $strPos + strlen("{<>}");
+$subStr = substr($firstCharacter, $strPos, strlen($firstCharacter));
+DebugLog::log($subStr);
+$pattern = "/(<|<>)/i";
+$pattern = "/{{(?<inner>.*?)}}|(?<outer>[^{}]*(?:{(?!{)[^{}]*|}(?!})[^{}]*)*)/";
+$pattern = "/(?<=\()(.+)(?=\))/is";
+$pattern = "/\(([^\)]*)\)/";
+$pattern = "/\(([^\)]*)\)/";
+$pattern = "/\((.*?)\)/si";
+$pattern = "/\[\((.*?)\)\]/si";
+$pattern = "/\[\((.*?)\)\]|\[\{(.*?)\}\]/si";
+$pattern = array();
+$pattern[] = "\{(.*?)\}"; //{}
+$pattern[] = "\[\{(.*?)\}\]"; //[{}]
+$pattern[] = "\[\((.*?)\)\]"; //[()]
+$pattern[] = "\{\((.*?)\)\}"; //{()}
+$regexPattern = implode("|", $pattern);
+//$pattern = "/{$pattern1}|{$pattern2}|{$pattern3}/si";
+$pattern = "/^\s+{$regexPattern}$/si";
+//$pattern = "/{$pattern[0]}|{$pattern[1]}|{$pattern[2]}|{$pattern[3]}/si";
+//if(preg_match($pattern, $firstCharacter, $matches)) {
+//if(preg_match_all($pattern, $firstCharacter, $matches)) {
+if(preg_match($pattern, $firstCharacter, $matches)) {
+    DebugLog::log($matches);
+    DebugLog::log($matches[1]);
+} else {
+    DebugLog::log("Not Found");
+}
+/-*if(preg_match_all($pattern, $firstCharacter, $matches)) {
+    //DebugLog::log($matches[0]);
+    //$operator = $matches[1];
+    //$value = ltrim(substr($value, 1));
+    DebugLog::log(array_filter($matches["outer"]));
+    DebugLog::log(array_filter($matches["inner"]));
+    DebugLog::log($matches);
+} else {
+    DebugLog::log("Not Found");
+}*-/
+*/
 ?>
 <?php
 $isPrint = false;
@@ -115,7 +165,12 @@ $data = getArrayByValue("red", $a);
 DebugLog::log($data);*/
 ?>
 <?php
+?>
+<?php
 $curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
+?>
+<?php
+$curlUserAuthTokenAuthentication = new CurlUserAuthTokenAuthentication(SiteUrl::getBaseUrl());
 ?>
 <?php
 echo "<br />";

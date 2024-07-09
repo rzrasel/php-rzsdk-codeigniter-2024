@@ -18,8 +18,8 @@ class UserAuthenticationTokenDatabaseModel {
     public $auth_token;
 
     public function getSelectWhereSqlData(UserAuthenticationRequestModel $userAuthRequestModel, UserAuthenticationDatabaseModel $userAuthDatabaseModel) {
-        $userLoginAuthLogTable = new UserLoginAuthLogTable();
-        $tableColumn = $userLoginAuthLogTable->getColumn();
+        //$userLoginAuthLogTable = new UserLoginAuthLogTable();
+        //$tableColumn = $userLoginAuthLogTable->getColumn();
         return array(
             "user_id" => $userAuthDatabaseModel->userId,
             "status" => true,
@@ -61,6 +61,7 @@ class UserAuthenticationTokenDatabaseModel {
         shuffle($encryptionTypeList);
         $encryptionType = EncryptionTypeExtension::getEncryptionTypeByName($encryptionTypeList[0]);
         $mcryptKey = RandomIdGenerator::getRandomString(56);
+        $mcryptKey = McryptCipherIvGenerator::hashIv($mcryptKey, 56);
         $secretKey = McryptCipherIvGenerator::opensslRandomIv();
         $mcryptIvBase64 = rtrim(base64_encode($secretKey), "=");
         if($encryptionType == EncryptionType::JWT_TOKEN) {
