@@ -27,9 +27,27 @@ class CurlUserRegistration {
         //DebugLog::log($result);
         unset($result["info"]);
         unset($result["error"]);
-        DebugLog::log($result);
+        //DebugLog::log($result);
+        if(!is_array($result)) {
+            $this->printResponse();
+            return;
+        }
+        if(array_key_exists("body", $result)) {
+            $responseData = json_decode($result["body"], true);
+            (!empty($responseData)) ? $this->printResponse($responseData) : $this->printResponse();
+        } else {
+            $this->printResponse();
+        }
         /* $responseData = json_decode($result["body"], true);
         DebugLog::log($responseData); */
+    }
+
+    private function printResponse(array $responseMessage = array()) {
+        if(empty($responseMessage)) {
+            $responseMessage = $this->getErrorResponse();
+        }
+        $responseData = json_encode($responseMessage);
+        DebugLog::log($responseData);
     }
 
     private function getData() {
@@ -39,6 +57,17 @@ class CurlUserRegistration {
             "agent_type"    => "android_app",
             "user_email"    => "email@gmail.com",
             "password"      => "123456aB#",
+        );
+    }
+
+    private function getErrorResponse() {
+        return array(
+            "body" => null,
+            "info" => array(
+                "message" => "Error inform to developer",
+                "type" => "error",
+            ),
+            "parameter" => $this->getData(),
         );
     }
 
