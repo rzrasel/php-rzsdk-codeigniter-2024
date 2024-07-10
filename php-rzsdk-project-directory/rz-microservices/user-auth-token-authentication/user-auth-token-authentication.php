@@ -8,11 +8,13 @@ use RzSDK\Response\InfoType;
 use RzSDK\Model\User\Authentication\UserAuthTokenAuthenticationRequestModel;
 use RzSDK\HTTPRequest\UserAuthTokenAuthenticationRequest;
 use RzSDK\Validation\BuildValidationRules;
+use RzSDK\Service\Listener\ServiceListener;
+use RzSDK\Service\Adapter\UserAuthTokenAuthenticationDataValidationService;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserAuthTokenAuthenticationToken {
-    private UserAuthTokenAuthenticationRequestModel $userAuthTokenAuthRequestModel;
+    public UserAuthTokenAuthenticationRequestModel $userAuthTokenAuthRequestModel;
     private $postedDataSet;
 
     public function __construct(){
@@ -22,7 +24,8 @@ class UserAuthTokenAuthenticationToken {
     public function execute() {
         if(!empty($_POST)) {
             //DebugLog::log($_POST);
-            $isValidated = $this->isValidated($_POST);
+            $this->userAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationRequestModel();
+            /*$isValidated = $this->isValidated($_POST);
             if(!$isValidated["is_validate"]) {
                 $this->response(null,
                     "Error! need to request by all parameter",
@@ -33,11 +36,42 @@ class UserAuthTokenAuthenticationToken {
             $this->userAuthTokenAuthRequestModel = $isValidated["data_set"];
             //DebugLog::log($userRegiRequestModel);
             $postedDataSet = $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest->getPropertyKeyValue();
-            DebugLog::log($postedDataSet);
+            DebugLog::log($postedDataSet);*/
             //
-            //$this->userAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationRequestModel();
-            $this->response(null, "Successful login completed", InfoType::SUCCESS, $postedDataSet);
+            $innerInstance = new class($this) implements ServiceListener {
+                private $outerInstance;
+
+                // Constructor to receive outer instance
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                function onSuccess($dataSet, $message) {
+                    /*DebugLog::log($dataSet);
+                    DebugLog::log($message);*/
+                    //$this->outerInstance->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $dataSet;
+                    $this->outerInstance->test($dataSet);
+                }
+            };
+            $userAuthTokenAuthDataValidationService = new UserAuthTokenAuthenticationDataValidationService($innerInstance);
+            $userAuthTokenAuthDataValidationService->execute($_POST);
+            //DebugLog::log($innerInstance->sayHello("hi this is a value"));
+            //
+            //$this->response(null, "Successful login completed", InfoType::SUCCESS, $postedDataSet);
         }
+    }
+
+    public function test($dataSet) {
+        //DebugLog::log($dataSet);
+        //$this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $this->userAuthTokenAuthRequestModel->toTypeCasting($dataSet);
+        $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $dataSet;
+        //DebugLog::log($userRegiRequestModel);
+        $postedDataSet = $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest->getPropertyKeyValue();
+        DebugLog::log($postedDataSet);
     }
 
     public function isValidated($requestDataSet) {
@@ -89,7 +123,7 @@ class UserAuthTokenAuthenticationToken {
         );
     }
 
-    private function response($body, $message, InfoType $infoType, $parameter = null) {
+    public function response($body, $message, InfoType $infoType, $parameter = null) {
         $launchResponse = new LaunchResponse();
         $launchResponse->setBody($body)
             ->setInfo($message, $infoType)

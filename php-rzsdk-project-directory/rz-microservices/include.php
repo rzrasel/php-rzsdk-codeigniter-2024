@@ -83,15 +83,19 @@ require_once($baseInclude . "user-authentication-request.php");
 require_once($baseInclude . "user-auth-token-authentication-request.php");
 ?>
 <?php
-$baseInclude = "user-info/";
-//require_once($baseInclude . "model/user-model.php");
-?>
-<?php
 $baseInclude = "utils/";
 require_once($baseInclude . "launch-response.php");
 require_once($baseInclude . "prepare-validation-rules.php");
 require_once($baseInclude . "build-validation-rules.php");
 require_once($baseInclude . "user-auth-type.php");
+?>
+<?php
+$baseInclude = "service-listener/";
+require_once($baseInclude . "service-listener.php");
+?>
+<?php
+$baseInclude = "user-info/";
+//require_once($baseInclude . "model/user-model.php");
 ?>
 <?php
 $baseInclude = "";

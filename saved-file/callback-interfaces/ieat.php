@@ -2,6 +2,6 @@
 ?>
 <?php
 interface IEat {
-  public function eat();
+    public function eat();
 }
 ?>
