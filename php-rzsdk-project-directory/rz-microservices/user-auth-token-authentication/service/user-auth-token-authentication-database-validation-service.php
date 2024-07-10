@@ -229,8 +229,11 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
                 $isActivate => "{=} true",
                 $expiredDate => "{>}{$currentDate}",
             ))
+            ->orderBy($expiredDate, "DESC")
+            ->limit(1)
+            ->offset(0)
             ->build();
-        //DebugLog::log($sqlQuery);
+        DebugLog::log($sqlQuery);
         return $sqlQuery;
     }
 
