@@ -8,6 +8,7 @@ class UserLoginAuthLogTable {
     public $user_id = "user_id";
     public $user_auth_log_id = "user_auth_log_id";
     public $status = "status";
+    public $is_activate = "is_activate";
     public $assigned_date = "assigned_date";
     public $refresh_date = "refresh_date";
     public $expired_date = "expired_date";

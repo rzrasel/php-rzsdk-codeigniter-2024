@@ -45,6 +45,7 @@ class UserLoginAuthLogTableQuery extends UserLoginAuthLogTable {
             "user_id"           => "BIGINT(20) NOT NULL",
             "user_auth_log_id"  => "BIGINT(20) NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
+            "is_activate"       => "BOOLEAN NOT NULL DEFAULT TRUE",
             "assigned_date"     => "DATETIME NOT NULL",
             "refresh_date"      => "DATETIME NOT NULL",
             "expired_date"      => "DATETIME NOT NULL",

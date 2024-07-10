@@ -167,7 +167,7 @@ DebugLog::log($data);*/
 <?php
 ?>
 <?php
-//$curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
+$curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
 ?>
 <?php
 $curlUserAuthTokenAuthentication = new CurlUserAuthTokenAuthentication(SiteUrl::getBaseUrl());

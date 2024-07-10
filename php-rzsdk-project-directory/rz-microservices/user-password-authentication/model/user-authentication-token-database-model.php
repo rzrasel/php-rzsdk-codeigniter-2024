@@ -77,8 +77,9 @@ class UserAuthenticationTokenDatabaseModel {
         //DebugLog::log($mcryptIvBase64);
         //
         $userLoginAuthLogTable->user_id         = $userAuthDatabaseModel->userId;
-        $userLoginAuthLogTable->user_auth_log_id         = $userAuthTokenModel->user_auth_id;
+        $userLoginAuthLogTable->user_auth_log_id    = $userAuthTokenModel->user_auth_id;
         $userLoginAuthLogTable->status          = true;
+        $userLoginAuthLogTable->is_activate     = true;
         $userLoginAuthLogTable->assigned_date   = $userAuthTokenModel->started_date;
         $userLoginAuthLogTable->refresh_date    = $userAuthTokenModel->started_date;
         $userLoginAuthLogTable->expired_date    = $userAuthTokenModel->expiry_date;
