@@ -4,7 +4,7 @@ require_once("include.php");
 <?php
 use RzSDK\Log\DebugLog;
 use RzSDK\URL\SiteUrl;
-use RzSDK\User\Login\CurlUserAuthTokenAuthentication;
+use RzSDK\User\Authentication\Token\CurlUserAuthTokenAuthentication;
 use RzSDK\User\Registration\CurlUserRegistration;
 use RzSDK\User\Login\CurlUserLogin;
 use RzSDK\Device\ClientDevice;
@@ -167,7 +167,7 @@ DebugLog::log($data);*/
 <?php
 ?>
 <?php
-$curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
+//$curlUserLogin = new CurlUserLogin(SiteUrl::getBaseUrl());
 ?>
 <?php
 $curlUserAuthTokenAuthentication = new CurlUserAuthTokenAuthentication(SiteUrl::getBaseUrl());

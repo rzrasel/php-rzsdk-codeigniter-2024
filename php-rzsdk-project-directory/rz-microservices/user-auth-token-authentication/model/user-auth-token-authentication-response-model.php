@@ -3,11 +3,20 @@ namespace RzSDK\Model\User\Authentication;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;
-use RzSDK\HTTPRequest\UserAuthTokenAuthenticationRequest;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class UserAuthTokenAuthenticationRequestModel {
+class UserAuthTokenAuthenticationResponseModel {
+    /*public $device_type;
+    public $auth_type;
+    public $agent_type;*/
+    public $user_id;
+    //public $user_email;
+    public $user_auth_token;
+
+    public function getQuery() {
+        return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);
+    }
 
     public function getPropertyKeyValue() {
         return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);

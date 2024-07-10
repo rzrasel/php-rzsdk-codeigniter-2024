@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\User\Login;
+namespace RzSDK\User\Authentication\Token;
 ?>
 <?php
 use RzSDK\Curl\Curl;
@@ -58,7 +58,7 @@ class CurlUserAuthTokenAuthentication {
             "agent_type"        => "android_app",
             "user_email"        => "email@gmail.com",
             "password"          => "123456aB#",
-            "user_auth_token"   => "7U0z5q3dETxkHoMNIxRA+SFycB+fZ9lKsRb5KM2xYnev8xiv4X94aZZpelUDlUkeTzUU6pv1E99+F9c9rMit/ddb8yBjkN1SbsKmVSAwFvOGYnA/6GN61SFgzCZhO6otwpyMtIx1txH1QIE4XF9+idYsT7XFKBJ8f6CWIyMJv0+yQlNNs2wiYs5q9c+VoitQ/akY4jrTy+FBE4RFxW/xMSkdfMcwn6pVvUBNm/mgjqwKIA7JpZthLqXxdkR+263EA2myTrPPt0Qr1up+wpQzEuAWvTSYmvsa77SziilL9hETjTfSlOpEipL+6FCmmI+ILBQMzBNy6urMQjvW2z0pbr8Gr2qfRXFElcDEP8LMqpaZIjxjJJ7ilMNPTBEVb0HrHn1hoNxhLLhAhPsQxq3hQ7avRPQbZSzaKVcUQPMhvssTI5GxG1d9vjj45wpmQjkr1u+osXqTxhO38/RrnefW4J4/MKMIhwkjkHoE+wXcQYVsSO97Tv+drYkU4M+ORF60"
+            "user_auth_token"   => "NmHabCBaIO+9t1adC2KPQd/ABxn9e7yRAyo0rzfbqTNNCrPsTHoaMbz3ADrtqZeaWsXWnXvjYSAcxyvVSdSgF5BVB2uFS8GyKVpekU8BFAciVFYH8ojv0S8tvJCHRUr8xYFxbVgU0oBQTKf7/poYoc5aXLwW8V5sBoxbF+4yb+yTpMGgimkBeLCI2GuieXJHkre7MOVyAXaFP/L9vixMgKi87SsKuSbgi898+rUb0h/Y74u6otTigmvzqG+jRt/vPEQO/mwO3Sxzy7VLXNvLqGH3pecjWJ1UtsL/ZnWv0k6sHKmsK1mQ8sFct6DbZzW2ltYbnvQp+mzYPeqSDNSo23Lw/gwiBwYsAC1vP3DmeQ94UXJqsTq8hUsTV0ftpw44ARmaJltzB2z1IMMPpcS8Mm4fdpSzruyKQYXQ3Bak8odNu/GMDzf/mKXWezkTaj3+kica52MK91dA38Is3Nu/nbHI/XQ8uAfc2Yt1ACacuDelJPzO1QVtJMsUtIZahPA6"
         );
     }
 

@@ -8,13 +8,17 @@ use RzSDK\Response\InfoType;
 use RzSDK\Model\User\Authentication\UserAuthTokenAuthenticationRequestModel;
 use RzSDK\HTTPRequest\UserAuthTokenAuthenticationRequest;
 use RzSDK\Validation\BuildValidationRules;
+use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Service\Adapter\UserAuthTokenAuthenticationDataValidationService;
+use RzSDK\Model\User\Authentication\UserAuthTokenAuthenticationResponseModel;
+use RzSDK\Service\Adapter\UserAuthTokenAuthenticationDatabaseValidationService;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserAuthTokenAuthenticationToken {
     public UserAuthTokenAuthenticationRequestModel $userAuthTokenAuthRequestModel;
+    private UserAuthTokenAuthenticationRequest $userAuthTokenAuthRequest;
     private $postedDataSet;
 
     public function __construct(){
@@ -24,7 +28,7 @@ class UserAuthTokenAuthenticationToken {
     public function execute() {
         if(!empty($_POST)) {
             //DebugLog::log($_POST);
-            $this->userAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationRequestModel();
+            //$this->userAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationRequestModel();
             /*$isValidated = $this->isValidated($_POST);
             if(!$isValidated["is_validate"]) {
                 $this->response(null,
@@ -39,7 +43,7 @@ class UserAuthTokenAuthenticationToken {
             DebugLog::log($postedDataSet);*/
             //
             $innerInstance = new class($this) implements ServiceListener {
-                private $outerInstance;
+                private UserAuthTokenAuthenticationToken $outerInstance;
 
                 // Constructor to receive outer instance
                 public function __construct($outerInstance) {
@@ -53,28 +57,64 @@ class UserAuthTokenAuthenticationToken {
                 function onSuccess($dataSet, $message) {
                     /*DebugLog::log($dataSet);
                     DebugLog::log($message);*/
-                    //$this->outerInstance->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $dataSet;
-                    $this->outerInstance->test($dataSet);
+                    $this->outerInstance->userTokenDatabaseValidation($dataSet);
                 }
             };
             $userAuthTokenAuthDataValidationService = new UserAuthTokenAuthenticationDataValidationService($innerInstance);
             $userAuthTokenAuthDataValidationService->execute($_POST);
             //DebugLog::log($innerInstance->sayHello("hi this is a value"));
             //
-            //$this->response(null, "Successful login completed", InfoType::SUCCESS, $postedDataSet);
+            //$this->response(null, "Successful login completed", InfoType::SUCCESS, $_POST);
         }
     }
 
-    public function test($dataSet) {
+    public function userTokenDatabaseValidation($dataSet) {
         //DebugLog::log($dataSet);
-        //$this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $this->userAuthTokenAuthRequestModel->toTypeCasting($dataSet);
-        $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest = $dataSet;
+        $this->userAuthTokenAuthRequest = $dataSet;
         //DebugLog::log($userRegiRequestModel);
-        $postedDataSet = $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest->getPropertyKeyValue();
-        DebugLog::log($postedDataSet);
+        $postedDataSet = $this->userAuthTokenAuthRequest->getPropertyKeyValue();
+        //DebugLog::log($postedDataSet);
+        (new UserAuthTokenAuthenticationDatabaseValidationService(
+            new class($this) implements ServiceListener {
+                private UserAuthTokenAuthenticationToken $outerInstance;
+
+                // Constructor to receive outer instance
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                function onSuccess($dataSet, $message) {
+                    $this->outerInstance->httpResponse($dataSet);
+                }
+            }
+        ))->execute($this->userAuthTokenAuthRequest, $postedDataSet);
     }
 
-    public function isValidated($requestDataSet) {
+    public function httpResponse(UserLoginAuthLogTable $userLoginAuthLogTable) {
+        //DebugLog::log($userLoginAuthLogTable);
+        $UserAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationResponseModel();
+        /*$UserAuthTokenAuthRequestModel->device_type = $this->userAuthTokenAuthRequest->device_type;
+        $UserAuthTokenAuthRequestModel->auth_type = $this->userAuthTokenAuthRequest->auth_type;
+        $UserAuthTokenAuthRequestModel->agent_type = $this->userAuthTokenAuthRequest->agent_type;*/
+        $UserAuthTokenAuthRequestModel->user_id = $userLoginAuthLogTable->user_id;
+        $UserAuthTokenAuthRequestModel->user_auth_token = $userLoginAuthLogTable->auth_token;
+        //DebugLog::log($userAuthTokenAuthRequest);
+        $this->response($UserAuthTokenAuthRequestModel->getQuery(), "Successful user authentication.", InfoType::SUCCESS, $this->userAuthTokenAuthRequest->getPropertyKeyValue());
+    }
+
+    public function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
+    }
+
+    /*public function isValidated($requestDataSet) {
         //DebugLog::log($requestDataSet);
         $buildValidationRules = new BuildValidationRules();
         $userAuthTokenAuthRequest = new UserAuthTokenAuthenticationRequest();
@@ -121,15 +161,7 @@ class UserAuthTokenAuthenticationToken {
             "is_validate"   => $isValidated,
             "data_set"          => $this->userAuthTokenAuthRequestModel,
         );
-    }
-
-    public function response($body, $message, InfoType $infoType, $parameter = null) {
-        $launchResponse = new LaunchResponse();
-        $launchResponse->setBody($body)
-            ->setInfo($message, $infoType)
-            ->setParameter($parameter)
-            ->execute();
-    }
+    }*/
 }
 ?>
 <?php
