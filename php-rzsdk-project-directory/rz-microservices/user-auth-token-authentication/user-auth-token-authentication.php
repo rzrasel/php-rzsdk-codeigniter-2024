@@ -88,6 +88,7 @@ class UserAuthTokenAuthenticationToken {
                 }
 
                 function onSuccess($dataSet, $message) {
+                    //DebugLog::log($message);
                     $this->outerInstance->httpResponse($dataSet);
                 }
             }

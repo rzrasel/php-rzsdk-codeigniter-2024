@@ -11,6 +11,8 @@ use RzSDK\Identification\RandomIdGenerator;
 use RzSDK\Encryption\McryptCipherIvGenerator;
 use RzSDK\Encryption\JwtManager;
 use RzSDK\Encryption\OpensslEncryption;
+use RzSDK\Utils\ObjectPropertyWizard;
+use RzSDK\DateTime\DateTime;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -20,9 +22,11 @@ class UserAuthenticationTokenDatabaseModel {
     public function getSelectWhereSqlData(UserAuthenticationRequestModel $userAuthRequestModel, UserAuthenticationDatabaseModel $userAuthDatabaseModel) {
         //$userLoginAuthLogTable = new UserLoginAuthLogTable();
         //$tableColumn = $userLoginAuthLogTable->getColumn();
+        $currentDate = DateTime::getCurrentDateTime();
         return array(
             "user_id" => $userAuthDatabaseModel->userId,
             "status" => true,
+            //"expired_date" => "{>}{$currentDate}",
         );
     }
 

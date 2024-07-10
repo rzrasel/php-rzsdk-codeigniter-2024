@@ -86,7 +86,7 @@ class UserPasswordAuthenticationToken {
             ->where("", $userAuthTokenDbSet)
             ->limit(1)
             ->offset(0)
-            ->orderBy("modified_date", "DESC")
+            ->orderBy("expired_date", "DESC")
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;

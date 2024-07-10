@@ -11,6 +11,7 @@ use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
 use RzSDK\Utils\ObjectPropertyWizard;
+use RzSDK\DateTime\DateDiffType;
 use RzSDK\DateTime\DateTime;
 use RzSDK\Log\DebugLog;
 ?>
@@ -49,8 +50,9 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
             $this->findLastActivatedToken($userLoginAuthLogTable, $requestDataSet);
             return;
         }
-        $this->serviceListener->onSuccess($userLoginAuthLogTable, "Successful authentication request.");
-    }
+        $this->doUpdateExpiryDate($userLoginAuthLogTable, $requestDataSet);
+        $this->serviceListener->onSuccess($userLoginAuthLogTable, "Successful authentication request code " . __LINE__);
+    }//getUpdateExpiryDateSqlQuery
 
     private function updateActiveStatus(UserLoginAuthLogTable $userLoginAuthLogTable) {
         $sqlQuery = $this->getUpdateSqlQuery($userLoginAuthLogTable);
@@ -68,16 +70,24 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
         $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
         $dbDataSet = $this->fillDatabaseSelectData($dbResult);
         if(empty($dbDataSet)) {
-            $this->serviceListener->onError($requestDataSet, "Error! user authentication failed to authenticate error codes " . __LINE__);
+            $this->serviceListener->onError($requestDataSet, "Error! user authentication failed to authenticate error code " . __LINE__);
             return;
         }
         $this->userLoginAuthLogTable = $dbDataSet;
         //DebugLog::log($this->userLoginAuthLogTable);
         if($this->isTokenExpired($this->userLoginAuthLogTable) || !$this->userLoginAuthLogTable->status) {
-            $this->serviceListener->onError($requestDataSet, "Error! user authentication failed for expiration date error codes " . __LINE__);
+            $this->serviceListener->onError($requestDataSet, "Error! user authentication failed for expiration date error code " . __LINE__);
             return;
         }
-        $this->serviceListener->onSuccess($this->userLoginAuthLogTable, "Successful authentication request.");
+        $this->doUpdateExpiryDate($this->userLoginAuthLogTable, $requestDataSet);
+        $this->serviceListener->onSuccess($this->userLoginAuthLogTable, "Successful authentication request code " . __LINE__);
+    }
+
+    private function doUpdateExpiryDate(UserLoginAuthLogTable $userLoginAuthLogTable, $requestDataSet) {
+        $sqlQuery = $this->getUpdateExpiryDateSqlQuery($userLoginAuthLogTable);
+        //DebugLog::log($sqlQuery);
+        $dbConn = $this->getDbConnection();
+        $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
     }
 
     private function fillDatabaseSelectData($dbResult) {
@@ -125,6 +135,45 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
         return $sqlQuery;
     }
 
+    private function getUpdateExpiryDateSqlQuery(UserLoginAuthLogTable $userLoginAuthLogTable) {
+        $tempAuthLogTable = new UserLoginAuthLogTable();
+        $userId = $tempAuthLogTable->user_id;
+        $userAuthLogId = $tempAuthLogTable->user_auth_log_id;
+        $authToken = $tempAuthLogTable->auth_token;
+        $status = $tempAuthLogTable->status;
+        $isActivate = $tempAuthLogTable->is_activate;
+        $refreshDate = $tempAuthLogTable->refresh_date;
+        $expiredDate = $tempAuthLogTable->expired_date;
+        $modifiedBy = $tempAuthLogTable->modified_by;
+        $modifiedDate = $tempAuthLogTable->modified_date;
+        $tempAuthLogTable = null;
+        //DebugLog::log($status);
+        $currentDate = DateTime::getCurrentDateTime();
+        $expiredDateTime = $this->getExpiryDate();
+        $userLoginAuthLogTableName = DbUserTable::$userLoginAuthLog;
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->update($userLoginAuthLogTableName)
+            ->set(array(
+                $refreshDate => $currentDate,
+                $expiredDate => $expiredDateTime,
+                $modifiedBy => $userLoginAuthLogTable->user_id,
+                $modifiedDate => $currentDate,
+            ))
+            ->where("", array(
+                $userId => $userLoginAuthLogTable->user_id,
+                $userAuthLogId => $userLoginAuthLogTable->user_auth_log_id,
+                //$authToken => $userLoginAuthLogTable->auth_token,
+                //$isActivate => "{=} true",
+                //$expiredDate => "{<}{$currentDate}",
+            ))
+            ->build();
+        //"modified_by" => $userAuthDatabaseModel->userId,
+        //                "modified_date" => $userAuthTokenModel->getCurrentDate(),
+        //DebugLog::log($sqlQuery);
+        return $sqlQuery;
+    }
+
     private function getUpdateSqlQuery(UserLoginAuthLogTable $userLoginAuthLogTable) {
         $tempAuthLogTable = new UserLoginAuthLogTable();
         $userId = $tempAuthLogTable->user_id;
@@ -132,6 +181,8 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
         $status = $tempAuthLogTable->status;
         $isActivate = $tempAuthLogTable->is_activate;
         $expiredDate = $tempAuthLogTable->expired_date;
+        $modifiedBy = $tempAuthLogTable->modified_by;
+        $modifiedDate = $tempAuthLogTable->modified_date;
         $tempAuthLogTable = null;
         //DebugLog::log($status);
         $currentDate = DateTime::getCurrentDateTime();
@@ -139,7 +190,11 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
         $sqlQueryBuilder = new SqlQueryBuilder();
         $sqlQuery = $sqlQueryBuilder
             ->update($userLoginAuthLogTableName)
-            ->set(array($status => false))
+            ->set(array(
+                $status => false,
+                $modifiedBy => $userLoginAuthLogTable->user_id,
+                $modifiedDate => $currentDate,
+            ))
             ->where("", array(
                 $userId => $userLoginAuthLogTable->user_id,
                 //$authToken => $userLoginAuthLogTable->auth_token,
@@ -147,6 +202,8 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
                 $expiredDate => "{<}{$currentDate}",
             ))
             ->build();
+        //"modified_by" => $userAuthDatabaseModel->userId,
+        //                "modified_date" => $userAuthTokenModel->getCurrentDate(),
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
     }
@@ -186,6 +243,11 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
             return true;
         }
         return false;
+    }
+
+    private function getExpiryDate($add = 7, DateDiffType $dateDiffType = DateDiffType::days) {
+        $toDate = DateTime::getCurrentDateTime();
+        return DateTime::addDateTime($toDate, $add, $dateDiffType);
     }
 
     private function doRunDatabaseQuery($dbConn, $sqlQuery) {
