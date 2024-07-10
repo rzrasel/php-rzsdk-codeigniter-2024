@@ -3,6 +3,7 @@ namespace RzSDK\HTTPRequest;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;
+use RzSDK\Validation\PrepareValidationRules;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -11,6 +12,38 @@ class UserAuthTokenAuthenticationRequest {
     public $auth_type;
     public $agent_type;
     public $user_auth_token;
+
+    public function getQuery() {
+        return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);
+    }
+
+    public function device_type_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Device type can not be null"),
+        );
+    }
+
+    public function auth_type_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Auth type can not be null"),
+        );
+    }
+
+    public function agent_type_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("Agent type can not be null"),
+        );
+    }
+
+    public function user_auth_token_rules() {
+        $validationRules = new PrepareValidationRules();
+        return array(
+            $validationRules->notNullValidationRules("User authentication token can not be null"),
+        );
+    }
 
     public function getPropertyKeyValue() {
         return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);
@@ -35,16 +68,25 @@ class UserAuthTokenAuthenticationRequest {
      * Array right side is - database column
      */
     public function keyMapping() {
+        $tempDeviceType = $this->device_type;
+        $tempAuthType = $this->auth_type;
+        $tempAgentType = $this->agent_type;
+        $tempUserAuthToken = $this->user_auth_token;
         $this->device_type = ObjectPropertyWizard::getVariableName();
         $this->auth_type = ObjectPropertyWizard::getVariableName();
         $this->agent_type = ObjectPropertyWizard::getVariableName();
         $this->user_auth_token = ObjectPropertyWizard::getVariableName();
-        return array(
+        $dataList = array(
             $this->device_type      => "device_type",
             $this->auth_type        => "auth_type",
             $this->agent_type       => "agent_type",
-            $this->user_auth_token  => "email",
+            $this->user_auth_token  => "auth_token",
         );
+        $this->device_type = $tempDeviceType;
+        $this->auth_type = $tempAuthType;
+        $this->agent_type = $tempAgentType;
+        $this->user_auth_token = $tempUserAuthToken;
+        return $dataList;
         /*return array(
             "device_type"       => "device_type",
             "auth_type"         => "auth_type",

@@ -31,6 +31,10 @@ class UserLogin {
         if(!empty($_POST)) {
             $isValidated = $this->isValidated($_POST);
             if(!$isValidated["is_validate"]) {
+                $this->response(null,
+                    "Error! need to request by all parameter",
+                    InfoType::ERROR,
+                    $_POST);
                 return;
             }
             $userLoginRequestModel = $isValidated["data_set"];
@@ -55,7 +59,7 @@ class UserLogin {
                     InfoType::ERROR,
                     $postedDataSet);
             }
-            //$this->response(null, "Successful login completed", InfoType::SUCCESS, $dataModel);
+            //$this->response(null, "Successful login completed", InfoType::SUCCESS, $postedDataSet);
         }
     }
 
@@ -71,6 +75,7 @@ class UserLogin {
         $isValidated = true;
         foreach($loginParamList as $value) {
             //Extract requested values from $_POST
+            $paramValue = "";
             if(array_key_exists($value, $requestDataSet)) {
                 $paramValue = $requestDataSet[$value];
                 $userLoginRequestModel->{$keyMapping[$value]} = $paramValue;
@@ -81,6 +86,10 @@ class UserLogin {
                     InfoType::ERROR,
                     $requestDataSet);
                 $isValidated = false;
+                return array(
+                    "is_validate"   => $isValidated,
+                    "data_set"          => null,
+                );
             }
             //Execute and check validation rules
             $method = $value . "_rules";
@@ -95,6 +104,10 @@ class UserLogin {
                         InfoType::ERROR,
                         $requestDataSet);
                     $isValidated = false;
+                    return array(
+                        "is_validate"   => $isValidated,
+                        "data_set"          => null,
+                    );
                 }
             }
         }

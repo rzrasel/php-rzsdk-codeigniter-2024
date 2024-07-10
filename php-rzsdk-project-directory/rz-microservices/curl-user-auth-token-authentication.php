@@ -66,7 +66,7 @@ class CurlUserAuthTokenAuthentication {
         return array(
             "body" => null,
             "info" => array(
-                "message" => "Error inform to developer",
+                "message" => "Error inform to developer, JSON data error",
                 "type" => "error",
             ),
             "parameter" => $this->getData(),

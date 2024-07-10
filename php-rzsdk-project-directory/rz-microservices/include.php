@@ -80,6 +80,7 @@ require_once($baseInclude . "user-info-request.php");
 require_once($baseInclude . "user-registration-request.php");
 require_once($baseInclude . "user-login-request.php");
 require_once($baseInclude . "user-authentication-request.php");
+require_once($baseInclude . "user-auth-token-authentication-request.php");
 ?>
 <?php
 $baseInclude = "user-info/";
