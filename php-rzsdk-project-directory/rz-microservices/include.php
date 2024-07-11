@@ -88,6 +88,7 @@ require_once($baseInclude . "launch-response.php");
 require_once($baseInclude . "prepare-validation-rules.php");
 require_once($baseInclude . "build-validation-rules.php");
 require_once($baseInclude . "user-auth-type.php");
+require_once($baseInclude . "user-auth-type-extension.php");
 ?>
 <?php
 $baseInclude = "service-listener/";

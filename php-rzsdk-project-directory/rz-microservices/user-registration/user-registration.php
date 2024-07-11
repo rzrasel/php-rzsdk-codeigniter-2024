@@ -6,7 +6,7 @@ require_once("include.php");
 use RzSDK\Curl\Curl;
 use RzSDK\Response\InfoType;
 use RzSDK\User\Type\UserAuthType;
-use function RzSDK\User\Type\getUserAuthTypeByValue;
+use RzSDK\User\Type\UserAuthTypeExtension;
 use function RzSDK\Response\getInfoTypeByValue;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\Device\ClientDevice;
@@ -44,11 +44,6 @@ class UserRegistration {
 
     public function execute() {
         if(!empty($_POST)) {
-            $isValidated = $this->isValidated($_POST);
-            if(!$isValidated["is_validate"]) {
-                return;
-            }
-            //
             $registrationRequestValidationAction = new class($this) implements ServiceListener {
                 private UserRegistration $outerInstance;
 
@@ -61,93 +56,47 @@ class UserRegistration {
                 }
 
                 public function onSuccess($dataSet, $message) {
-                    DebugLog::log($dataSet);
+                    $this->outerInstance->fetchRegistrationType($dataSet);
                 }
             };
             (new UserRegistrationRequestValidationService($registrationRequestValidationAction))
                 ->execute($_POST);
             //
-            //$userRegiRequestModel = new UserRegistrationRequestModel();
-            $userRegiRequestModel = $isValidated["data_set"];
-            //DebugLog::log($userRegiRequestModel);
-            $postedDataSet = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
-            //DebugLog::log($postedDataSet);
-
-            $enumValue = $userRegiRequestModel->authType;
-            $userAuthType = getUserAuthTypeByValue($enumValue);
-
-            if(!empty($userAuthType)) {
-                if($userAuthType == UserAuthType::EMAIL) {
-                    $this->registeredByEmail($userRegiRequestModel, $postedDataSet);
-                } else {
-                    $this->response(null,
-                        "Error! request parameter not matched out of type",
-                        InfoType::ERROR,
-                        $postedDataSet);
-                }
-            } else {
-                $this->response(null,
-                    "Error! request parameter not matched",
-                    InfoType::ERROR,
-                    $postedDataSet);
-            }
             //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $dataModel);
         }
     }
 
-    public function isValidated($requestDataSet) {
-        //DebugLog::log($requestDataSet);
-        $buildValidationRules = new BuildValidationRules();
-        $userRegiRequest = new UserRegistrationRequest();
-        $regiParamList = $userRegiRequest->getQuery();
+    public function fetchRegistrationType(UserRegistrationRequest $userRegiRequest) {
+        $this->userRegiRequest = $userRegiRequest;
+        $postedDataSet = $this->userRegiRequest->getQuery();
+        //DebugLog::log($postedDataSet);
+        $enumValue = $this->userRegiRequest->auth_type;
+        $userAuthType = UserAuthTypeExtension::getUserAuthTypeByValue($enumValue);
+        //
         $userRegiRequestModel = new UserRegistrationRequestModel();
-        $keyMapping = $userRegiRequestModel->propertyKeyMapping();
-        //$requestValue = array();
-        //DebugLog::log($regiParamList);
-        $isValidated = true;
-        //$returnValue = null;
-        foreach($regiParamList as $value) {
-            //Extract requested values from $_POST
-            if(array_key_exists($value, $requestDataSet)) {
-                $paramValue = $requestDataSet[$value];
-                $userRegiRequestModel->{$keyMapping[$value]} = $paramValue;
+        $userRegiRequestModel->deviceType = $this->userRegiRequest->device_type;
+        $userRegiRequestModel->authType = $this->userRegiRequest->auth_type;
+        $userRegiRequestModel->agentType = $this->userRegiRequest->agent_type;
+        $userRegiRequestModel->email = $this->userRegiRequest->user_email;
+        $userRegiRequestModel->password = $this->userRegiRequest->password;
+        if(!empty($userAuthType)) {
+            if($userAuthType == UserAuthType::EMAIL) {
+                $this->registeredByEmail($userRegiRequestModel, $postedDataSet);
             } else {
-                //Error array key not exist, return
                 $this->response(null,
-                    "Error! need to request by all parameter",
+                    "Error! request parameter not matched out of type",
                     InfoType::ERROR,
-                    $requestDataSet);
-                $isValidated = false;
+                    $postedDataSet);
             }
-            //Execute and check validation rules
-            $method = $value . "_rules";
-            if(method_exists($userRegiRequest, $method)) {
-                $validationRules = $userRegiRequest->{$method}();
-                //DebugLog::log($validationRules);
-                $isValidated = $buildValidationRules->setRules($paramValue, $validationRules)
-                    ->run();
-                if(!$isValidated["is_validate"]) {
-                    $this->response(null,
-                        $isValidated["message"],
-                        InfoType::ERROR,
-                        $requestDataSet);
-                    $isValidated = false;
-                }
-            }
+        } else {
+            $this->response(null,
+                "Error! request parameter not matched",
+                InfoType::ERROR,
+                $postedDataSet);
         }
-        //$returnValue = $userRegiRequestModel;
-        //DebugLog::log($userRegiRequestModel);
-        return array(
-            "is_validate"   => $isValidated,
-            "data_set"          => $userRegiRequestModel,
-        );
     }
 
     private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, array $postedDataSet) {
-        //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
-        /*if(!$this->regexValidation($userRegiRequestModel)) {
-            return;
-        }*/
         if($this->isExistsUserInDatabase($postedDataSet)) {
             $this->response(null,
                 "User already exists",

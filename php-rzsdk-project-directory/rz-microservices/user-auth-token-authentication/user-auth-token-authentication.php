@@ -28,19 +28,6 @@ class UserAuthTokenAuthenticationToken {
     public function execute() {
         if(!empty($_POST)) {
             //DebugLog::log($_POST);
-            //$this->userAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationRequestModel();
-            /*$isValidated = $this->isValidated($_POST);
-            if(!$isValidated["is_validate"]) {
-                $this->response(null,
-                    "Error! need to request by all parameter",
-                    InfoType::ERROR,
-                    $_POST);
-                return;
-            }
-            $this->userAuthTokenAuthRequestModel = $isValidated["data_set"];
-            //DebugLog::log($userRegiRequestModel);
-            $postedDataSet = $this->userAuthTokenAuthRequestModel->objectUserAuthTokenAuthRequest->getPropertyKeyValue();
-            DebugLog::log($postedDataSet);*/
             //
             $innerInstance = new class($this) implements ServiceListener {
                 private UserAuthTokenAuthenticationToken $outerInstance;
@@ -62,7 +49,6 @@ class UserAuthTokenAuthenticationToken {
             };
             $userAuthTokenAuthRequestValidationService = new UserAuthTokenAuthenticationRequestValidationService($innerInstance);
             $userAuthTokenAuthRequestValidationService->execute($_POST);
-            //DebugLog::log($innerInstance->sayHello("hi this is a value"));
             //
             //$this->response(null, "Successful login completed", InfoType::SUCCESS, $_POST);
         }
