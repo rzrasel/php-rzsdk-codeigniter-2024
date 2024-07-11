@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\Service\Adapter;
+namespace RzSDK\Service\Adapter\User\Authentication\Token;
 ?>
 <?php
 ?>
@@ -233,7 +233,7 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
             ->limit(1)
             ->offset(0)
             ->build();
-        DebugLog::log($sqlQuery);
+        //DebugLog::log($sqlQuery);
         return $sqlQuery;
     }
 

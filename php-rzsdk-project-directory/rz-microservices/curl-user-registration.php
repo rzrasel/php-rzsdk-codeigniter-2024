@@ -27,7 +27,7 @@ class CurlUserRegistration {
         //DebugLog::log($result);
         unset($result["info"]);
         unset($result["error"]);
-        //DebugLog::log($result);
+        DebugLog::log($result);
         if(!is_array($result)) {
             $this->printResponse();
             return;

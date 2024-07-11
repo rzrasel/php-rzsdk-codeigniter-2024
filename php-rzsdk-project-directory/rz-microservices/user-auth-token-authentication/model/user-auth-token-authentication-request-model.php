@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\Model\User\Authentication;
+namespace RzSDK\Model\User\Authentication\Token;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;

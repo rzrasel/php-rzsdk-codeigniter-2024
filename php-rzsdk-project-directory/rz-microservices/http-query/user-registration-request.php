@@ -3,6 +3,7 @@ namespace RzSDK\HTTPRequest;
 ?>
 <?php
 use RzSDK\Validation\PrepareValidationRules;
+use RzSDK\Utils\ObjectPropertyWizard;
 use RzSDK\HTTPRequest\ValidationType;
 ?>
 <?php
@@ -18,11 +19,12 @@ class UserRegistrationRequest {
     }
 
     public function getQuery() {
-        $result = array_intersect_key(
+        /*$result = array_intersect_key(
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
-        return array_keys($result);
+        return array_keys($result);*/
+        return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);
     }
 
     public function getQueryWithKey() {
@@ -86,13 +88,36 @@ class UserRegistrationRequest {
      * Array right side is - database column
      */
     public function keyMapping() {
-        return array(
+        $tempDeviceType = $this->device_type;
+        $tempAuthType = $this->auth_type;
+        $tempAgentType = $this->agent_type;
+        $tempUserEmail = $this->user_email;
+        $temppassword = $this->password;
+        $this->device_type = ObjectPropertyWizard::getVariableName();
+        $this->auth_type = ObjectPropertyWizard::getVariableName();
+        $this->agent_type = ObjectPropertyWizard::getVariableName();
+        $this->user_email = ObjectPropertyWizard::getVariableName();
+        $this->password = ObjectPropertyWizard::getVariableName();
+        $dataList = array(
             $this->device_type  => "device_type",
             $this->auth_type    => "auth_type",
             $this->agent_type   => "agent_type",
             $this->user_email   => "email",
             $this->password     => "password",
         );
+        $this->device_type = $tempDeviceType;
+        $this->auth_type = $tempAuthType;
+        $this->agent_type = $tempAgentType;
+        $this->user_email = $tempUserEmail;
+        $this->password = $temppassword;
+        return $dataList;
+        /*return array(
+            $this->device_type  => "device_type",
+            $this->auth_type    => "auth_type",
+            $this->agent_type   => "agent_type",
+            $this->user_email   => "email",
+            $this->password     => "password",
+        );*/
     }
 }
 ?>

@@ -22,7 +22,9 @@ use RzSDK\Model\User\Registration\UserRegistrationRequestModel;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\DateTime\DateDiffType;
+use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Response\InfoTypeExtension;
+use RzSDK\Service\Adapter\User\Registration\UserRegistrationRequestValidationService;
 use RzSDK\DateTime\DateTime;
 use RzSDK\Log\DebugLog;
 
@@ -31,6 +33,7 @@ use RzSDK\Log\DebugLog;
 class UserRegistration {
     //
     //private UserRegistrationRequestModel $userRegiRequestModel;
+    private UserRegistrationRequest $userRegiRequest;
     //
     public function __construct() {
         /* DebugLog::log($_SERVER["HTTP_USER_AGENT"]);
@@ -45,6 +48,24 @@ class UserRegistration {
             if(!$isValidated["is_validate"]) {
                 return;
             }
+            //
+            $registrationRequestValidationAction = new class($this) implements ServiceListener {
+                private UserRegistration $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    DebugLog::log($dataSet);
+                }
+            };
+            (new UserRegistrationRequestValidationService($registrationRequestValidationAction))
+                ->execute($_POST);
             //
             //$userRegiRequestModel = new UserRegistrationRequestModel();
             $userRegiRequestModel = $isValidated["data_set"];
@@ -229,7 +250,7 @@ class UserRegistration {
         return new SqliteConnection($dbFullPath);
     }
 
-    private function response($body, $message, InfoType $infoType, $parameter = null) {
+    public function response($body, $message, InfoType $infoType, $parameter = null) {
         $launchResponse = new LaunchResponse();
         $launchResponse->setBody($body)
             ->setInfo($message, $infoType)

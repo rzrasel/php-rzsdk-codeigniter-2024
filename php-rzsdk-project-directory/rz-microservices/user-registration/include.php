@@ -9,6 +9,10 @@ require_once($baseInclude . "user-password-database-model.php");
 require_once($baseInclude . "user-registration-request-model.php");
 ?>
 <?php
+$baseInclude = "service/";
+require_once($baseInclude . "user-registration-request-validation-service.php");
+?>
+<?php
 $baseInclude = "";
 //require_once($baseInclude . "user-registration-process.php");
 //require_once($baseInclude . "user-registration-regex-validation.php");

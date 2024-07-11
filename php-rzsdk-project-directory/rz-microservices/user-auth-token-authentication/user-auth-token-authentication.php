@@ -5,14 +5,14 @@ require_once("include.php");
 <?php
 use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\Response\InfoType;
-use RzSDK\Model\User\Authentication\UserAuthTokenAuthenticationRequestModel;
+use RzSDK\Model\User\Authentication\Token\UserAuthTokenAuthenticationRequestModel;
 use RzSDK\HTTPRequest\UserAuthTokenAuthenticationRequest;
 use RzSDK\Validation\BuildValidationRules;
 use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
 use RzSDK\Service\Listener\ServiceListener;
-use RzSDK\Service\Adapter\UserAuthTokenAuthenticationDataValidationService;
-use RzSDK\Model\User\Authentication\UserAuthTokenAuthenticationResponseModel;
-use RzSDK\Service\Adapter\UserAuthTokenAuthenticationDatabaseValidationService;
+use RzSDK\Service\Adapter\User\Authentication\Token\UserAuthTokenAuthenticationRequestValidationService;
+use RzSDK\Model\User\Authentication\Token\UserAuthTokenAuthenticationResponseModel;
+use RzSDK\Service\Adapter\User\Authentication\Token\UserAuthTokenAuthenticationDatabaseValidationService;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -60,8 +60,8 @@ class UserAuthTokenAuthenticationToken {
                     $this->outerInstance->userTokenDatabaseValidation($dataSet);
                 }
             };
-            $userAuthTokenAuthDataValidationService = new UserAuthTokenAuthenticationDataValidationService($innerInstance);
-            $userAuthTokenAuthDataValidationService->execute($_POST);
+            $userAuthTokenAuthRequestValidationService = new UserAuthTokenAuthenticationRequestValidationService($innerInstance);
+            $userAuthTokenAuthRequestValidationService->execute($_POST);
             //DebugLog::log($innerInstance->sayHello("hi this is a value"));
             //
             //$this->response(null, "Successful login completed", InfoType::SUCCESS, $_POST);
