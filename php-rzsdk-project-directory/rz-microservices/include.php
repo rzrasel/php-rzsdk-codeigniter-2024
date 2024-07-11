@@ -26,6 +26,7 @@ defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FIL
 <?php
 $rootDir = rtrim(dirname(ROOT_URL), "/");
 defined("PAGE_USER_INFO") or define("PAGE_USER_INFO", "{$rootDir}/user-info/user-info.php");
+defined("USER_TOKEN_EXPIRED_DAY") or define("USER_TOKEN_EXPIRED_DAY", 7);
 ?>
 <?php
 //

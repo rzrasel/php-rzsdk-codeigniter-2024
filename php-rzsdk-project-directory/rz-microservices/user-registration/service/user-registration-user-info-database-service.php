@@ -33,7 +33,7 @@ class UserRegistrationUserInfoDatabaseService {
     private function modelToUserInsertSqlQuery(UserInfoTable $userInfoTable) {
         //DebugLog::log($userInfoTable);
         $userInfoColumn = $userInfoTable->getColumnWithKey();
-        //DebugLog::log($userRegiColumn);
+        //DebugLog::log($userInfoColumn);
         $userInfoTableName = DbUserTable::$userInfo;
         $sqlQueryBuilder = new SqlQueryBuilder();
         $sqlQuery = $sqlQueryBuilder->insert($userInfoTableName)
@@ -41,8 +41,8 @@ class UserRegistrationUserInfoDatabaseService {
             ->build();
         //DebugLog::log($sqlQuery);
         $dbCon = $this->getDbConnection();
-        $dbResult = "";
-        //$dbResult = $this->doExecuteQuery($dbCon, $sqlQuery);
+        //$dbResult = "";
+        $dbResult = $this->doExecuteQuery($dbCon, $sqlQuery);
         $this->serviceListener->onSuccess(
             array(
                 $userInfoTable,

@@ -34,7 +34,9 @@ use RzSDK\Service\Adapter\User\Registration\UserRegistrationUserInfoDatabaseServ
 use RzSDK\DatabaseSpace\UserInfoTable;
 use RzSDK\Service\Adapter\User\Registration\UserRegistrationUserPasswordDatabaseService;
 use RzSDK\DatabaseSpace\UserPasswordTable;
-use RzSDK\Service\Adapter\User\Registration\UserAuthenticationTokenSessionDatabaseService;
+use RzSDK\DatabaseSpace\UserLoginAuthLogTable;
+use RzSDK\Service\Adapter\User\Registration\UserAuthenticationTokenDatabaseService;
+use RzSDK\Model\User\Registration\UserRegistrationResponseModel;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -124,7 +126,7 @@ class UserRegistration {
             return;
         }
         $this->response(null,
-            "User already exists",
+            "User already exists error code " . __LINE__,
             InfoType::ERROR,
             $this->postedDataSet);
     }
@@ -165,14 +167,14 @@ class UserRegistration {
                 }
 
                 public function onSuccess($dataSet, $message) {
-                    $this->outerInstance->insertIntoUserAuthenticationTokenSession($dataSet[0], $dataSet[1]);
+                    $this->outerInstance->insertIntoUserAuthenticationToken($dataSet[0], $dataSet[1]);
                 }
             }
         ))->execute($userInfoTable, $this->userRegiRequest, $this->postedDataSet);
     }
 
-    public function insertIntoUserAuthenticationTokenSession(UserInfoTable $userInfoTable, UserPasswordTable $userPasswordTable) {
-        (new UserAuthenticationTokenSessionDatabaseService(
+    public function insertIntoUserAuthenticationToken(UserInfoTable $userInfoTable, UserPasswordTable $userPasswordTable) {
+        (new UserAuthenticationTokenDatabaseService(
             new class($this) implements ServiceListener {
                 private UserRegistration $outerInstance;
 
@@ -185,14 +187,27 @@ class UserRegistration {
                 }
 
                 public function onSuccess($dataSet, $message) {
-                    DebugLog::log($dataSet);
-                    DebugLog::log($message);
+                    $this->outerInstance->sendBackHttpResponse($dataSet[0], $dataSet[1]);
                 }
             }
         ))->execute($userInfoTable, $userPasswordTable, $this->userRegiRequest);
     }
 
-    public function sendBackHttpResponse($userLoginAuthLogTable) {}
+    public function sendBackHttpResponse(UserInfoTable $userInfoTable, UserLoginAuthLogTable $userLoginAuthLogTable) {
+        //DebugLog::log($userInfoTable);
+        //DebugLog::log($userLoginAuthLogTable);
+        $userRegiResponseModel = new UserRegistrationResponseModel();
+        $userRegiResponseModel->user_id = $userInfoTable->user_id;
+        $userRegiResponseModel->user_email = $userInfoTable->email;
+        $userRegiResponseModel->user_auth_token = $userLoginAuthLogTable->auth_token;
+
+        $responseDataSet = $userRegiResponseModel->toParameterKeyValue();
+        //DebugLog::log($responseDataSet);
+        $this->response($responseDataSet,
+            "Successful registration completed code " . __LINE__,
+            InfoType::SUCCESS,
+            $this->postedDataSet);
+    }
 
     public function fetchRegistrationTypeOld(UserRegistrationRequest $userRegiRequest) {
         $this->userRegiRequest = $userRegiRequest;

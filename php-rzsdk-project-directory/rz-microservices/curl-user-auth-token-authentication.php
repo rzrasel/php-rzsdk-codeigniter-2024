@@ -58,7 +58,7 @@ class CurlUserAuthTokenAuthentication {
             "agent_type"        => "android_app",
             "user_email"        => "email@gmail.com",
             "password"          => "123456aB#",
-            "user_auth_token"   => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3Rva2VuX2lkIjoiMTcyMDUyMjYwNjUxMTI5MDE5fDE3MjA2MzI1MDQyNDA0NTYzNHwxNzIxMjM3MzA0fDE3MjA2MzI1MDR8MTcyMDYzMjUwNDI0MDE2OTA0fDk2MTAiLCJ1c2VyX2lwIjoiMTI3LjAuMC4xIiwidG9rZW5fc3RhcnRfZGF0ZSI6IjIwMjQtMDctMTAgMTk6Mjg6MjQiLCJ0b2tlbl9zdGFydF90aW1lIjoxNzIwNjMyNTA0LCJ0b2tlbl9leHBpcnlfZGF0ZSI6IjIwMjQtMDctMTcgMTk6Mjg6MjQiLCJ0b2tlbl9leHBpcnlfdGltZSI6MTcyMTIzNzMwNCwidG9rZW5fcmVmcmVzaF9kYXRlIjoiMjAyNC0wNy0xMCAxOToyODoyNCIsInRva2VuX3JlZnJlc2hfdGltZSI6MTcyMDYzMjUwNCwidXNlcl90b2tlbl9rZXkiOiJpYWVzdSJ9.eSgzEbyw0b7jQooEenoDXRWA31_c89Wzj-vJH_5XRn4"
+            "user_auth_token"   => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3Rva2VuX2lkIjoiMTcyMDcyNzkzNzYxOTU3NjYxbDE3MjEzMzI3MzdsMTcyMDcyNzkzNzYxOTYzNTY4bDE3MjA3Mjc5MzdsMTcyMDcyNzkzNzUzNzMzMTEzbDYzMDAiLCJ1c2VyX2lwIjoiMTI3LjAuMC4xIiwidG9rZW5fc3RhcnRfZGF0ZSI6IjIwMjQtMDctMTEgMjE6NTg6NTciLCJ0b2tlbl9zdGFydF90aW1lIjoxNzIwNzI3OTM3LCJ0b2tlbl9leHBpcnlfZGF0ZSI6IjIwMjQtMDctMTggMjE6NTg6NTciLCJ0b2tlbl9leHBpcnlfdGltZSI6MTcyMTMzMjczNywidG9rZW5fcmVmcmVzaF9kYXRlIjoiMjAyNC0wNy0xMSAyMTo1ODo1NyIsInRva2VuX3JlZnJlc2hfdGltZSI6MTcyMDcyNzkzNywidXNlcl90b2tlbl9rZXkiOiJ1ZWFzaSJ9.YmL5UasV2ORDYy2Hwt5aoKp833mk-UtrXeylUPYDlkY"
         );
     }
 

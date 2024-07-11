@@ -46,13 +46,13 @@ class UserRegistrationUserRegistrationDatabaseService {
             ->build();
         //DebugLog::log($sqlQuery);
         $dbCon = $this->getDbConnection();
-        $dbResult = "";
-        //$dbResult = $this->doExecuteQuery($dbCon, $sqlQuery);
+        //$dbResult = "";
+        $dbResult = $this->doExecuteQuery($dbCon, $sqlQuery);
         $this->serviceListener->onSuccess(
         array(
             $userRegiTable,
             $dbResult,
-        ), "Successfully inserted user into database.");
+        ), "Successfully inserted user into database code " . __LINE__);
     }
 
     private function doExecuteQuery($dbConn, $sqlQuery) {
