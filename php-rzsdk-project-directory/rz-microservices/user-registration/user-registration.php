@@ -25,7 +25,16 @@ use RzSDK\DateTime\DateDiffType;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Response\InfoTypeExtension;
 use RzSDK\Service\Adapter\User\Registration\UserRegistrationRequestValidationService;
+use RzSDK\Service\Adapter\User\Registration\UserRegistrationCurlUserFetchService;
 use RzSDK\DateTime\DateTime;
+use RzSDK\Model\User\Registration\UserInfoCurlResponseModel;
+use RzSDK\Service\Adapter\User\Registration\UserRegistrationUserRegistrationDatabaseService;
+use RzSDK\DatabaseSpace\UserRegistrationTable;
+use RzSDK\Service\Adapter\User\Registration\UserRegistrationUserInfoDatabaseService;
+use RzSDK\DatabaseSpace\UserInfoTable;
+use RzSDK\Service\Adapter\User\Registration\UserRegistrationUserPasswordDatabaseService;
+use RzSDK\DatabaseSpace\UserPasswordTable;
+use RzSDK\Service\Adapter\User\Registration\UserAuthenticationTokenSessionDatabaseService;
 use RzSDK\Log\DebugLog;
 
 ?>
@@ -34,6 +43,7 @@ class UserRegistration {
     //
     //private UserRegistrationRequestModel $userRegiRequestModel;
     private UserRegistrationRequest $userRegiRequest;
+    private $postedDataSet;
     //
     public function __construct() {
         /* DebugLog::log($_SERVER["HTTP_USER_AGENT"]);
@@ -44,6 +54,7 @@ class UserRegistration {
 
     public function execute() {
         if(!empty($_POST)) {
+            $this->postedDataSet = $_POST;
             $registrationRequestValidationAction = new class($this) implements ServiceListener {
                 private UserRegistration $outerInstance;
 
@@ -56,17 +67,134 @@ class UserRegistration {
                 }
 
                 public function onSuccess($dataSet, $message) {
-                    $this->outerInstance->fetchRegistrationType($dataSet);
+                    $this->outerInstance->fetchRegisteredDatabaseUser($dataSet);
                 }
             };
             (new UserRegistrationRequestValidationService($registrationRequestValidationAction))
-                ->execute($_POST);
+                ->execute($this->postedDataSet);
             //
             //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $dataModel);
         }
     }
 
-    public function fetchRegistrationType(UserRegistrationRequest $userRegiRequest) {
+    public function fetchRegisteredDatabaseUser(UserRegistrationRequest $userRegiRequest) {
+        $this->userRegiRequest = $userRegiRequest;
+        //$postedDataSet = $this->userRegiRequest->getQuery();
+        //DebugLog::log($postedDataSet);
+        (new UserRegistrationCurlUserFetchService(
+            new class($this) implements ServiceListener {
+                private UserRegistration $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    $this->outerInstance->insertIntoUserRegistration($dataSet);
+                }
+            }
+        ))->execute($userRegiRequest, $this->postedDataSet);
+    }
+
+    public function insertIntoUserRegistration(UserInfoCurlResponseModel $userInfoCurlResponseModel) {
+        //DebugLog::log($userInfoCurlResponseModel);
+        //
+        if($userInfoCurlResponseModel->infoType == InfoType::DB_DATA_NOT_FOUND) {
+            (new UserRegistrationUserRegistrationDatabaseService(
+                new class($this) implements ServiceListener {
+                    private UserRegistration $outerInstance;
+
+                    public function __construct($outerInstance) {
+                        $this->outerInstance = $outerInstance;
+                    }
+
+                    public function onError($dataSet, $message) {
+                        $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                    }
+
+                    public function onSuccess($dataSet, $message) {
+                        $this->outerInstance->insertIntoUserInfo($dataSet[0]);
+                    }
+                }
+            ))->execute($this->userRegiRequest, $this->postedDataSet);
+            return;
+        }
+        $this->response(null,
+            "User already exists",
+            InfoType::ERROR,
+            $this->postedDataSet);
+    }
+
+    public function insertIntoUserInfo(UserRegistrationTable $userRegiTable) {
+        //DebugLog::log($userRegiTable);
+        (new UserRegistrationUserInfoDatabaseService(
+            new class($this) implements ServiceListener {
+                private UserRegistration $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    $this->outerInstance->insertIntoUserPassword($dataSet[0]);
+                }
+            }
+        ))->execute($userRegiTable, $this->postedDataSet);
+    }
+
+    public function insertIntoUserPassword(UserInfoTable $userInfoTable) {
+        //DebugLog::log($userInfoTable);
+        (new UserRegistrationUserPasswordDatabaseService(
+            new class($this) implements ServiceListener {
+                private UserRegistration $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    $this->outerInstance->insertIntoUserAuthenticationTokenSession($dataSet[0], $dataSet[1]);
+                }
+            }
+        ))->execute($userInfoTable, $this->userRegiRequest, $this->postedDataSet);
+    }
+
+    public function insertIntoUserAuthenticationTokenSession(UserInfoTable $userInfoTable, UserPasswordTable $userPasswordTable) {
+        (new UserAuthenticationTokenSessionDatabaseService(
+            new class($this) implements ServiceListener {
+                private UserRegistration $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    DebugLog::log($dataSet);
+                    DebugLog::log($message);
+                }
+            }
+        ))->execute($userInfoTable, $userPasswordTable, $this->userRegiRequest);
+    }
+
+    public function sendBackHttpResponse($userLoginAuthLogTable) {}
+
+    public function fetchRegistrationTypeOld(UserRegistrationRequest $userRegiRequest) {
         $this->userRegiRequest = $userRegiRequest;
         $postedDataSet = $this->userRegiRequest->getQuery();
         //DebugLog::log($postedDataSet);

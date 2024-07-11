@@ -86,7 +86,7 @@ class UserInfo {
             } else {
                 //Error array key not exist, return
                 $this->response(null,
-                    "Error! need to request by all parameter " . $value,
+                    "Error! need to request by all parameter error code " . __LINE__,
                     InfoType::ERROR,
                     $dataSet);
                 $isValidated = false;
@@ -127,7 +127,7 @@ class UserInfo {
         //DebugLog::log($userInfoTable->getColumnWithKey());
         if(!empty($userInfoTable)) {
             $this->response($userInfoTable->getColumnWithKey(),
-                "Successful user found",
+                "Successful user found code " . __LINE__,
                 InfoType::SUCCESS,
                 $postedDataSet);
         } else {
@@ -139,13 +139,13 @@ class UserInfo {
             //DebugLog::log($userRegiTable->getColumnWithKey());
             if(!empty($userRegiTable)) {
                 $this->response($userRegiTable->getColumnWithKey(),
-                    "Successful user found",
+                    "Successful user found code " . __LINE__,
                     InfoType::SUCCESS,
                     $postedDataSet);
             } else {
                 $this->response(null,
-                    "Error user not found",
-                    InfoType::ERROR,
+                    "Error! user not found error code " . __LINE__,
+                    InfoType::DB_DATA_NOT_FOUND,
                     $postedDataSet);
             }
         }

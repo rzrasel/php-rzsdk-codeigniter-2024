@@ -75,13 +75,13 @@ class UserAuthTokenAuthenticationToken {
 
                 function onSuccess($dataSet, $message) {
                     //DebugLog::log($message);
-                    $this->outerInstance->httpResponse($dataSet);
+                    $this->outerInstance->sendBackHttpResponse($dataSet);
                 }
             }
         ))->execute($this->userAuthTokenAuthRequest, $postedDataSet);
     }
 
-    public function httpResponse(UserLoginAuthLogTable $userLoginAuthLogTable) {
+    public function sendBackHttpResponse(UserLoginAuthLogTable $userLoginAuthLogTable) {
         //DebugLog::log($userLoginAuthLogTable);
         $UserAuthTokenAuthRequestModel = new UserAuthTokenAuthenticationResponseModel();
         /*$UserAuthTokenAuthRequestModel->device_type = $this->userAuthTokenAuthRequest->device_type;

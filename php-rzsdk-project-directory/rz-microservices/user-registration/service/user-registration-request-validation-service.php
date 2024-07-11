@@ -6,7 +6,6 @@ namespace RzSDK\Service\Adapter\User\Registration;
 require_once("include.php");*/
 ?>
 <?php
-
 use RzSDK\HTTPRequest\UserRegistrationRequest;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Validation\BuildValidationRules;

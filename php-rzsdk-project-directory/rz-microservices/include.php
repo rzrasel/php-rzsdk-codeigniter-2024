@@ -13,6 +13,21 @@ $baseInclude = "rz-sdk-library/";
 //
 $baseInclude = "rz-sdk-library/autoloader/";
 require_once($baseInclude . "autoloader.php");
+?>
+<?php
+use RzSDK\URL\SiteUrl;
+?>
+<?php
+defined("ROOT_URL") or define("ROOT_URL", SiteUrl::getBaseUrl());
+defined("DB_PATH") or define("DB_PATH", "database");
+defined("DB_FILE") or define("DB_FILE", "user-database.sqlite");
+defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FILE);
+?>
+<?php
+$rootDir = rtrim(dirname(ROOT_URL), "/");
+defined("PAGE_USER_INFO") or define("PAGE_USER_INFO", "{$rootDir}/user-info/user-info.php");
+?>
+<?php
 //
 /*$baseInclude = "rz-sdk-library/utils/";
 require_once($baseInclude . "site-url.php");
@@ -106,12 +121,12 @@ require_once($baseInclude . "curl-user-auth-token-authentication.php");
 require_once($baseInclude . "gen-database-schema.php");
 ?>
 <?php
-use RzSDK\URL\SiteUrl;
+/*use RzSDK\URL\SiteUrl;*/
 ?>
 <?php
-defined("ROOT_URL") or define("ROOT_URL", SiteUrl::getBaseUrl());
+/*defined("ROOT_URL") or define("ROOT_URL", SiteUrl::getBaseUrl());
 defined("DB_PATH") or define("DB_PATH", "database");
-defined("DB_FILE") or define("DB_FILE", "user-database.sqlite");
+defined("DB_FILE") or define("DB_FILE", "user-database.sqlite");*/
 ?>
 <?php
 function logPrint($message) {

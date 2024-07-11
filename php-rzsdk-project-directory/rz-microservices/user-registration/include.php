@@ -7,10 +7,16 @@ require_once($baseInclude . "user-info-database-model.php");
 require_once($baseInclude . "user-registration-database-model.php");
 require_once($baseInclude . "user-password-database-model.php");
 require_once($baseInclude . "user-registration-request-model.php");
+require_once($baseInclude . "user-info-curl-response-model.php");
 ?>
 <?php
 $baseInclude = "service/";
 require_once($baseInclude . "user-registration-request-validation-service.php");
+require_once($baseInclude . "user-registration-curl-user-fetch-service.php");
+require_once($baseInclude . "user-registration-user-registration-database-service.php");
+require_once($baseInclude . "user-registration-user-info-database-service.php");
+require_once($baseInclude . "user-registration-user-password-database-service.php");
+require_once($baseInclude . "user-registration-user-authentication-service.php");
 ?>
 <?php
 $baseInclude = "";
