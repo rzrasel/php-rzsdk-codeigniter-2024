@@ -44,6 +44,8 @@ class CurlUserLogin {
         if(empty($responseMessage)) {
             $responseMessage = $this->getErrorResponse();
         }
+        $pageName = array("Page Name:" => "User Login");
+        $responseMessage = array_merge($pageName, $responseMessage);
         $responseData = json_encode($responseMessage);
         DebugLog::log($responseData);
     }
