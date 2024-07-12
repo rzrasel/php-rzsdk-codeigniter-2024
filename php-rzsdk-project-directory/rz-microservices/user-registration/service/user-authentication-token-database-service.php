@@ -44,7 +44,7 @@ class UserAuthenticationTokenDatabaseService {
             ->build();
         //DebugLog::log($sqlQuery);
         $dbCon = $this->getDbConnection();
-        //$dbResult = "";
+        $dbResult = "";
         $dbResult = $this->doExecuteQuery($dbCon, $sqlQuery);
         $this->serviceListener->onSuccess(
             array(

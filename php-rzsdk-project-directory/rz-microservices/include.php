@@ -105,6 +105,7 @@ require_once($baseInclude . "prepare-validation-rules.php");
 require_once($baseInclude . "build-validation-rules.php");
 require_once($baseInclude . "user-auth-type.php");
 require_once($baseInclude . "user-auth-type-extension.php");
+require_once($baseInclude . "user-authentication-token-generator.php");
 ?>
 <?php
 $baseInclude = "service-listener/";

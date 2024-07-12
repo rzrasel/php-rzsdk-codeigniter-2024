@@ -16,7 +16,7 @@ use RzSDK\Encryption\McryptCipherIvGenerator;
 use RzSDK\Encryption\EncryptionType;
 use RzSDK\Encryption\JwtManager;
 use RzSDK\Encryption\OpensslEncryption;
-use RzSDK\User\Authentication\Token\UserAuthenticationTokenKeyListGenerator;
+use RzSDK\User\Authentication\Token\UserAuthenticationTokenGenerator;
 use RzSDK\Utils\ArrayUtils;
 use RzSDK\Log\DebugLog;
 ?>
@@ -70,42 +70,25 @@ class UserAuthenticationTokenDatabaseModel {
         //
         $uniqueIntId = new UniqueIntId();
         $userId = $uniqueIntId->getId();
-        $userAuthTokenKeyListGen = new UserAuthenticationTokenKeyListGenerator();
+        $userAuthTokenKeyListGen = new UserAuthenticationTokenGenerator();
         $userAuthTokenKeyListGen
             ->setUserId($userLoginAuthLogTable->user_id)
             ->setUserAuthId($userLoginAuthLogTable->user_auth_log_id)
             ->setUniqueId($userId)
             ->setStartedDate($userLoginAuthLogTable->assigned_date)
             ->setExpiryDate($userLoginAuthLogTable->expired_date)
+            ->setTokenProperties(
+                array(
+                    "device_type" => $userLoginAuthLogTable->device_type,
+                    "agent_type" => $userLoginAuthLogTable->agent_type,
+                )
+            )
             ->setClientIp($userLoginAuthLogTable->regi_ip);
-        $userAuthTokenKeyList = $userAuthTokenKeyListGen->genUserAuthenticationTokenList();
-        //DebugLog::log($userAuthTokenKeyList);
-        //
-        $encryptionTypeList = EncryptionTypeExtension::getEncryptionTypeNameList();
-        shuffle($encryptionTypeList);
-        $encryptionType = EncryptionTypeExtension::getEncryptionTypeByName($encryptionTypeList[0]);
-        //
-        $mcryptKey = RandomIdGenerator::getRandomString(56);
-        $mcryptKey = McryptCipherIvGenerator::hashIv($mcryptKey, 56);
-        $secretKey = McryptCipherIvGenerator::opensslRandomIv();
-        $mcryptIvBase64 = rtrim(base64_encode($secretKey), "=");
-        $userAuthToken = "";
-        if($encryptionType == EncryptionType::JWT_TOKEN) {
-            $jwtManager = new JwtManager($secretKey);
-            $userAuthToken = $jwtManager->createToken($userAuthTokenKeyList);
-        } else {
-            $userAuthTokenJson = json_encode($userAuthTokenKeyList);
-            $userAuthToken = OpensslEncryption::encryptData($userAuthTokenJson, $mcryptKey, $secretKey);
-            $userAuthToken = rtrim($userAuthToken, "=");
-            /*$authTokenDecrypt = OpensslEncryption::decryptData($userAuthToken, $mcryptKey, $secretKey);
-            DebugLog::log($authTokenDecrypt);*/
-        }
-        //
-        $userLoginAuthLogTable->encrypt_type = $encryptionType->value;
-        $userLoginAuthLogTable->mcrypt_key = $mcryptKey;
-        $userLoginAuthLogTable->mcrypt_iv = $mcryptIvBase64;
-        $userLoginAuthLogTable->auth_token = $userAuthToken;
-        //DebugLog::log($mcryptIvBase64);
+        $userAuthTokenDataSet = $userAuthTokenKeyListGen->generate();
+        $userLoginAuthLogTable->encrypt_type = $userAuthTokenKeyListGen->encrypt_type;
+        $userLoginAuthLogTable->mcrypt_key = $userAuthTokenKeyListGen->mcrypt_key;
+        $userLoginAuthLogTable->mcrypt_iv = $userAuthTokenKeyListGen->mcrypt_iv;
+        $userLoginAuthLogTable->auth_token = $userAuthTokenKeyListGen->auth_token;
         //
         return $userLoginAuthLogTable;
     }

@@ -19,7 +19,6 @@ require_once($baseInclude . "user-registration-user-registration-database-servic
 require_once($baseInclude . "user-registration-user-info-database-service.php");
 require_once($baseInclude . "user-registration-user-password-database-service.php");
 require_once($baseInclude . "user-authentication-token-database-service.php");
-require_once($baseInclude . "user-authentication-token-key-list-generator.php");
 ?>
 <?php
 $baseInclude = "";
