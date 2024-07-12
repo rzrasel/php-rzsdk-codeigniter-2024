@@ -13,39 +13,137 @@ use RzSDK\HTTPRequest\UserInfoRequest;
 use RzSDK\HTTPResponse\LaunchResponse;
 use RzSDK\DatabaseSpace\DbUserTable;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
+use RzSDK\Service\Listener\ServiceListener;
+use RzSDK\Service\Adapter\User\Info\UserInfoRequestValidationService;
+use RzSDK\Service\Adapter\User\Info\UserInfoUserInfoDatabaseService;
+use RzSDK\Utils\ObjectPropertyWizard;
+use RzSDK\DatabaseSpace\UserInfoTable;
+use RzSDK\Model\User\UserInfo\UserInfoResponseModel;
+use RzSDK\Service\Adapter\User\Info\UserInfoUserRegistrationDatabaseService;
+use RzSDK\DatabaseSpace\UserRegistrationTable;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UserInfo {
+    //
+    private UserInfoRequest $userInfoRequest;
+    public $postedDataSet;
+    //
     public function __construct() {
         $this->execute();
     }
 
     /*private function doDatabaseTask($userInfoRequestModel, $postedDataSet) {
-        //DebugLog::log($userInfoRequestModel);
-        //DebugLog::log($userInfoRequestModel->arrayKeyMap());
-        $userInfoTable = DbUserTable::$userInfo;
-        $userInfoDatabaseModel = new UserInfoDatabaseModel();
-        $userEmail = $userInfoDatabaseModel->getColumnName("email");
-        $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->select()
-            ->from($userInfoTable, "")
-            ->where("", array($userEmail => $userInfoRequestModel->email))
-            ->build();
-        DebugLog::log($sqlQuery);
-        //
-        $userInfoTable = DbUserTable::$userRegistration;
-        $userRegistrationDatabaseModel = new UserRegistrationDatabaseModel();
-        $userEmail = $userRegistrationDatabaseModel->getColumnName("email");
-        $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->select()
-            ->from($userInfoTable, "")
-            ->where("", array($userEmail => $userInfoRequestModel->email))
-            ->build();
         DebugLog::log($sqlQuery);
     }*/
 
     public function execute() {
+        if(!empty($_POST)) {
+            $this->postedDataSet = $_POST;
+            $userInfoRequestValidationAction = new class($this) implements ServiceListener {
+                private UserInfo $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    $this->outerInstance->checkUserInfoUserExists($dataSet);
+                }
+            };
+            //
+            (new UserInfoRequestValidationService(
+                $userInfoRequestValidationAction
+            ))->execute($this->postedDataSet);
+        }
+    }
+
+    public function checkUserInfoUserExists(UserInfoRequest $userInfoRequest) {
+        //DebugLog::log($userInfoRequest);
+        $this->userInfoRequest = $userInfoRequest;
+        //
+        (new UserInfoUserInfoDatabaseService(
+            new class($this) implements ServiceListener {
+                private UserInfo $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    if(empty($dataSet)) {
+                        $this->outerInstance->checkUserRegistrationUserExists();
+                        return;
+                    }
+                    //DebugLog::log($dataSet);
+                    $this->outerInstance->userExistsInUserInfoDatabase($dataSet, $message);
+                }
+            }
+        ))->execute($this->userInfoRequest, $this->postedDataSet);
+    }
+
+    public function checkUserRegistrationUserExists() {
+        //DebugLog::log($this->postedDataSet);
+        (new UserInfoUserRegistrationDatabaseService(
+            new class($this) implements ServiceListener {
+                private UserInfo $outerInstance;
+
+                public function __construct($outerInstance) {
+                    $this->outerInstance = $outerInstance;
+                }
+
+                public function onError($dataSet, $message) {
+                    $this->outerInstance->response(null, $message, InfoType::ERROR, $dataSet);
+                }
+
+                public function onSuccess($dataSet, $message) {
+                    if(empty($dataSet)) {
+                        $this->outerInstance->response(null, $message, InfoType::DB_DATA_NOT_FOUND, $this->outerInstance->postedDataSet);
+                        return;
+                    }
+                    $this->outerInstance->userExistsInUserRegistrationDatabase($dataSet, $message);
+                }
+            }
+        ))->execute($this->userInfoRequest, $this->postedDataSet);
+    }
+
+    public function userExistsInUserInfoDatabase(UserInfoTable $userInfoTable, $message) {
+        $userInfoResponseModel = new UserInfoResponseModel();
+        $userInfoResponseModel->user_id = $userInfoTable->user_id;
+        $userInfoResponseModel->user_email = $userInfoTable->email;
+        $retVal = $userInfoResponseModel->toParameterKeyValue();
+        //DebugLog::log($retVal);
+        $message = $message . "." . __LINE__;
+        $this->response($retVal, $message, InfoType::SUCCESS, $this->postedDataSet);
+    }
+
+    public function userExistsInUserRegistrationDatabase(UserRegistrationTable $userRegiTable, $message) {
+        $userInfoResponseModel = new UserInfoResponseModel();
+        $userInfoResponseModel->user_id = $userRegiTable->user_regi_id;
+        $userInfoResponseModel->user_email = $userRegiTable->email;
+        $retVal = $userInfoResponseModel->toParameterKeyValue();
+        //DebugLog::log($retVal);
+        $message = $message . "." . __LINE__;
+        $this->response($retVal, $message, InfoType::SUCCESS, $this->postedDataSet);
+    }
+
+    public function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
+    }
+
+    /*public function executeOld() {
         if(!empty($_POST)) {
             //DebugLog::log($_POST);
             $isValidated = $this->isValidated($_POST);
@@ -60,15 +158,15 @@ class UserInfo {
             //DebugLog::log($postedDataSet);
             //$this->doDatabaseTask($userInfoRequestModel, $postedDataSet);
 
-            /*if($this->getDatabaseUser($userInfoRequestModel, $postedDataSet)) {
+            /-*if($this->getDatabaseUser($userInfoRequestModel, $postedDataSet)) {
                 return;
-            }*/
+            }*-/
             $this->bindUserInfoSqlQuery($userInfoRequestModel, $postedDataSet);
             //$this->response(null, "Successful registration completed", InfoType::SUCCESS, $postedDataSet);
         }
-    }
+    }*/
 
-    public function isValidated($dataSet) {
+    /*public function isValidated($dataSet) {
         //DebugLog::log($dataSet);
         $buildValidationRules = new BuildValidationRules();
         $userInfoRequest = new UserInfoRequest();
@@ -112,9 +210,9 @@ class UserInfo {
             "is_validate"   => $isValidated,
             "data_set"          => $userInfoRequestModel,
         );
-    }
+    }*/
 
-    private function bindUserInfoSqlQuery($userInfoRequestModel, $postedDataSet) {
+    /*private function bindUserInfoSqlQuery($userInfoRequestModel, $postedDataSet) {
         //DebugLog::log($userInfoRequestModel);
         //
         $dbConn = $this->getDbConnection();
@@ -149,9 +247,9 @@ class UserInfo {
                     $postedDataSet);
             }
         }
-    }
+    }*/
 
-    private function getSelectUserInfoSql($userInfoRequestModel) {
+    /*private function getSelectUserInfoSql($userInfoRequestModel) {
         $userInfoTable = DbUserTable::$userInfo;
         $userInfoDatabaseModel = new UserInfoDatabaseModel();
         $userEmail = $userInfoDatabaseModel->getColumnName("email");
@@ -162,9 +260,9 @@ class UserInfo {
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
-    }
+    }*/
 
-    private function getSelectUserRegiSql($userInfoRequestModel) {
+    /*private function getSelectUserRegiSql($userInfoRequestModel) {
         $userInfoTable = DbUserTable::$userRegistration;
         $userRegistrationDatabaseModel = new UserRegistrationDatabaseModel();
         $userEmail = $userRegistrationDatabaseModel->getColumnName("email");
@@ -175,95 +273,15 @@ class UserInfo {
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
-    }
+    }*/
 
-    private function doRunSelectQuery($dbConn, $sqlQuery) {
+    /*private function doRunSelectQuery($dbConn, $sqlQuery) {
         return $dbConn->query($sqlQuery);
-    }
+    }*/
 
-    private function getDbConnection() {
+    /*private function getDbConnection() {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         return new SqliteConnection($dbFullPath);
-    }
-
-    private function response($body, $message, InfoType $infoType, $parameter = null) {
-        $launchResponse = new LaunchResponse();
-        $launchResponse->setBody($body)
-            ->setInfo($message, $infoType)
-            ->setParameter($parameter)
-            ->execute();
-    }
-
-    /*private function getDatabaseUser($userRegiRequestModel, $postedDataSet) {
-        $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
-        //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
-        $connection = new SqliteConnection($dbFullPath);
-        $sqlUserTable = DbUserTable::$userInfo;
-        $sqlQuery = "SELECT * "
-        . "FROM {$sqlUserTable} "
-        . "WHERE"
-        . " email = '{$userRegiRequestModel->email}'"
-        . ";";
-        //echo $sqlQuery;
-        $dbData = array();
-        $dbResult = $connection->query($sqlQuery);
-        if($dbResult != null) {
-            foreach($dbResult as $row) {
-                $dbData["user_id"]          = $row["user_id"];
-                $dbData["email"]            = $row["email"];
-                $dbData["status"]           = $row["status"];
-                $dbData["modified_by"]      = $row["modified_by"];
-                $dbData["created_by"]       = $row["created_by"];
-                $dbData["modified_date"]    = $row["modified_date"];
-                $dbData["created_date"]     = $row["created_date"];
-            }
-            //echo $sqlQuery;
-            if(!empty($dbData)) {
-                //echo "user table is empty";
-                //$this->response($dbData, new Info("Successful user found", InfoType::SUCCESS), $dataModel);
-                $this->response($dbData,
-                    "Successful user found",
-                    InfoType::SUCCESS,
-                    $postedDataSet);
-                return true;
-            }
-        }
-        //
-        $sqlUserRegiTable = DbUserTable::$userRegistration;
-        $sqlQuery = "SELECT * "
-        . "FROM {$sqlUserRegiTable} "
-        . "WHERE"
-        . " email = '{$userRegiRequestModel->email}'"
-        . ";";
-        //echo $sqlQuery;
-        $dbResult = $connection->query($sqlQuery);
-        if($dbResult != null) {
-            foreach($dbResult as $row) {
-                $dbData["user_regi_id"]     = $row["user_regi_id"];
-                $dbData["email"]            = $row["email"];
-                $dbData["status"]           = $row["status"];
-                $dbData["modified_by"]      = $row["modified_by"];
-                $dbData["created_by"]       = $row["created_by"];
-                $dbData["modified_date"]    = $row["modified_date"];
-                $dbData["created_date"]     = $row["created_date"];
-            }
-            //echo $sqlQuery;
-            if(!empty($dbData)) {
-                //echo "user_registration table is empty";
-                //$this->response($dbData, new Info("Successful user found", InfoType::SUCCESS), $dataModel);
-                $this->response($dbData,
-                    "Successful user found",
-                    InfoType::SUCCESS,
-                    $postedDataSet);
-                return true;
-            }
-        }
-        //$this->response($dbData, new Info("Error user not found", InfoType::ERROR), $dataModel);
-        $this->response(null,
-            "Error user not found",
-            InfoType::ERROR,
-            $postedDataSet);
-        return false;
     }*/
 }
 ?>

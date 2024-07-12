@@ -33,7 +33,8 @@ class UserRegistrationCurlUserFetchService {
             return;
         }
         $result = trim($result["body"]); // Default from curl response
-        //DebugLog::log($result);
+        //|------------------------------------|
+        //DebugLog::log($result); // Default from curl response
         //
         $curlResponse = json_decode($result, true);
         //DebugLog::log($responseData);

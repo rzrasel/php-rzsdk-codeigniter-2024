@@ -96,7 +96,7 @@ class UserAuthTokenAuthenticationDatabaseValidationService {
         //DebugLog::log($userLoginAuthLogTableColumns);
         if(!empty($dbResult)) {
             $counter = 0;
-            foreach ($dbResult as $row) {
+            foreach($dbResult as $row) {
                 foreach($userLoginAuthLogTableColumns as $key => $value) {
                     if(array_key_exists($key, $row)) {
                         $userLoginAuthLogTable->$key = $row[$key];

@@ -3,6 +3,7 @@ namespace RzSDK\HTTPRequest;
 ?>
 <?php
 use RzSDK\Validation\PrepareValidationRules;
+use RzSDK\Utils\ObjectPropertyWizard;
 use RzSDK\HTTPRequest\ValidationType;
 ?>
 <?php
@@ -18,11 +19,12 @@ class UserInfoRequest {
     }
 
     public function getQuery() {
-        $result = array_intersect_key(
+        /*$result = array_intersect_key(
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
-        return array_keys($result);
+        return array_keys($result);*/
+        return ObjectPropertyWizard::getPublicVariableWithKeyValue($this);
     }
 
     public function getQueryWithKey() {
