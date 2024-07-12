@@ -69,7 +69,7 @@ class UserRegistration {
                 }
 
                 public function onSuccess($dataSet, $message) {
-                    $this->outerInstance->fetchRegisteredDatabaseUser($dataSet);
+                    $this->outerInstance->getDbUserByCurlRequest($dataSet);
                 }
             };
             (new UserRegistrationRequestValidationService($registrationRequestValidationAction))
@@ -79,7 +79,7 @@ class UserRegistration {
         }
     }
 
-    public function fetchRegisteredDatabaseUser(UserRegistrationRequest $userRegiRequest) {
+    public function getDbUserByCurlRequest(UserRegistrationRequest $userRegiRequest) {
         $this->userRegiRequest = $userRegiRequest;
         //$postedDataSet = $this->userRegiRequest->getQuery();
         //DebugLog::log($postedDataSet);
@@ -209,7 +209,15 @@ class UserRegistration {
             $this->postedDataSet);
     }
 
-    public function fetchRegistrationTypeOld(UserRegistrationRequest $userRegiRequest) {
+    public function response($body, $message, InfoType $infoType, $parameter = null) {
+        $launchResponse = new LaunchResponse();
+        $launchResponse->setBody($body)
+            ->setInfo($message, $infoType)
+            ->setParameter($parameter)
+            ->execute();
+    }
+
+    /*public function fetchRegistrationTypeOld(UserRegistrationRequest $userRegiRequest) {
         $this->userRegiRequest = $userRegiRequest;
         $postedDataSet = $this->userRegiRequest->getQuery();
         //DebugLog::log($postedDataSet);
@@ -237,9 +245,9 @@ class UserRegistration {
                 InfoType::ERROR,
                 $postedDataSet);
         }
-    }
+    }*/
 
-    private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, array $postedDataSet) {
+    /*private function registeredByEmail(UserRegistrationRequestModel $userRegiRequestModel, array $postedDataSet) {
         if($this->isExistsUserInDatabase($postedDataSet)) {
             $this->response(null,
                 "User already exists",
@@ -252,9 +260,9 @@ class UserRegistration {
             "Successful registration completed",
             InfoType::SUCCESS,
             $postedDataSet);
-    }
+    }*/
 
-    private function isExistsUserInDatabase($postedDataSet) {
+    /*private function isExistsUserInDatabase($postedDataSet) {
         $url = dirname(ROOT_URL) . "/user-info/user-info.php";
         //$dataModel = $userRegiRequestModel->toArrayKeyMapping($userRegiRequestModel);
         //DebugLog::log($postedDataSet);
@@ -280,9 +288,9 @@ class UserRegistration {
         }
         //echo "True Data";
         return true;
-    }
+    }*/
 
-    private function bindUserRegistrationSqlQuery($userRegiRequestModel) {
+    /*private function bindUserRegistrationSqlQuery($userRegiRequestModel) {
         $uniqueIntId = new UniqueIntId();
         $userId = $uniqueIntId->getId();
         $dateTime = DateTime::getCurrentDateTime();
@@ -295,9 +303,9 @@ class UserRegistration {
         $this->doRunInsertQuery($dbConn, $sqlQuery);
         $sqlQuery = $this->getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime);
         $this->doRunInsertQuery($dbConn, $sqlQuery);
-    }
+    }*/
 
-    private function getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime) {
+    /*private function getInsertUserRegistrationSql($userRegiRequestModel, $userId, $dateTime) {
         $userRegiTable = DbUserTable::$userRegistration;
         $userRegiDatabaseModel = new UserRegistrationDatabaseModel();
         $userRegiDbDataSet = $userRegiDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
@@ -307,9 +315,9 @@ class UserRegistration {
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
-    }
+    }*/
 
-    private function getInsertUserInfoSql($userRegiRequestModel, $userId, $dateTime) {
+    /*private function getInsertUserInfoSql($userRegiRequestModel, $userId, $dateTime) {
         $userInfoTable = DbUserTable::$userInfo;
         $userInfoDatabaseModel = new UserInfoDatabaseModel();
         $userInfoDbDataSet = $userInfoDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
@@ -319,9 +327,9 @@ class UserRegistration {
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
-    }
+    }*/
 
-    private function getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime) {
+    /*private function getInsertUserPasswordSql($userRegiRequestModel, $userId, $dateTime) {
         $userPasswordTable = DbUserTable::$userPassword;
         $userPasswordDatabaseModel = new UserPasswordDatabaseModel();
         $userPasswordDbDataSet = $userPasswordDatabaseModel->getInsertSql($userRegiRequestModel, $userId, $dateTime);
@@ -331,24 +339,16 @@ class UserRegistration {
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;
-    }
+    }*/
 
-    private function doRunInsertQuery($dbConn, $sqlQuery) {
+    /*private function doRunInsertQuery($dbConn, $sqlQuery) {
         return $dbConn->query($sqlQuery);
-    }
+    }*/
 
-    private function getDbConnection() {
+    /*private function getDbConnection() {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
         return new SqliteConnection($dbFullPath);
-    }
-
-    public function response($body, $message, InfoType $infoType, $parameter = null) {
-        $launchResponse = new LaunchResponse();
-        $launchResponse->setBody($body)
-            ->setInfo($message, $infoType)
-            ->setParameter($parameter)
-            ->execute();
-    }
+    }*/
 
     /*private function doUserResitrationOld(UserRegistrationRequestModel $userRegiRequestModel, $paramData) {
         $dbFullPath = "../" . DB_PATH . "/" . DB_FILE;
