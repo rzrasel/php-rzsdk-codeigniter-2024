@@ -20,6 +20,7 @@ class WordSearchModule {
     public HttpWordSearchModuleRequestModel $searchModuleRequestModel;
     public HttpWordSearchModuleResponseModel $searchModuleResponseModel;
     private $wordLinkUrl = "";
+    private $wordMeaningLinkUrl = "";
     private $limit = 10;
     //
     public function __construct(ServiceListener $serviceListener) {
@@ -33,6 +34,11 @@ class WordSearchModule {
 
     public function setWordLinkUrl($wordLinkUrl) {
         $this->wordLinkUrl = $wordLinkUrl;
+        return $this;
+    }
+
+    public function setWordMeaningLinkUrl($wordMeaningLinkUrl) {
+        $this->wordMeaningLinkUrl = $wordMeaningLinkUrl;
         return $this;
     }
 
@@ -51,6 +57,7 @@ class WordSearchModule {
             return;
         }
         $postedDataSet["word_link_url"] = $this->wordLinkUrl;
+        $postedDataSet["word_meaning_link_url"] = $this->wordMeaningLinkUrl;
         $postedDataSet["limit"] = $this->limit;
 
         //DebugLog::log($postedDataSet);

@@ -88,17 +88,12 @@ $wordSearchActivity
     ->execute();
 ?>
 <?php
-$wordLanguage = $wordSearchActivity->wordSearchRequestModel->word_language;
+$wordLanguage = $wordSearchActivity->wordSearchRequestModel->url_word_language;
 $urlWordId = $wordSearchActivity->wordSearchRequestModel->url_word_id;
 $searchWord = $wordSearchActivity->wordSearchRequestModel->search_word;
 $urlWord = $wordSearchActivity->wordSearchRequestModel->url_word;
 $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions($wordLanguage, "English");
 $meaningLanguageOptions = $wordSearchActivity->getMeaningLanguageOptions("", "Bangla");
-?>
-<?php
-$leftWidth = 15;
-$midWidth = 2;
-$rightWidth = 100 - ($leftWidth + $midWidth);
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>

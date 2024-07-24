@@ -25,6 +25,9 @@ $siteLink = $siteLinkUtils->getSiteLink();
         <td class="main-side-bar-menu"><?= $siteLink; ?></td>
         <td class="main-body-container">
             <table cellspacing="0" cellpadding="0"  class="content-body-container">
+                <tr class="page-title-header">
+                    <td class="page-title-header"><?= !empty($_GET["page-title"]) ? $_GET["page-title"] : ""; ?></td>
+                </tr>
                 <tr>
                     <td>
                         <p>

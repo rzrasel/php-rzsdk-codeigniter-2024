@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\Model\HTTP\Request\Word\Meaning\Search;
+namespace RzSDK\Model\HTTP\Request\Word\Edti\Search;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;

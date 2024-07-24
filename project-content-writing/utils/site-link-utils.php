@@ -28,7 +28,7 @@ class SiteLinkUtils {
                 $data .= "</ul>\n";
                 $data .= "</li>\n";
             } else {
-                $data .= "<li><a href=\"{$key}\" >{$value}</a></li>\n";
+                $data .= "<li><a href=\"{$key}?page-title={$value}\" >{$value}</a></li>\n";
             }
         }
         return $data;
@@ -93,12 +93,14 @@ class SiteLinkUtils {
             "Thinking Topics" => array(
                 $this->baseUrl . "/thinking-topics/thinking-topics-1.php" => "Thinking Topics (Page 1)",
             ),
-            "Nalanda University" => array(
-                $this->baseUrl . "/nalanda-university/nalanda-university-1.php" => "Nalanda University (Page 1)",
+            "Nalanda University - নালন্দা ইউনিভার্সিটি" => array(
+                $this->baseUrl . "/nalanda-university/nalanda-university-page-01.php" => "Nalanda University (Page 1) - নালন্দা ইউনিভার্সিটি",
+                $this->baseUrl . "/nalanda-university/nalanda-university-page-10.php" => "Nalanda University (Page 10) - নালন্দা ইউনিভার্সিটি",
             ),
-            "Freedom Speech" => array(
+            "Tongue Of The Freedom Fighter - মুক্তিযোদ্ধার বয়ানে" => array(
                 //$this->baseUrl . "/freedom-speech" => "Freedom Speech",
-                $this->baseUrl . "/freedom-speech/freedom-speech-page-01.php" => "Freedom Speech (Page 1)",
+                $this->baseUrl . "/tongue-of-the-freedom-fighter/tongue-of-the-freedom-fighter-page-01.php" => "Tongue Of The Freedom Fighter (Page 1) - মুক্তিযোদ্ধার বয়ানে",
+                $this->baseUrl . "/tongue-of-the-freedom-fighter/tongue-of-the-freedom-fighter-page-99.php" => "Tongue Of The Freedom Fighter (Page 99) - মুক্তিযোদ্ধার বয়ানে",
             ),
         );
     }

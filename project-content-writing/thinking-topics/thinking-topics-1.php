@@ -25,10 +25,13 @@ $siteLink = $siteLinkUtils->getSiteLink();
         <td class="main-side-bar-menu"><?= $siteLink; ?></td>
         <td class="main-body-container">
             <table cellspacing="0" cellpadding="0" class="content-body-container">
+                <tr class="page-title-header">
+                    <td class="page-title-header"><?= !empty($_GET["page-title"]) ? $_GET["page-title"] : ""; ?></td>
+                </tr>
                 <tr>
                     <td>
                         <div style="padding-left: 30px;">
-                            <p class="header">Thinking Topics</p>
+                            <!--<p class="header">Thinking Topics</p>-->
                             <p>
                             <ol>
                                 <li>দেশ ভাগের ইতিহাসে মুসলমানের দায় ও দায়বদ্ধতাঃ</li>

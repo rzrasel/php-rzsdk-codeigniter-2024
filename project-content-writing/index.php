@@ -38,7 +38,7 @@ $siteLink = $siteLinkUtils->getSiteLink();
 </body>
 </html>
 
-
+<!--https://cssdeck.com/labs/pure-css3-expand-collapse-->
 <!--<ul>
     <li><input type="checkbox" id="cb1"/><label for="cb1">Level 1</label>
         <ul>

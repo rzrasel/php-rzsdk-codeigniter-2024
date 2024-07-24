@@ -7,10 +7,12 @@ use RzSDK\Utils\ObjectPropertyWizard;
 <?php
 class HttpWordSearchModuleRequestModel {
     //
-    public $word_language = "word_language";
+    public $url_word_language = "url_word_language";
     public $search_word = "search_word";
     //
-    public $word_link_url;
+    //
+    public $word_link_url = "word_link_url";
+    public $word_meaning_link_url = "word_meaning_link_url";
     public $limit = 10;
     //
     public function getQuery() {

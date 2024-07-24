@@ -24,20 +24,17 @@ echo __LINE__;
 echo "<br />";*/
 ?>
 <?php
-require_once("../include.php");
+require_once("../word-search-module/include.php");
 ?>
 <?php
 $baseInclude = "model/";
-require_once($baseInclude . "http-word-search-module-request-model.php");
-require_once($baseInclude . "http-word-search-module-response-model.php");
-require_once($baseInclude . "url-word-parameter.php");
-require_once($baseInclude . "url-word-meaning-parameter.php");
+require_once($baseInclude . "http-word-search-request-model.php");
 ?>
 <?php
 $baseInclude = "service/";
-require_once($baseInclude . "word-search-module-service.php");
+require_once($baseInclude . "word-search-activity-service.php");
 ?>
 <?php
 $baseInclude = "";
-require_once($baseInclude . "word-search-module.php");
+require_once($baseInclude . "word-search-activity.php");
 ?>

@@ -106,11 +106,6 @@ $projectBaseUrl = rtrim(dirname($baseUrl), "/");
 //echo $baseUrl;
 $sideLink = (new SideLink($projectBaseUrl))->getSideLink();
 ?>
-<?php
-$leftWidth = 15;
-$midWidth = 2;
-$rightWidth = 100 - ($leftWidth + $midWidth);
-?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

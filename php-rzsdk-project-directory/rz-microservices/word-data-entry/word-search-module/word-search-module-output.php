@@ -22,7 +22,7 @@ class CallerClass {
     public function __construct() {
         $languageId = (new DatabaseLanguageOptions())
             ->getLanguageIdByName($this->defaultLanguageName);
-        $_POST["word_language"] = $languageId;
+        $_POST["url_word_language"] = $languageId;
         $_POST["search_word"] = "";
         (new WordSearchModule(
             new class($this) implements ServiceListener {
