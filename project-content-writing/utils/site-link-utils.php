@@ -95,6 +95,8 @@ class SiteLinkUtils {
             ),
             "Nalanda University - নালন্দা ইউনিভার্সিটি" => array(
                 $this->baseUrl . "/nalanda-university/nalanda-university-page-01.php" => "Nalanda University (Page 1) - নালন্দা ইউনিভার্সিটি",
+                $this->baseUrl . "/nalanda-university/nalanda-university-page-02.php" => "Nalanda University (Page 2) - নালন্দা ইউনিভার্সিটি",
+                $this->baseUrl . "/nalanda-university/nalanda-university-page-03.php" => "Nalanda University (Page 3) - নালন্দা ইউনিভার্সিটি",
                 $this->baseUrl . "/nalanda-university/nalanda-university-page-10.php" => "Nalanda University (Page 10) - নালন্দা ইউনিভার্সিটি",
             ),
             "Tongue Of The Freedom Fighter - মুক্তিযোদ্ধার বয়ানে" => array(
