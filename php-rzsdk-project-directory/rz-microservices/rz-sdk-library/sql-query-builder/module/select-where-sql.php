@@ -36,6 +36,7 @@ trait SelectWhereSql {
                         //$this->whereColumns[$table][] = array_merge($this->whereColumns[$table], $where);
                         /*$arrayValue = array_values($where);
                         $this->whereColumns[$table][] = $arrayValue;*/
+                        $this->whereColumns[$table] = array_merge($this->whereColumns[$table], $where);
                     } else {
                         $this->whereColumns[$table] = $where;
                     }
@@ -64,6 +65,7 @@ trait SelectWhereSql {
                 return trim(implode("AND ", array_values($this->columns)));
             }
             return trim(trim($where), "AND");*/
+            //DebugLog::log($this->whereColumns);
             $column = "";
             $counter = 0;
             $andOr = "AND";
@@ -73,9 +75,15 @@ trait SelectWhereSql {
                     //$key = "";
                     //$table = $this->selectTable;
                     $table = $this->whereTable;
+                    //
+                    $andOr = $this->getAndOr($this->whereAnd, $counter);
+                    $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";
+                } else {
+                    $andOr = $this->getAndOr($this->whereAnd, $counter);
+                    $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";
                 }
-                $andOr = $this->getAndOr($this->whereAnd, $counter);
-                $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";
+                /*$andOr = $this->getAndOr($this->whereAnd, $counter);
+                $column .= $this->getWhereColumn($table, $value, $andOr) . "{$andOr} ";*/
                 $counter++;
             }
             $where = $where . $column;

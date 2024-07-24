@@ -2,8 +2,8 @@
 namespace RzSDK\Autoloader;
 ?>
 <?php
-defined("RZ_SDK_BASEPATH") OR exit("No direct script access allowed");
-defined("RZ_SDK_WRAPPER") OR exit("No direct script access allowed");
+defined("RZ_SDK_BASE_PATH") OR exit("No direct script access allowed");
+defined("RZ_SDK_LIB_ROOT_DIR") OR exit("No direct script access allowed");
 ?>
 <?php
 require_once("autoloader-helper.php");
@@ -33,14 +33,16 @@ class Autoloader extends AutoloaderHelper {
         $filePath = null;
         if(!empty($this->directories)) {
             //$pathList = parent::getDirectoryToPath("", $this->directories);
-            $pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
+            //$pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
+            $pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
             /*echo "<br /><br /><br /><br />";
             $this->log($pathList);
-            echo "<br /><br /><br /><br />";*/
-            //echo "<br />";
+            echo "<br /><br /><br /><br />";
+            //echo "<br />";*/
             $filePath = parent::getExistedFilePath($pathList, $fileName);
             if(empty($filePath)) {
-                $pathList = parent::getDirectoryToPath("rz-sdk-library", $this->directories);
+                //$pathList = parent::getDirectoryToPath("rz-sdk-library", $this->directories);
+                $pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
                 $filePath = parent::getExistedFilePath($pathList, $fileName);
             }
             /*echo "<br />";

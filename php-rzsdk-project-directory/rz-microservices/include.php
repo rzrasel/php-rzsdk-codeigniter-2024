@@ -2,7 +2,7 @@
 namespace RzSDK\Import;
 ?>
 <?php
-defined("RZ_SDK_BASEPATH") or define("RZ_SDK_BASEPATH", trim(trim(__DIR__, "/")));
+defined("RZ_SDK_BASE_PATH") or define("RZ_SDK_BASE_PATH", trim(trim(__DIR__, "/")));
 defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", "rz-sdk-library");
 defined("RZ_SDK_DIR_FILE_PATH") or define("RZ_SDK_DIR_FILE_PATH", "directory-path-file.json");
 $rzSdkFolder = "rz-sdk-library";
@@ -15,13 +15,15 @@ $baseInclude = "rz-sdk-library/autoloader/";
 require_once($baseInclude . "autoloader.php");
 ?>
 <?php
+defined("DB_PATH") or define("DB_PATH", "database");
+defined("DB_FILE") or define("DB_FILE", "user-database.sqlite");
+defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FILE);
+?>
+<?php
 use RzSDK\URL\SiteUrl;
 ?>
 <?php
 defined("ROOT_URL") or define("ROOT_URL", SiteUrl::getBaseUrl());
-defined("DB_PATH") or define("DB_PATH", "database");
-defined("DB_FILE") or define("DB_FILE", "user-database.sqlite");
-defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FILE);
 ?>
 <?php
 $rootDir = rtrim(dirname(ROOT_URL), "/");
@@ -106,9 +108,8 @@ require_once($baseInclude . "build-validation-rules.php");
 require_once($baseInclude . "user-auth-type.php");
 require_once($baseInclude . "user-auth-type-extension.php");
 require_once($baseInclude . "user-authentication-token-generator.php");
-?>
-<?php
-$baseInclude = "service-listener/";
+//
+$baseInclude = "utils/service-listener/";
 require_once($baseInclude . "service-listener.php");
 ?>
 <?php

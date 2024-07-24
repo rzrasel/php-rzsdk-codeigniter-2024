@@ -1,0 +1,172 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+html, body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-family: "Noto Serif", "Noto Sans", "SolaimanLipi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+}
+main-body-table {
+    width: 100%;
+    vertical-align: top;
+    height: 100%;
+    position: absolute;
+}
+.side-bar-menu {
+    padding-top: 0px;
+    padding-left: 0px;
+    vertical-align: top;
+    background: #000000;
+    width: 300px;
+}
+.side-bar-menu table {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+.side-bar-menu td {
+    width: 300px;
+    padding: 0px;
+    margin: 0px;
+}
+.side-bar-menu td:hover {
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+    background: #333333;
+}
+.side-bar-menu a {
+    padding: 8px;
+    color: #999999;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    border-left: #000000 2px solid;
+}
+.side-bar-menu a:hover {
+    color: #ffffff;
+    padding: 8px;
+    border-left: #ff0000 2px solid;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+.entry-form {
+}
+.entry-form td {
+    height: 36px;
+    padding: 10px;
+}
+.form-input-td {
+    width: 400px;
+}
+.entry-form td input, .entry-form td select {
+    height: 36px;
+    width: 100%;
+    font-family: "Noto Serif", "Noto Sans", "SolaimanLipi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+}
+.form-button {
+    align-content: end;
+    text-align: right;
+}
+.entry-form button {
+    font-size: 20px;
+    font-weight: bold;
+    height: 46px;
+    width: 250px;
+    cursor: pointer;
+}
+
+.dictionary-word {
+    border: none;
+}
+
+.dictionary-word th {
+    color: #ffffff;
+    background-color: #2980b9;
+    padding: 20px;
+}
+
+.dictionary-word td {
+    /*background: #9dbed0;*/
+    color: #383838;
+    vertical-align: top;
+    border: none;
+    font-size: 100%;
+    /*border: 1px solid #9dbed0;*/
+}
+
+.dictionary-word tr {
+    margin: 8px;
+}
+
+/* Background-color of the odd rows */
+.dictionary-word tr:nth-child(odd) {
+    background-color: #f6f6f6;
+}
+
+/* Background-color of the even rows */
+.dictionary-word tr:nth-child(even) {
+    background-color: #e9e9e9;
+}
+
+.dictionary-word td a {
+    text-decoration: none;
+    color: #383838;
+    padding: 10px 0px 10px 10px;
+    width: 100%;
+    height: 100%;
+    /*border: 1px solid #9dbed0;*/
+    display: block;
+}
+
+.dictionary-word td a:hover {
+    /*background-color: #688ca0;*/
+    color: #ffffff;
+}
+
+.dictionary-word tr:hover {
+    background-color: #ffffff;
+}
+
+.dictionary-word td:hover {
+    color: #ffffff;
+    background-color: #f7f7f7;
+}
+
+.dictionary-word tr:hover {
+    background-color: #688ca0;
+}
+
+.dictionary-word td:hover {
+    background-color: #648699;
+}
+
+/*
+.dictionary-word tbody {
+    tr {
+        &:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+    }
+    td {
+        position: relative;
+        &:hover {
+            &:before {
+                content: "";
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: -9999px;
+                bottom: -9999px;
+                background-color: rgba(255,255,255,0.2);
+                z-index: -1;
+            }
+        }
+    }
+}*/
