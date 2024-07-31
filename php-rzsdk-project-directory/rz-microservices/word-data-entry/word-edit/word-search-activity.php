@@ -2,7 +2,7 @@
 namespace RzSDK\Word\Edit\Search\Word\Activity;
 ?>
 <?php
-use RzSDK\Model\HTTP\Request\Word\Edti\Search\HttpWordSearchRequestModel;
+use RzSDK\Model\HTTP\Request\Word\Edit\Search\HttpWordSearchRequestModel;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Dictionary\Search\Module\WordSearchModule;
 use RzSDK\URL\SiteUrl;
@@ -75,8 +75,8 @@ class WordSearchActivity {
                 }
             }
         ))
-            ->setWordLinkUrl(SiteUrl::getBaseUrl() . "/word-meaning-entry.php")
-            ->setWordMeaningLinkUrl(SiteUrl::getBaseUrl() . "/word-meaning-entry.php")
+            ->setWordLinkUrl(SiteUrl::getBaseUrl() . "/word-edit.php")
+            ->setWordMeaningLinkUrl(SiteUrl::getBaseUrl() . "/word-edit.php")
             ->setLimit($this->limit)
             ->execute($wordSearchRequestModel->getQuery());
         //DebugLog::log($this->limit);

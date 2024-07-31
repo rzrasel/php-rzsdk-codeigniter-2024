@@ -1,11 +1,11 @@
 <?php
-namespace RzSDK\Model\HTTP\Request\Word\Edit\Search;
+namespace RzSDK\Model\HTTP\Request\Word\Edit;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;
 ?>
 <?php
-class HttpWordSearchRequestModel {
+class HttpWordEditRequestModel {
     //
     public $url_word_language = "url_word_language";
     public $url_word_id = "url_word_id";

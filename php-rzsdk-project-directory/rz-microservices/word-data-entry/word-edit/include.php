@@ -29,6 +29,7 @@ require_once("../word-search-module/include.php");
 <?php
 $baseInclude = "model/";
 require_once($baseInclude . "http-word-search-request-model.php");
+require_once($baseInclude . "http-word-edit-request-model.php");
 ?>
 <?php
 $baseInclude = "service/";

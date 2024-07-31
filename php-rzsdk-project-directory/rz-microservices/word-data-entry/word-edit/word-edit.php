@@ -7,9 +7,49 @@ require_once("include.php");
 use RzSDK\URL\SiteUrl;
 use RzSDK\Word\Navigation\SideLink;
 use RzSDK\Word\Edit\Search\Word\Activity\WordSearchActivity;
+use RzSDK\Service\Listener\ServiceListener;
+use RzSDK\Utils\Alert\Message\AlertMessageBox;
+use RzSDK\Model\HTTP\Request\Word\Edit\HttpWordEditRequestModel;
+use RzSDK\Model\HTTP\Request\Word\Edit\Search\HttpWordSearchRequestModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
+$baseUrl = SiteUrl::getBaseUrl();
+$projectBaseUrl = rtrim(dirname($baseUrl), "/");
+//echo $baseUrl;
+$sideLink = (new SideLink($projectBaseUrl))->getSideLink();
+?>
+<?php
+class WordEdit {
+    //
+    public ServiceListener $serviceListener;
+    public HttpWordEditRequestModel $wordEditRequestModel;
+    //
+    public function __construct(ServiceListener $serviceListener) {
+        $this->serviceListener = $serviceListener;
+        $this->wordEditRequestModel = new HttpWordEditRequestModel();
+    }
+
+    public function execute() {
+        //DebugLog::log($_POST);
+        //
+        $entryRequestQuery = $this->wordEditRequestModel->getQuery();
+        foreach($entryRequestQuery as $key => $value) {
+            if(array_key_exists($key, $_POST)) {
+                $this->wordEditRequestModel->$key = $_POST[$key];
+            } else {
+                $this->wordEditRequestModel->$key = null;
+            }
+        }
+        //
+        if(empty($_POST)) {
+            return;
+        }
+        if(!array_key_exists("meaning_entry_form", $_POST)) {
+            return;
+        }
+    }
+}
 ?>
 <?php
 $wordSearchActivity = new WordSearchActivity();
@@ -25,12 +65,6 @@ $searchWord = "";
 //$urlWord = $wordSearchActivity->wordSearchRequestModel->url_word;
 $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions("", "English");
 //$meaningLanguageOptions = $wordSearchActivity->getMeaningLanguageOptions("", "Bangla");
-?>
-<?php
-$baseUrl = SiteUrl::getBaseUrl();
-$projectBaseUrl = rtrim(dirname($baseUrl), "/");
-//echo $baseUrl;
-$sideLink = (new SideLink($projectBaseUrl))->getSideLink();
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -56,7 +90,7 @@ $sideLink = (new SideLink($projectBaseUrl))->getSideLink();
                                 <td class="response-message-section">
                                     <div class="response-message-box">
 <?php
-/*$wordEntry = new WordEntry(
+$wordEdit = new WordEdit(
     new class implements ServiceListener {
         private AlertMessageBox $alertMessageBox;
         public function __construct() {
@@ -73,9 +107,14 @@ $sideLink = (new SideLink($projectBaseUrl))->getSideLink();
         }
     }
 );
-$wordEntry->execute();*/
+$wordEdit->execute();
 ?>
                                     </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+
                                 </td>
                             </tr>
                             <tr>

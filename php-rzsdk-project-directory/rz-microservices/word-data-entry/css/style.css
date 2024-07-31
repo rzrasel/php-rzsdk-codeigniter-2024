@@ -158,6 +158,11 @@ input[type="text"] {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: .25rem;
 }
+input[type="text"]:focus, select:focus {
+    /*outline: none;*/
+    outline: 1px solid rgba(0, 0, 0, 0.09);
+    box-shadow: rgba(0, 0, 0, 0.06) 0 1px 1px;
+}
 .response-message-section {
     height: 36px;
     padding: 8px 20px;
