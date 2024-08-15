@@ -34,6 +34,16 @@ require_once($baseInclude . "http-word-edit-request-model.php");
 <?php
 $baseInclude = "service/";
 require_once($baseInclude . "word-search-activity-service.php");
+require_once($baseInclude . "word-edit-service.php");
+require_once($baseInclude . "word-edit-pre-database-service.php");
+?>
+<?php
+$baseInclude = "module/";
+require_once($baseInclude . "word-edit-requested-data-module.php");
+?>
+<?php
+$baseInclude = "view/";
+//require_once($baseInclude . "word-edit-form-view.php");
 ?>
 <?php
 $baseInclude = "";

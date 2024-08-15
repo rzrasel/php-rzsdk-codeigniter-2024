@@ -25,8 +25,14 @@ class DebugLog {
         $debugBacktrace = debug_backtrace();
         $printData = "File " . $debugBacktrace[0]["file"];
         if(count($debugBacktrace) > 1) {
-            $class = $debugBacktrace[1]["class"];
-            $method = $debugBacktrace[1]["function"];
+            $class = "Undefined";
+            if(array_key_exists("class", $debugBacktrace[1])) {
+                $class = $debugBacktrace[1]["class"];
+            }
+            $method = "Undefined";
+            if(array_key_exists("function", $debugBacktrace[1])) {
+                $method = $debugBacktrace[1]["function"];
+            }
             $printData .= " class " . $class . " method " . $method;
         }
         $printData .= " on line " . $debugBacktrace[0]["line"];

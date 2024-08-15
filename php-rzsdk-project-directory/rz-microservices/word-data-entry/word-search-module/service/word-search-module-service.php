@@ -36,6 +36,13 @@ class WordSearchModuleService {
         $this->searchModuleResponseModel->message = "Error! data empty";
         $this->serviceListener->onSuccess($this->searchModuleResponseModel, $this->searchModuleResponseModel->message);*/
         //
+        if(empty($searchModuleRequestModel->search_word)) {
+            $searchModuleRequestModel->search_word = "";
+        }
+        if(empty($searchModuleRequestModel->url_word_language)) {
+            $searchModuleRequestModel->url_word_language = "172157831436333409";
+        }
+        //
         $tempDictionaryWord = new DictionaryWord();
         $colLanId = $tempDictionaryWord->lan_id;
         $colWordId = $tempDictionaryWord->word_id;
@@ -52,6 +59,7 @@ class WordSearchModuleService {
         //
         $tblDictionaryWord = DbWordTable::dictionaryWordWithPrefix();
         $dictionaryWordMeaningTableName = DbWordTable::dictionaryWordMeaningWithPrefix();
+        //DebugLog::log($searchModuleRequestModel->url_word_language);
         $sqlQueryBuilder = new SqlQueryBuilder();
         $sqlQuery = $sqlQueryBuilder
             ->select()
@@ -76,6 +84,7 @@ class WordSearchModuleService {
             ->offset(0)
             ->build();
         //DebugLog::log($sqlQuery);
+        //return;
         $dbConn = $this->getDbConnection();
         $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
         if(empty($dbResult)) {

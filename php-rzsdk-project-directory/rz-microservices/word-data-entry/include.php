@@ -51,6 +51,10 @@ $baseInclude = RZ_SDK_BASE_PATH . "/utils/service-listener/";
 require_once($baseInclude . "service-listener.php");
 ?>
 <?php
+$baseInclude = "shared/";
+require_once($baseInclude . "global-url-parameter-model.php");
+?>
+<?php
 $baseInclude = "database-tables/";
 require_once($baseInclude . "db-word-table.php");
 require_once($baseInclude . "tbl-language.php");

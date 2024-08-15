@@ -9,9 +9,16 @@ use RzSDK\Word\Navigation\SideLink;
 use RzSDK\Word\Edit\Search\Word\Activity\WordSearchActivity;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
-use RzSDK\Model\HTTP\Request\Word\Edit\HttpWordEditRequestModel;
-use RzSDK\Model\HTTP\Request\Word\Edit\Search\HttpWordSearchRequestModel;
+use RzSDK\Module\HTTP\Request\Data\Word\Edit\WordEditRequestedDataModule;
+use RzSDK\Shared\HTTP\Url\Parameter\GlobalUrlParameterModel;
 use RzSDK\Log\DebugLog;
+?>
+<?php
+$urlParameterModel = new GlobalUrlParameterModel();
+$urlParameterModel->url_word = "test";
+$urlParameterModel->url_word_id = "test";
+$urlParameter = $urlParameterModel->getUrlParameters();
+DebugLog::log($urlParameter);
 ?>
 <?php
 $baseUrl = SiteUrl::getBaseUrl();
@@ -20,49 +27,17 @@ $projectBaseUrl = rtrim(dirname($baseUrl), "/");
 $sideLink = (new SideLink($projectBaseUrl))->getSideLink();
 ?>
 <?php
-class WordEdit {
-    //
-    public ServiceListener $serviceListener;
-    public HttpWordEditRequestModel $wordEditRequestModel;
-    //
-    public function __construct(ServiceListener $serviceListener) {
-        $this->serviceListener = $serviceListener;
-        $this->wordEditRequestModel = new HttpWordEditRequestModel();
-    }
-
-    public function execute() {
-        //DebugLog::log($_POST);
-        //
-        $entryRequestQuery = $this->wordEditRequestModel->getQuery();
-        foreach($entryRequestQuery as $key => $value) {
-            if(array_key_exists($key, $_POST)) {
-                $this->wordEditRequestModel->$key = $_POST[$key];
-            } else {
-                $this->wordEditRequestModel->$key = null;
-            }
-        }
-        //
-        if(empty($_POST)) {
-            return;
-        }
-        if(!array_key_exists("meaning_entry_form", $_POST)) {
-            return;
-        }
-    }
-}
-?>
-<?php
 $wordSearchActivity = new WordSearchActivity();
 $wordSearchActivity
     ->setLimit(10)
     ->execute();
 ?>
 <?php
-/*$wordLanguage = $wordSearchActivity->wordSearchRequestModel->url_word_language;
+$wordLanguage = $wordSearchActivity->wordSearchRequestModel->url_word_language;
+$searchWord = $wordSearchActivity->wordSearchRequestModel->search_word;
 $urlWordId = $wordSearchActivity->wordSearchRequestModel->url_word_id;
-$searchWord = $wordSearchActivity->wordSearchRequestModel->search_word;*/
 $searchWord = "";
-//$urlWord = $wordSearchActivity->wordSearchRequestModel->url_word;
+$urlWord = $wordSearchActivity->wordSearchRequestModel->url_word;
 $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions("", "English");
 //$meaningLanguageOptions = $wordSearchActivity->getMeaningLanguageOptions("", "Bangla");
 ?>
@@ -90,7 +65,7 @@ $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions("", "English"
                                 <td class="response-message-section">
                                     <div class="response-message-box">
 <?php
-$wordEdit = new WordEdit(
+$wordEdit = new WordEditRequestedDataModule(
     new class implements ServiceListener {
         private AlertMessageBox $alertMessageBox;
         public function __construct() {
@@ -108,45 +83,25 @@ $wordEdit = new WordEdit(
     }
 );
 $wordEdit->execute();
+//DebugLog::log($wordEdit->wordEditRequestModel);
 ?>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-
+<?php
+if(!empty($wordLanguage) && !empty($urlWordId) && !empty($urlWord)) {
+    require_once("view/word-edit-form-view.php");
+}
+?>
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
-                                        <table class="table-entry-form-field-container">
-                                            <tr><td height="20px"></td><td></td><td></td></tr>
-                                            <tr><td width="150px"></td><td width="250px" style="padding: 0px 15px;"></td><td width="250px"></td></tr>
-                                            <!--<tr>
-                                                <td></td><td><input type="button" value="Submit" /></td>
-                                            </tr>-->
-                                            <tr>
-                                                <td>Word Language: </td>
-                                                <td style="padding: 0px 15px;">
-                                                    <select name="word_language" required="required">
-                                                        <!--<option value="172157799761295096">Bangla Language</option>
-                                                        <option value="172157831436333409" selected="select">English Language</option>-->
-                                                        <?= $wordLanguageOptions; ?>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="search_word" value="<?= $searchWord; ?>" required="required" placeholder="Search Word">
-                                                </td>
-                                            </tr>
-                                            <tr><td height="20px"></td><td></td><td></td></tr>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td class="form-button"><button type="submit" class="button-6">Search</button></td>
-                                            </tr>
-                                        </table>
-                                    </form>
+<?php
+require_once("view/word-edit-search-form-view.php");
+?>
                                 </td>
                             </tr>
                             <tr><td height="20px"></td></tr>
