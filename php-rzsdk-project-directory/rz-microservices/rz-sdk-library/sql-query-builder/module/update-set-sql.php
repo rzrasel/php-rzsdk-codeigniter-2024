@@ -48,7 +48,11 @@ trait UpdateSetSql {
                 } else if(is_int($value) || is_float($value) || is_numeric($value)) {
                     $value = $value;
                 } else {
-                    $value = "'{$value}'";
+                    if(empty($value)) {
+                        $value = "NULL";
+                    } else {
+                        $value = "'{$value}'";
+                    }
                 }
                 $retVal .= "{$key} = {$value}, ";
             }

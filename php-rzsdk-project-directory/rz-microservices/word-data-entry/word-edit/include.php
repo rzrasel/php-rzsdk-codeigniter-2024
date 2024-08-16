@@ -30,12 +30,14 @@ require_once("../word-search-module/include.php");
 $baseInclude = "model/";
 require_once($baseInclude . "http-word-search-request-model.php");
 require_once($baseInclude . "http-word-edit-request-model.php");
+require_once($baseInclude . "database-word-edit-model.php");
 ?>
 <?php
 $baseInclude = "service/";
 require_once($baseInclude . "word-search-activity-service.php");
 require_once($baseInclude . "word-edit-service.php");
 require_once($baseInclude . "word-edit-pre-database-service.php");
+require_once($baseInclude . "word-edit-activity-service.php");
 ?>
 <?php
 $baseInclude = "module/";
@@ -48,4 +50,5 @@ $baseInclude = "view/";
 <?php
 $baseInclude = "";
 require_once($baseInclude . "word-search-activity.php");
+require_once($baseInclude . "word-edit-activity.php");
 ?>

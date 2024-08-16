@@ -14,11 +14,11 @@ use RzSDK\Shared\HTTP\Url\Parameter\GlobalUrlParameterModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-$urlParameterModel = new GlobalUrlParameterModel();
+/*$urlParameterModel = new GlobalUrlParameterModel();
 $urlParameterModel->url_word = "test";
 $urlParameterModel->url_word_id = "test";
 $urlParameter = $urlParameterModel->getUrlParameters();
-DebugLog::log($urlParameter);
+DebugLog::log($urlParameter);*/
 ?>
 <?php
 $baseUrl = SiteUrl::getBaseUrl();

@@ -3,6 +3,8 @@ use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
 use RzSDK\Module\HTTP\Request\Data\Word\Edit\WordEditRequestedDataModule;
 use RzSDK\Word\Edit\Search\Word\Activity\WordSearchActivity;
+use RzSDK\Word\Edit\Activity\WordEditActivity;
+use RzSDK\URL\SiteUrl;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -29,6 +31,31 @@ $wordEdit->execute();
 //DebugLog::log($wordEdit->wordEditRequestModel);
 ?>
 <?php
+$wordEditActivity = (new WordEditActivity(
+        new class implements ServiceListener {
+            private AlertMessageBox $alertMessageBox;
+            public function __construct() {
+                $this->alertMessageBox = new AlertMessageBox();
+            }
+
+            public function onError($dataSet, $message) {
+                //DebugLog::log($dataSet);
+                //DebugLog::log($message);
+                echo $this->alertMessageBox->build($message);
+                echo "<br/>";
+                echo "<br/>";
+            }
+
+            function onSuccess($dataSet, $message) {
+                //DebugLog::log($message);
+                echo $this->alertMessageBox->build($message);
+                echo "<br/>";
+                echo "<br/>";
+            }
+        }
+))->execute($wordEdit->wordEditRequestModel);
+?>
+<?php
 $wordSearchActivity = new WordSearchActivity();
 $wordSearchActivity
     ->setLimit(10)
@@ -43,7 +70,7 @@ $urlWord = $wordSearchActivity->wordSearchRequestModel->url_word;
 $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions("", "English");
 //$meaningLanguageOptions = $wordSearchActivity->getMeaningLanguageOptions("", "Bangla");
 ?>
-<form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
+<form action="<?= SiteUrl::getFullUrl(); ?>" method="POST">
     <table class="table-entry-form-field-container">
         <!--<tr>
             <td class="table-entry-form-field-left">Word: </td>
@@ -100,7 +127,7 @@ $wordLanguageOptions = $wordSearchActivity->getWordLanguageOptions("", "English"
                     <option value="v">Verb</option>
                     <option value="vi">Verb Intens</option>
                     <option value="vt">Verb Trans</option>-->
-                    <?= $wordEdit->getPartsOfSpeechOptions(array($wordEdit->wordEditRequestModel->parts_of_speech)); ?>
+                    <?= $wordEdit->getPartsOfSpeechOptions($wordEdit->wordEditRequestModel->parts_of_speech); ?>
                 </select>
             </td>
         </tr>

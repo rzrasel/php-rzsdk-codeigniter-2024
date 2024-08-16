@@ -23,6 +23,7 @@ class WordEditPreDatabaseService {
     public function execute(HttpWordEditRequestModel $wordEntryRequestModel) {
         //DebugLog::log($wordEntryRequestModel);
         $tempDictionaryWord = new DictionaryWord();
+        $wordIdCol = $tempDictionaryWord->word_id;
         $wordCol = $tempDictionaryWord->word;
         $pronunciationCol = $tempDictionaryWord->pronunciation;
         $accentUSCol = $tempDictionaryWord->accent_us;
@@ -38,7 +39,7 @@ class WordEditPreDatabaseService {
             ->select()
             ->from($dictionaryWordTableName)
             ->where("", array(
-                $wordCol => $wordEntryRequestModel->word,
+                $wordIdCol => $wordEntryRequestModel->url_word_id,
             ))
             ->build();
         //DebugLog::log($sqlQuery);
@@ -48,13 +49,15 @@ class WordEditPreDatabaseService {
             $counter = 0;
             foreach($dbResult as $row) {
                 $counter++;
+                $wordEntryRequestModel->word = $row[$wordCol];
                 $wordEntryRequestModel->pronunciation = $row[$pronunciationCol];
                 $wordEntryRequestModel->accent_us = $row[$accentUSCol];
                 $wordEntryRequestModel->accent_uk = $row[$accentUKCol];
-                $wordEntryRequestModel->parts_of_speech = $row[$partsOfSpeechCol];
+                $wordEntryRequestModel->parts_of_speech = explode(",", $row[$partsOfSpeechCol]);
                 $wordEntryRequestModel->syllable = $row[$syllableCol];
             }
             //DebugLog::log($counter);
+            //DebugLog::log($wordEntryRequestModel);
         }
     }
 

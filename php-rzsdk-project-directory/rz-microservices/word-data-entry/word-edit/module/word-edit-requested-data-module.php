@@ -96,7 +96,7 @@ class WordEditRequestedDataModule {
         return $wordEntryService->getLanguageOptions($languageId, $defaultLanguage);
     }
 
-    public function getPartsOfSpeechOptions(array $optionList = array()) {
+    public function getPartsOfSpeechOptions($optionList) {
         $wordEntryService = new WordEditService();
         return $wordEntryService->getPartsOfSpeechOptions($optionList);
     }

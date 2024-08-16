@@ -33,8 +33,13 @@ class WordEditService {
     }
 
     //public function getPartsOfSpeechOptions(HttpWordEditRequestModel $entryRequestModel) {
-    public function getPartsOfSpeechOptions(array $requestedOptionList) {
-        //DebugLog::log($optionList);
+    public function getPartsOfSpeechOptions($requestedOptionList) {
+        //DebugLog::log($requestedOptionList);
+        if(!empty($requestedOptionList)) {
+            if(!is_array($requestedOptionList)) {
+                $requestedOptionList = array($requestedOptionList);
+            }
+        }
         $optionsList = array(
             "" => "Select Parts of Speech",
             "adj" => "Adjective",
@@ -114,7 +119,7 @@ class WordEditService {
         }
         if(empty($retValue)) {
             foreach($requestedOptionList as $key) {
-                $key = strtolower($key);
+                $key = strtolower(trim($key));
                 if(array_key_exists($key, $optionsList)) {
                     $retValue[$key] = $optionsList[$key];
                 }
