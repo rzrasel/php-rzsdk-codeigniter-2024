@@ -35,6 +35,7 @@ class SideLink {
             $this->baseUrl . "/word-entry/" . "word-entry.php" => "Word Entry",
             $this->baseUrl . "/word-edit/" . "word-edit.php" => "Word Edit",
             $this->baseUrl . "/word-meaning-entry/" . "word-meaning-entry.php" => "Word Meaning Entry",
+            $this->baseUrl . "/word-meaning-edit/" . "word-meaning-edit.php" => "Word Meaning Edit",
             $this->baseUrl . "/word-search-module/" . "word-search-module-output.php" => "Word Search Module",
             $this->baseUrl . "/gen-database-schema.php" => "Database Table Home",
         );

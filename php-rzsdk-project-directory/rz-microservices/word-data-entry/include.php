@@ -65,9 +65,12 @@ require_once($baseInclude . "dictionary-word-meaning.php");
 require_once($baseInclude . "dictionary-word-meaning-query.php");
 ?>
 <?php
+$baseInclude = "route/";
+require_once($baseInclude . "side-link.php");
+?>
+<?php
 //
 $baseInclude = "utils/";
-require_once($baseInclude . "side-link.php");
 require_once($baseInclude . "id-generator.php");
 require_once($baseInclude . "database-language-options-utils.php");
 require_once($baseInclude . "alert-message-box.php");

@@ -51,6 +51,7 @@ $wordEditActivity = (new WordEditActivity(
                 echo $this->alertMessageBox->build($message);
                 echo "<br/>";
                 echo "<br/>";
+                header("Location: " . SiteUrl::getUrlOnly());
             }
         }
 ))->execute($wordEdit->wordEditRequestModel);

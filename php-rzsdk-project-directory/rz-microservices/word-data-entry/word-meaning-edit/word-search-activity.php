@@ -1,12 +1,12 @@
 <?php
-namespace RzSDK\Word\Edit\Search\Word\Activity;
+namespace RzSDK\Word\Meaning\Edit\Search\Word\Activity;
 ?>
 <?php
 use RzSDK\Model\HTTP\Request\Word\Edit\Search\HttpWordSearchRequestModel;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Dictionary\Search\Module\WordSearchModule;
 use RzSDK\URL\SiteUrl;
-use RzSDK\Service\Word\Edit\Activity\Search\WordSearchActivityService;
+use RzSDK\Service\Word\Meaning\Edit\Activity\Search\WordSearchActivityService;
 use RzSDK\Utils\Database\Options\Language\DatabaseLanguageOptions;
 use RzSDK\Log\DebugLog;
 ?>

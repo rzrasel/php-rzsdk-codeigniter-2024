@@ -16,12 +16,31 @@ class WordSearchActivity {
     public $responseData;
     private $defaultLanguageName = "English";
     private $limit = 50;
+    private $wordUrl;
+    private $wordMeaningUrl;
+    //
     public function __construct() {
         //$this->execute($_POST);
     }
 
     public function setLimit($limit = 50) {
         $this->limit = $limit;
+        return $this;
+    }
+
+    public function setWordUrl($wordUrl) {
+        if(empty($wordUrl)) {
+            $wordUrl = SiteUrl::getBaseUrl();
+        }
+        $this->wordUrl = $wordUrl;
+        return $this;
+    }
+
+    public function setWordMeaningUrl($wordMeaningUrl) {
+        if(empty($wordMeaningUrl)) {
+            $wordMeaningUrl = SiteUrl::getBaseUrl();
+        }
+        $this->wordMeaningUrl = $wordMeaningUrl;
         return $this;
     }
 
@@ -75,8 +94,8 @@ class WordSearchActivity {
                 }
             }
         ))
-            ->setWordLinkUrl(SiteUrl::getBaseUrl() . "/word-meaning-entry.php")
-            ->setWordMeaningLinkUrl(SiteUrl::getBaseUrl() . "/word-meaning-entry.php")
+            ->setWordLinkUrl($this->wordUrl)
+            ->setWordMeaningLinkUrl($this->wordMeaningUrl)
             ->setLimit($this->limit)
             ->execute($wordSearchRequestModel->getQuery());
         //DebugLog::log($this->limit);
