@@ -31,11 +31,11 @@ class WordEditActivityService {
         $dbWordEditModel = new WordEditDataModule();
         $updateDataSet = $dbWordEditModel->getWordUpdateDataSet($wordEntryRequestModel);
         //
-        $dictionaryWordTableName = DbWordTable::dictionaryWordWithPrefix();
-        //
         $wordWhereDataSet = array(
             $wordIdCol => $wordEntryRequestModel->url_word_id,
         );
+        //
+        $dictionaryWordTableName = DbWordTable::dictionaryWordWithPrefix();
         //
         $sqlQueryBuilder = new SqlQueryBuilder();
         $sqlQuery = $sqlQueryBuilder

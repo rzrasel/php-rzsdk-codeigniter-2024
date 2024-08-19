@@ -38,8 +38,8 @@ class WordEntryService {
             "n" => "Noun",
             "adv" => "Adverb",
             "v" => "Verb",
-            "vi" => "Verb Intens",
-            "vt" => "Verb Trans",
+            "vt" => "Verb Transitive",
+            "vi" => "Verb Intransitive",
         );
         //$partsOfSpeechArray = array();
         $partsOfSpeechArray = $entryRequestModel->parts_of_speech;

@@ -46,8 +46,8 @@ class WordEditService {
             "n" => "Noun",
             "adv" => "Adverb",
             "v" => "Verb",
-            "vi" => "Verb Intransitive",
             "vt" => "Verb Transitive",
+            "vi" => "Verb Intransitive",
         );
         //$partsOfSpeechArray = array();
         $partsOfSpeechArray = $requestedOptionList;

@@ -26,7 +26,7 @@ class DatabaseWordEntryModel {
         $dictionaryWord->pronunciation = $wordEntryRequestModel->pronunciation;
         $dictionaryWord->accent_us = $wordEntryRequestModel->accent_us;
         $dictionaryWord->accent_uk = $wordEntryRequestModel->accent_uk;
-        $dictionaryWord->parts_of_speech = implode(", ", $wordEntryRequestModel->parts_of_speech);
+        $dictionaryWord->parts_of_speech = implode(",", $wordEntryRequestModel->parts_of_speech);
         $dictionaryWord->syllable = $wordEntryRequestModel->syllable;
         $dictionaryWord->status = true;
         $dictionaryWord->modified_by = $sysUserId;

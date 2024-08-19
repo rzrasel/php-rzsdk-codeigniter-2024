@@ -7,7 +7,7 @@ use RzSDK\Log\DebugLog;
         <tr>
             <td class="table-entry-form-field-left">Word: </td>
             <td class="table-entry-form-field-right">
-                <input type="text" name="url_word" value="<?= $urlWord; ?>" placeholder="Search Word" required="required" readonly="readonly" />
+                <input type="text" name="word" value="<?= $word; ?>" placeholder="Search Word" required="required" readonly="readonly" />
             </td>
         </tr>
         <tr><td height="20px"></td><td></td></tr>
@@ -25,18 +25,19 @@ use RzSDK\Log\DebugLog;
         <tr>
             <td>Word Meaning: </td>
             <td>
-                <input type="text" name="meaning" value="<?= $wordMeaningEntry->meaningEntryRequestModel->meaning; ?>" placeholder="Word Meaning" required="required" />
+                <input type="text" name="meaning" value="<?= $meaning; ?>" placeholder="Word Meaning" required="required" />
             </td>
         </tr>
         <tr><td height="20px"></td><td></td></tr>
         <tr>
             <td></td>
             <td>
-                <input type="hidden" name="meaning_entry_form" value="meaning_entry_form">
+                <input type="hidden" name="<?= $wordMeaningEditModule->wordMeaningEditQueryModel->getWordMeaningEditFormField(); ?>" value="word_edit_entry_form_value">
                 <input type="hidden" name="word_language" value="<?= $wordLanguage; ?>">
                 <input type="hidden" name="url_word_id" value="<?= $urlWordId; ?>">
                 <input type="hidden" name="search_word" value="<?= $searchWord; ?>">
                 <input type="hidden" name="url_word" value="<?= $urlWord; ?>">
+                <input type="hidden" name="meaning_id" value="<?= $meaningId; ?>">
             </td>
         </tr>
         <tr><td height="20px"></td><td></td></tr>

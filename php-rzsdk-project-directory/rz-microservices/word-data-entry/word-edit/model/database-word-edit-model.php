@@ -34,7 +34,7 @@ class WordEditDataModule {
             $pronunciationCol => $wordEntryRequestModel->pronunciation,
             $accentUsCol => $wordEntryRequestModel->accent_us,
             $accentUkCol => $wordEntryRequestModel->accent_uk,
-            $partsOfSpeechCol => implode(", ", $wordEntryRequestModel->parts_of_speech),
+            $partsOfSpeechCol => implode(",", $wordEntryRequestModel->parts_of_speech),
             $syllableCol => $wordEntryRequestModel->syllable,
             $modifiedByCol => $sysUserId,
             $modifiedDateCol => $currentDate,

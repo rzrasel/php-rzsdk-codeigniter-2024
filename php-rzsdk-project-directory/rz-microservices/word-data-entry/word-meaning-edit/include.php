@@ -32,12 +32,19 @@ require_once("../word-search-module/include.php");
 <?php
 $baseInclude = "model/";
 require_once($baseInclude . "http-word-search-request-model.php");
+require_once($baseInclude . "word-meaning-edit-data-model.php");
 ?>
 <?php
 $baseInclude = "service/";
 require_once($baseInclude . "word-search-activity-service.php");
+require_once($baseInclude . "word-meaning-edit-activity-service.php");
+?>
+<?php
+$baseInclude = "module/";
+require_once($baseInclude . "word-meaning-edit-module.php");
 ?>
 <?php
 $baseInclude = "";
 require_once($baseInclude . "word-search-activity.php");
+require_once($baseInclude . "word-meaning-edit-activity.php");
 ?>

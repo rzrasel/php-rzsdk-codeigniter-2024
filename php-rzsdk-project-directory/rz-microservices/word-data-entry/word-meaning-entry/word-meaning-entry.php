@@ -82,13 +82,13 @@ class WordMeaningEntry {
 $wordMeaningEntry->execute();*/
 ?>
 <?php
-$wordUrl = SiteUrl::getUrlOnly();
-$wordMeaningUrl = dirname(dirname($wordUrl)) . "/word-meaning-edit/word-meaning-edit.php";
+$wordMeaningEntryUrl = SiteUrl::getUrlOnly();
+$wordMeaningEditUrl = dirname(dirname($wordMeaningEntryUrl)) . "/word-meaning-edit/word-meaning-edit.php";
 $wordSearchActivity = new WordSearchActivity();
 $wordSearchActivity
     ->setLimit(10)
-    ->setWordUrl($wordUrl)
-    ->setWordMeaningUrl($wordMeaningUrl)
+    ->setWordUrl($wordMeaningEntryUrl)
+    ->setWordMeaningUrl($wordMeaningEditUrl)
     ->execute();
 ?>
 <?php

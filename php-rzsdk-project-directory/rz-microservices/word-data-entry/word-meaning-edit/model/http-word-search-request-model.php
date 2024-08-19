@@ -12,6 +12,9 @@ class HttpWordSearchRequestModel {
     public $search_word = "search_word";
     public $url_word = "url_word";
     //
+    public $meaning_language = "meaning_language";
+    public $meaning = "meaning";
+    //
     public function __construct() {
     }
 

@@ -1,21 +1,33 @@
 <?php
-namespace RzSDK\Shared\HTTP\Url\Parameter;
+namespace RzSDK\Shared\HTTP\Request\Parameter;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class GlobalUrlParameterModel {
-    //
+class GlobalRequestParameterModel {
+    // Word Language Part
     public $url_word_language = "url_word_language";
+    public $word_language = "word_language";
+    // Word Part
     public $url_word_id = "url_word_id";
-    public $search_word = "search_word";
     public $url_word = "url_word";
-    //
+    public $search_word = "search_word";
+    public $word = "word";
+    // Word Meaning Language Part
+    public $url_word_meaning_language = "url_word_meaning_language";
     public $meaning_language = "meaning_language";
+    // Word Meaning Part
+    public $url_meaning_id = "url_meaning_id";
+    public $meaning_id = "meaning_id";
+    public $url_meaning = "url_meaning";
     public $meaning = "meaning";
     //
+    public $word_edit_entry_form = "word_edit_entry_form";
+    public $word_meaning_edit_form = "word_meaning_edit_form";
+    //
+
     public function __construct() {
     }
 
@@ -34,7 +46,7 @@ class GlobalUrlParameterModel {
 
     public function getUrlParameters() {
         $retVal = "";
-        $urlParameterModel = new GlobalUrlParameterModel();
+        $urlParameterModel = new GlobalRequestParameterModel();
         /*DebugLog::log($urlParameterModel);
         DebugLog::log($this);*/
         $defaultParameters = $urlParameterModel->getQuery();

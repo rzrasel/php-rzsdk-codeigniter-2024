@@ -52,7 +52,8 @@ require_once($baseInclude . "service-listener.php");
 ?>
 <?php
 $baseInclude = "shared/";
-require_once($baseInclude . "global-url-parameter-model.php");
+require_once($baseInclude . "global-request-parameter-model.php");
+require_once($baseInclude . "request-word-meaning-edit-query-model.php");
 ?>
 <?php
 $baseInclude = "database-tables/";
