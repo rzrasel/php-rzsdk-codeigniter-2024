@@ -44,8 +44,9 @@ class TblLanguageQuery extends TblLanguage {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             "lan_id"            => "BIGINT(20) NOT NULL",
-            "lan_name_bn"       => "VARCHAR(255) NOT NULL",
-            "lan_name_en"       => "VARCHAR(255) NOT NULL",
+            "lan_name"          => "VARCHAR(255) NOT NULL",
+            /*"lan_name_bn"       => "VARCHAR(255) NOT NULL",
+            "lan_name_en"       => "VARCHAR(255) NOT NULL",*/
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",

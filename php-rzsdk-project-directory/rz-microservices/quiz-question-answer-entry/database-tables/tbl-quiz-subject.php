@@ -1,18 +1,18 @@
 <?php
-namespace RzSDK\Database\Book;
+namespace RzSDK\Database\Quiz;
 ?>
 <?php
-class TblAuthor {
-    public static $prefix = "tbl_";
-    public static $table = "author";
+class TblQuizSubject {
+    public static $prefix = "";
+    public static $table = "quiz_subject";
     //
-    public $lan_id         = "lan_id";
-    public $author_id       = "author_id";
-    public $author_token    = "author_token";
-    //public $author_name     = "author_name";
-    /*public $author_name_bn  = "author_name_bn";
-    public $author_name_en  = "author_name_en";*/
+    public $lan_id          = "lan_id";
+    public $subject_id      = "subject_id";
+    public $subject_name    = "subject_name";
+    public $slug            = "slug";
+    public $subject_order   = "subject_order";
     public $status          = "status";
+    public $is_quiz_mode    = "is_quiz_mode";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";
     public $modified_date   = "modified_date";

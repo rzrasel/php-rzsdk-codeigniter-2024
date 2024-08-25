@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblReligionQuery extends TblReligion {
+class TblSectionQuery extends TblSection {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -44,10 +44,9 @@ class TblReligionQuery extends TblReligion {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             "lan_id"            => "BIGINT(20) NOT NULL",
-            "religion_id"       => "BIGINT(20) NOT NULL",
-            "religion_name"     => "VARCHAR(255) NOT NULL",
-            /*"religion_name_bn"  => "VARCHAR(255)",
-            "religion_name_en"  => "VARCHAR(255)",*/
+            "section_id"        => "BIGINT(20) NOT NULL",
+            "section_token"     => "TEXT NOT NULL",
+            "slug"              => "TEXT NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",
@@ -67,7 +66,7 @@ class TblReligionQuery extends TblReligion {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "religion_id")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "section_id")
         );
         /*$dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, "user_auth_log_id", "test_table", "user_auth_log_id")

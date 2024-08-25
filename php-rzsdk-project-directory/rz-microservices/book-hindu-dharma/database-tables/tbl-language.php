@@ -7,8 +7,9 @@ class TblLanguage {
     public static $table = "language";
     //
     public $lan_id         = "lan_id";
-    public $lan_name_bn     = "lan_name_bn";
-    public $lan_name_en     = "lan_name_en";
+    public $lan_name        = "lan_name";
+    /*public $lan_name_bn     = "lan_name_bn";
+    public $lan_name_en     = "lan_name_en";*/
     public $status          = "status";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";

@@ -6,9 +6,11 @@ class TblReligion {
     public static $prefix = "tbl_";
     public static $table = "religion";
     //
+    public $lan_id          = "lan_id";
     public $religion_id     = "religion_id";
-    public $religion_name_bn    = "religion_name_bn";
-    public $religion_name_en    = "religion_name_en";
+    public $religion_name   = "religion_name";
+    /*public $religion_name_bn    = "religion_name_bn";
+    public $religion_name_en    = "religion_name_en";*/
     public $status          = "status";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";

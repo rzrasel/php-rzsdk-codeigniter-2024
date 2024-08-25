@@ -1,5 +1,5 @@
 <?php
-require_once("include.php");
+require_once("../include.php");
 ?>
 <?php
 use RzSDK\URL\SiteUrl;
@@ -8,17 +8,10 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 $baseUrl = SiteUrl::getBaseUrl();
-$projectBaseUrl = $baseUrl;
+$projectBaseUrl = rtrim(dirname($baseUrl), "/");
 //echo $baseUrl;
 $sideNavigation = (new SideRoureNavigation($projectBaseUrl))->getSideNavigation();
 //echo $sideNavigation;
-//echo IdGenerator::getSysUserId();
-?>
-<?php
-$str = "Hello PHP";
-echo "Your string is".$str;
-echo "<br>";
-echo sha1($str);
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -36,7 +29,7 @@ echo sha1($str);
                     <td>
                         <table class="table-entry-form-holder">
                             <tr>
-                                <td class="table-entry-form-holder-page-header">Home</td>
+                                <td class="table-entry-form-holder-page-header">Language Entry</td>
                             </tr>
                         </table>
                     </td>

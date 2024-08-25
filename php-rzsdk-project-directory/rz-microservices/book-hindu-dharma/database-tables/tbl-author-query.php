@@ -43,9 +43,12 @@ class TblAuthorQuery extends TblAuthor {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
+            "lan_id"            => "BIGINT(20) NOT NULL",
             "author_id"         => "BIGINT(20) NOT NULL",
-            "author_name_bn"    => "TEXT NOT NULL",
-            "author_name_en"    => "TEXT NOT NULL",
+            "author_token"      => "TEXT NOT NULL",
+            //"author_name"       => "TEXT NOT NULL",
+            /*"author_name_bn"    => "TEXT NOT NULL",
+            "author_name_en"    => "TEXT NOT NULL",*/
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",

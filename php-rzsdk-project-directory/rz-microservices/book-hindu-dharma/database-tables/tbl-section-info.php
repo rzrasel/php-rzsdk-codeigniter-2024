@@ -2,16 +2,16 @@
 namespace RzSDK\Database\Book;
 ?>
 <?php
-class TblAuthor {
+class TblSectionInfo {
     public static $prefix = "tbl_";
-    public static $table = "author";
+    public static $table = "section_info";
     //
     public $lan_id         = "lan_id";
-    public $author_id       = "author_id";
-    public $author_token    = "author_token";
-    //public $author_name     = "author_name";
-    /*public $author_name_bn  = "author_name_bn";
-    public $author_name_en  = "author_name_en";*/
+    public $section_id      = "section_id";
+    public $section_parent_id   = "section_parent_id";
+    public $section_info_id = "section_info_id";
+    public $section_name    = "section_name";
+    public $section_order   = "section_order";
     public $status          = "status";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";

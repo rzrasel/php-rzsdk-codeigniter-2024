@@ -6,14 +6,14 @@ defined("RZ_SDK_BASE_PATH") OR exit("No direct script access allowed");
 defined("RZ_SDK_LIB_ROOT_DIR") OR exit("No direct script access allowed");
 ?>
 <?php
-require_once("autoloader-helper.php");
+require_once("project-autoloader-helper.php");
 ?>
 <?php
-use RzSDK\Autoloader\AutoloaderHelper;
+use RzSDK\Autoloader\ProjectAutoloaderHelper;
 use RzSDK\File\FileAssist;
 ?>
 <?php
-class Autoloader extends AutoloaderHelper {
+class ProjectAutoloader extends ProjectAutoloaderHelper {
     //
     private $directories;
     public $existedFilePath;
@@ -34,11 +34,11 @@ class Autoloader extends AutoloaderHelper {
         if(!empty($this->directories)) {
             //$pathList = parent::getDirectoryToPath("", $this->directories);
             //$pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
-            $pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
+            $pathList = parent::getDirectoryToPath(RZ_SDK_PROJECT_ROOT_DIR, $this->directories);
             /*echo "<br /><br /><br /><br />";
             $this->log($pathList);
-            echo "<br /><br /><br /><br />";
-            //echo "<br />";*/
+            echo "<br /><br /><br /><br />";*/
+            //echo "<br />";
             $filePath = parent::getExistedFilePath($pathList, $fileName);
             if(empty($filePath)) {
                 //$pathList = parent::getDirectoryToPath("rz-sdk-library", $this->directories);
@@ -81,8 +81,10 @@ class Autoloader extends AutoloaderHelper {
 ?>
 <?php
 $directoryList = array(
-    "curl",
-    "database",
+    "database-tables",
+    "route",
+    "utils",
+    /*"database",
     "date-time",
     "debug-log",
     "detect-client",
@@ -93,10 +95,10 @@ $directoryList = array(
         "module",
     ),
     "utils",
-    "validation",
+    "validation",*/
 );
 ?>
 <?php
-$autoloader = new Autoloader($directoryList);
-//echo $autoloader->existedFilePath;
+$projectAutoloader = new ProjectAutoloader($directoryList);
+//echo $projectAutoloader->existedFilePath;
 ?>
