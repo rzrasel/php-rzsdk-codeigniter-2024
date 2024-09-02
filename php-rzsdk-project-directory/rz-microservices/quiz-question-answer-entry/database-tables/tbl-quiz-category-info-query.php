@@ -44,12 +44,13 @@ class TblQuizCategoryInfoQuery extends TblQuizCategoryInfo {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             "lan_id"            => "BIGINT(20) NOT NULL",
+            "cat_token_id"      => "BIGINT(20) NOT NULL",
             "category_id"       => "BIGINT(20) NOT NULL",
             "category_name"     => "TEXT NOT NULL",
             "slug"              => "TEXT NOT NULL",
             "category_order"    => "INT(5) NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
-            "is_quiz_mode"      => "BOOLEAN NOT NULL DEFAULT TRUE",
+            //"is_quiz_mode"      => "BOOLEAN NOT NULL DEFAULT TRUE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",
             "modified_date"     => "DATETIME NOT NULL",

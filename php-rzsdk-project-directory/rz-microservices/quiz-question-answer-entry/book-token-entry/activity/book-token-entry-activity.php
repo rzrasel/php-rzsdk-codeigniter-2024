@@ -1,52 +1,52 @@
 <?php
-namespace RzSDK\Quiz\Activity\Language\Entry;
+namespace RzSDK\Quiz\Activity\Book\Token\Entry;
 ?>
 <?php
 use RzSDK\Service\Listener\ServiceListener;
-use RzSDK\Quiz\Model\HTTP\Request\Language\Parameter\RequestLanguageEntryQueryModel;
-use RzSDK\Quiz\Service\Language\Entry\LanguageEntryActivityService;
+use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
+use RzSDK\Quiz\Service\Book\Token\Entry\BookTokenEntryActivityService;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class LanguageEntryActivity {
+class BookTokenEntryActivity {
     //
     public ServiceListener $serviceListener;
-    public RequestLanguageEntryQueryModel $languageEntryQueryModel;
+    public RequestBookTokenEntryQueryModel $bookTokenEntryQueryModel;
+
     //
 
     public function __construct(ServiceListener $serviceListener) {
         $this->serviceListener = $serviceListener;
-        $this->languageEntryQueryModel = new RequestLanguageEntryQueryModel();
+        $this->bookTokenEntryQueryModel = new RequestBookTokenEntryQueryModel();
     }
 
     public function execute($postedDataSet) {
-        $queryParams = $this->languageEntryQueryModel->getQueryParams();
+        $queryParams = $this->bookTokenEntryQueryModel->getQueryParams();
         //DebugLog::log($queryParams);
         if(empty($postedDataSet)) {
             foreach($queryParams as $key => $value) {
-                $this->languageEntryQueryModel->$key = "";
+                $this->bookTokenEntryQueryModel->$key = "";
             }
             return;
         }
-        if(!array_key_exists($this->languageEntryQueryModel->getEntryFormName(), $postedDataSet)) {
+        if(!array_key_exists($this->bookTokenEntryQueryModel->getEntryFormName(), $postedDataSet)) {
             return;
         }
         //DebugLog::log($postedDataSet);
         foreach($queryParams as $key => $value) {
             //echo $key . ": " . $value . "\n";
             if(array_key_exists($value, $postedDataSet)) {
-                $this->languageEntryQueryModel->$key = $postedDataSet[$value];
+                $this->bookTokenEntryQueryModel->$key = $postedDataSet[$value];
             }
         }
-        //DebugLog::log($this->languageEntryQueryModel->getUrlParameters());
-        //$this->serviceListener->onSuccess(null, "Success");
-        $this->runServiceExecute($this->languageEntryQueryModel);
+        //DebugLog::log($this->bookTokenEntryQueryModel->getUrlParameters());
+        $this->runServiceExecute($this->bookTokenEntryQueryModel);
     }
 
-    private function runServiceExecute(RequestLanguageEntryQueryModel $languageEntryQueryModel) {
-        (new LanguageEntryActivityService(
+    private function runServiceExecute(RequestBookTokenEntryQueryModel $bookTokenEntryQueryModel) {
+        (new BookTokenEntryActivityService(
             new class($this) implements ServiceListener {
-                private LanguageEntryActivity $outerInstance;
+                private BookTokenEntryActivity $outerInstance;
 
                 // Constructor to receive outer instance
                 public function __construct($outerInstance) {
@@ -62,12 +62,12 @@ class LanguageEntryActivity {
                 function onSuccess($dataSet, $message) {
                     //DebugLog::log($dataSet);
                     //DebugLog::log($message);
-                    $this->outerInstance->languageEntryQueryModel->language_name = null;
+                    //$this->outerInstance->bookTokenEntryQueryModel->book_token_name = null;
                     $this->outerInstance->serviceListener->onSuccess($dataSet, $message);
                 }
             }
         ))
-            ->execute($languageEntryQueryModel);
+            ->execute($bookTokenEntryQueryModel);
     }
 }
 ?>

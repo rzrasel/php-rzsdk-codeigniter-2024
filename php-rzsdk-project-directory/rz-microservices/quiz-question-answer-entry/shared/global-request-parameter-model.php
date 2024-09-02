@@ -9,8 +9,12 @@ use RzSDK\Log\DebugLog;
 class GlobalRequestParameterModel {
     // Language Request Query Part
     public $language_name = "language-name";
+    public $category_token_name = "category-token-name";
+    public $book_token_name = "book-token-name";
     //
     public $language_entry_form = "language-entry-form";
+    public $category_token_entry_form = "category-token-entry-form";
+    public $book_token_entry_form = "book-token-entry-form";
     //
 
     public function __construct() {

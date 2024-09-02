@@ -43,6 +43,21 @@ $directoryList = array(
         "model",
         "service",
     ),
+    "category-token-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    "book-token-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    "book-info-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
     "route",
     "shared",
     "utils",

@@ -30,16 +30,28 @@ class SideRouteNavigation {
 
     private function getLinkList() {
         return array(
+            // Language Router
             $this->baseUrl => "Home",
             $this->baseUrl . "/language-entry/" . "language-entry.php" => "Language Entry",
-            $this->baseUrl . "/language-entry/" . "religion-entry.php" => "Religion Entry",
-            $this->baseUrl . "/word-entry/" . "author-entry.php" => "Author Entry",
-            $this->baseUrl . "/word-entry/" . "book-entry.php" => "Book Entry",
-            $this->baseUrl . "/word-entry/" . "section-entry.php" => "Section Entry",
+            // Category Router
+            $this->baseUrl . "/category-token-entry/" . "category-token-entry.php" => "Category Token Entry",
+            $this->baseUrl . "/category-info-entry/" . "category-info-entry.php" => "Category Info Entry",
+            // Sub Category Router
+            $this->baseUrl . "/sub-category-token-entry/" . "category-token-entry.php" => "<s>Sub Category Token Entry</s>",
+            $this->baseUrl . "/sub-category-info-entry/" . "sub-category-info-entry.php" => "<s>Sub Category Info Entry</s>",
+            //
+            $this->baseUrl . "/word-entry/" . "author-entry.php" => "<s>Author Entry</s>",
+            $this->baseUrl . "/word-entry/" . "publisher-entry.php" => "<s>Publisher Entry</s>",
+            // Book Router
+            $this->baseUrl . "/book-token-entry/" . "book-token-entry.php" => "Book Token Entry",
+            $this->baseUrl . "/book-info-entry/" . "book-info-entry.php" => "Book Info Entry",
+            //
+            $this->baseUrl . "/word-entry/" . "sectioning-entry.php" => "Sectioning Entry",
             $this->baseUrl . "/word-entry/" . "word-entry.php" => "Content Entry",
-            $this->baseUrl . "/word-edit/" . "word-edit.php" => "Word Edit",
+            /*$this->baseUrl . "/word-edit/" . "word-edit.php" => "Word Edit",
             $this->baseUrl . "/word-meaning-entry/" . "word-meaning-entry.php" => "Word Meaning Entry",
-            $this->baseUrl . "/word-search-module/" . "word-search-module-output.php" => "Word Search Module",
+            $this->baseUrl . "/word-search-module/" . "word-search-module-output.php" => "Word Search Module",*/
+            // Database Schema Generator
             $this->baseUrl . "/pages/generate-database-schema.php" => "Database Table Home",
         );
     }

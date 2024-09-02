@@ -1,8 +1,5 @@
 <?php
-namespace RzSDK\Quiz\Model\HTTP\Request\Language\Parameter;
-?>
-<?php
-//require_once("global-url-parameter-model.php");
+namespace RzSDK\Quiz\Model\HTTP\Request\Category\Token\Parameter;
 ?>
 <?php
 use RzSDK\Utils\ObjectPropertyWizard;
@@ -10,7 +7,7 @@ use RzSDK\Shared\HTTP\Request\Parameter\GlobalRequestParameterModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class RequestLanguageEntryQueryModel extends GlobalRequestParameterModel {
+class RequestCategoryTokenEntryQueryModel extends GlobalRequestParameterModel {
     public function __construct() {
     }
 
@@ -34,7 +31,7 @@ class RequestLanguageEntryQueryModel extends GlobalRequestParameterModel {
         );*/
         $parameterModel = new GlobalRequestParameterModel();
         $tempParameterArray = array(
-            $parameterModel->language_name,
+            $parameterModel->category_token_name,
         );
         $parameterModel = null;
         return $this->getIndividualQuery($tempParameterArray);
@@ -42,7 +39,7 @@ class RequestLanguageEntryQueryModel extends GlobalRequestParameterModel {
 
     public function getEntryFormName() {
         $parameterModel = new GlobalRequestParameterModel();
-        $tempLanguageEntryForm = $parameterModel->language_entry_form;
+        $tempLanguageEntryForm = $parameterModel->category_token_entry_form;
         $parameterModel = null;
         return $tempLanguageEntryForm;
     }

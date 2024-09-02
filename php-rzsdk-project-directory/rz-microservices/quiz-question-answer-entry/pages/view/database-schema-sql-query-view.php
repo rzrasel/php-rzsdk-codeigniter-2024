@@ -8,6 +8,8 @@ use RzSDK\Database\DbType;
 use RzSDK\Database\Quiz\TblLanguageQuery;
 use RzSDK\Database\Quiz\TblQuizCategoryIndexQuery;
 use RzSDK\Database\Quiz\TblQuizCategoryInfoQuery;
+use RzSDK\Database\Quiz\TblBookIndexQuery;
+use RzSDK\Database\Quiz\TblBookInfoQuery;
 use RzSDK\Database\Quiz\TblQuizSubjectQuery;
 use RzSDK\Database\Quiz\TblQuizQuestionQuery;
 ?>
@@ -16,9 +18,11 @@ $dbType = DbType::SQLITE;
 $databaseSchemaList = array(
     new TblLanguageQuery($dbType),
     new TblQuizCategoryIndexQuery($dbType),
-    new TblQuizCategoryInfoQuery($dbType),
-    new TblQuizSubjectQuery($dbType),
-    new TblQuizQuestionQuery($dbType),
+    //new TblQuizCategoryInfoQuery($dbType),
+    new TblBookIndexQuery($dbType),
+    new TblBookInfoQuery($dbType),
+    //new TblQuizSubjectQuery($dbType),
+    //new TblQuizQuestionQuery($dbType),
 );
 ?>
 <?php
@@ -47,19 +51,21 @@ foreach($databaseSchemaList as $databaseSchema) {
                                         <tr>
                                             <td>
                                             <br />
-                                    <pre>
+                                            <br />
 <?php
+echo "<pre>";
 foreach($databaseSchemaList as $databaseSchema) {
     echo $databaseSchema->execute();
     echo "<br />";
     echo "<br />";
 }
+echo "</pre>";
 ?>
-                                    </pre>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
+                                                <br />
 <?php
 foreach($databaseSchemaList as $databaseSchema) {
     echo $databaseSchema->deleteQuery();

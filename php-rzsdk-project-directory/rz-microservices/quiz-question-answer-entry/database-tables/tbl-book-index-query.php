@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblQuizCategoryIndexQuery extends TblQuizCategoryIndex {
+class TblBookIndexQuery extends TblBookIndex {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,13 +43,10 @@ class TblQuizCategoryIndexQuery extends TblQuizCategoryIndex {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            //"lan_id"            => "BIGINT(20) NULL",
-            "cat_token_id"      => "BIGINT(20) NOT NULL",
-            "cat_token_name"    => "TEXT NOT NULL",
+            "book_token_id"     => "BIGINT(20) NOT NULL",
+            "book_token_name"   => "VARCHAR(255) NOT NULL",
             "slug"              => "TEXT NOT NULL",
-            "cat_token_order"   => "INT(5) NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
-            //"is_quiz_mode"      => "BOOLEAN NOT NULL DEFAULT TRUE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",
             "modified_date"     => "DATETIME NOT NULL",
@@ -68,7 +65,7 @@ class TblQuizCategoryIndexQuery extends TblQuizCategoryIndex {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "cat_token_id")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "book_token_id")
         );
         /*$dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, "user_auth_log_id", "test_table", "user_auth_log_id")
