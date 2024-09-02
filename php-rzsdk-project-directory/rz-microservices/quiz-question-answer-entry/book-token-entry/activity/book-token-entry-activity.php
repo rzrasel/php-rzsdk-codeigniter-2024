@@ -62,7 +62,7 @@ class BookTokenEntryActivity {
                 function onSuccess($dataSet, $message) {
                     //DebugLog::log($dataSet);
                     //DebugLog::log($message);
-                    //$this->outerInstance->bookTokenEntryQueryModel->book_token_name = null;
+                    $this->outerInstance->bookTokenEntryQueryModel->book_token_name = null;
                     $this->outerInstance->serviceListener->onSuccess($dataSet, $message);
                 }
             }

@@ -53,6 +53,11 @@ $directoryList = array(
         "model",
         "service",
     ),
+    "book-name-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
     "book-info-entry" => array(
         "activity",
         "model",
@@ -60,6 +65,10 @@ $directoryList = array(
     ),
     "route",
     "shared",
+    "universal" => array(
+        "book-token",
+        "language",
+    ),
     "utils",
 );
 defined("RZ_PROJECT_DIR_LIST") or define("RZ_PROJECT_DIR_LIST", $directoryList);

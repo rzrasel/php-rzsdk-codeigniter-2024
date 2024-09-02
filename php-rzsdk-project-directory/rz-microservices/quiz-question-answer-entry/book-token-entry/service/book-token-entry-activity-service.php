@@ -5,6 +5,10 @@ namespace RzSDK\Quiz\Service\Book\Token\Entry;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
 use RzSDK\Database\SqliteConnection;
+use RzSDK\Database\Quiz\TblBookIndex;
+use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
+use RzSDK\Database\Space\DbQuizTable;
+use RzSDK\Quiz\Model\Database\Book\Token\Entry\DbBookTokenEntryModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -25,8 +29,65 @@ class BookTokenEntryActivityService implements ServiceListener {
     }
 
     private function runExecute() {
-        DebugLog::log($this->bookTokenEntryQueryModel);
-        //$this->isLanguageExists();
+        //DebugLog::log($this->bookTokenEntryQueryModel);
+        $this->isBookTokenExists();
+    }
+
+    private function isBookTokenExists() {
+        //
+        $tempTblBookIndex = new TblBookIndex();
+        $colBookTokenName = $tempTblBookIndex->book_token_name;
+        $tempTblBookIndex = null;
+        //
+        $bookTokenTableName = DbQuizTable::bookTokenWithPrefix();
+        //
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->select()
+            ->from($bookTokenTableName)
+            ->where($bookTokenTableName, array(
+                $colBookTokenName => $this->bookTokenEntryQueryModel->book_token_name,
+            ))
+            ->build();
+        //DebugLog::log($sqlQuery);
+        $dbConn = $this->getDbConnection();
+        $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+        if(empty($dbResult)) {
+            $this->onError(null, "Error! Database error");
+            return;
+        }
+        //
+        $counter = 0;
+        foreach($dbResult as $row) {
+            //DebugLog::log($row);
+            $counter++;
+        }
+        $dbResult = null;
+        if($counter > 0) {
+            $this->onError(null, "Error! Language \"{$this->bookTokenEntryQueryModel->book_token_name}\" already exist");
+            return;
+        }
+        //
+        $this->runBookTokenDbInsert();
+    }
+
+    private function runBookTokenDbInsert() {
+        //
+        $dbBookTokenEntryModel = new DbBookTokenEntryModel();
+        $insertDataSet = $dbBookTokenEntryModel->getBookTokenInsertDataSet($this->bookTokenEntryQueryModel);
+        $insertDataSet = $insertDataSet->getColumnWithKey();
+        //DebugLog::log($insertDataSet);
+        //
+        $bookTokenTableName = DbQuizTable::bookTokenWithPrefix();
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder->insert($bookTokenTableName)
+            ->values($insertDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        $dbConn = $this->getDbConnection();
+        $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+        $dbResult = null;
+        $this->onSuccess($this->bookTokenEntryQueryModel, "Successfully inserted \"{$this->bookTokenEntryQueryModel->book_token_name}\"");
     }
 
     private function doRunDatabaseQuery($dbConn, $sqlQuery) {

@@ -9,6 +9,7 @@ use RzSDK\Database\Quiz\TblLanguageQuery;
 use RzSDK\Database\Quiz\TblQuizCategoryIndexQuery;
 use RzSDK\Database\Quiz\TblQuizCategoryInfoQuery;
 use RzSDK\Database\Quiz\TblBookIndexQuery;
+use RzSDK\Database\Quiz\TblBookNameQuery;
 use RzSDK\Database\Quiz\TblBookInfoQuery;
 use RzSDK\Database\Quiz\TblQuizSubjectQuery;
 use RzSDK\Database\Quiz\TblQuizQuestionQuery;
@@ -20,6 +21,7 @@ $databaseSchemaList = array(
     new TblQuizCategoryIndexQuery($dbType),
     //new TblQuizCategoryInfoQuery($dbType),
     new TblBookIndexQuery($dbType),
+    new TblBookNameQuery($dbType),
     new TblBookInfoQuery($dbType),
     //new TblQuizSubjectQuery($dbType),
     //new TblQuizQuestionQuery($dbType),

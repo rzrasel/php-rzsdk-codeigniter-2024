@@ -44,6 +44,7 @@ class SideRouteNavigation {
             $this->baseUrl . "/word-entry/" . "publisher-entry.php" => "<s>Publisher Entry</s>",
             // Book Router
             $this->baseUrl . "/book-token-entry/" . "book-token-entry.php" => "Book Token Entry",
+            $this->baseUrl . "/book-name-entry/" . "book-name-entry.php" => "Book Name Entry",
             $this->baseUrl . "/book-info-entry/" . "book-info-entry.php" => "Book Info Entry",
             //
             $this->baseUrl . "/word-entry/" . "sectioning-entry.php" => "Sectioning Entry",

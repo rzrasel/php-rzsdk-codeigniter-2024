@@ -3,12 +3,10 @@ namespace RzSDK\Quiz\Service\Language\Entry;
 ?>
 <?php
 
-use Error;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Quiz\Model\HTTP\Request\Language\Parameter\RequestLanguageEntryQueryModel;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
-use RzSDK\SqlQueryBuilder\SqlOrderType;
 use RzSDK\Database\Space\DbQuizTable;
 use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Quiz\Model\Database\Language\Entry\DbLanguageEntryModel;
@@ -80,9 +78,9 @@ class LanguageEntryActivityService implements ServiceListener {
         $insertDataSet = $dbLanguageEntryModel->getLanguageInsertDataSet($this->languageEntryQueryModel);
         $insertDataSet = $insertDataSet->getColumnWithKey();
         //
-        $dictionaryWordTableName = DbQuizTable::languageWithPrefix();
+        $languageTableName = DbQuizTable::languageWithPrefix();
         $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->insert($dictionaryWordTableName)
+        $sqlQuery = $sqlQueryBuilder->insert($languageTableName)
             ->values($insertDataSet)
             ->build();
         //DebugLog::log($sqlQuery);

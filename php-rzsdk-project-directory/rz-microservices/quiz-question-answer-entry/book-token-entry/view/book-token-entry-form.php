@@ -13,7 +13,7 @@ $tempBookTokenEntryQueryModel = new RequestBookTokenEntryQueryModel();
         <tr>
             <td class="table-entry-form-field-left">Book Token Name: </td>
             <td class="table-entry-form-field-right">
-                <input type="text" name="<?= $tempBookTokenEntryQueryModel->book_token_name; ?>" value="<?= $bookTokenEntryActivity->bookTokenEntryQueryModel->book_token_name; ?>" placeholder="Book Token Name" required="required" />
+                <input type="text" name="<?= $tempBookTokenEntryQueryModel->book_token_name; ?>" value="<?= $bookTokenEntryActivity->bookTokenEntryQueryModel->book_token_name; ?>" placeholder="Book Token Name (English Only)" required="required" />
             </td>
         </tr>
         <tr><td></td><td height="30px"></td></tr>

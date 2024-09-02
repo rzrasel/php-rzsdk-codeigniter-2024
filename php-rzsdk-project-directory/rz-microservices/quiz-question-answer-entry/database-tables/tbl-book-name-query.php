@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblBookInfoQuery extends TblBookInfo {
+class TblBookNameQuery extends TblBookName {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,12 +45,11 @@ class TblBookInfoQuery extends TblBookInfo {
         $tablePropertyList = array(
             "lan_id"            => "BIGINT(20) NOT NULL",
             "book_token_id"     => "BIGINT(20) NOT NULL",
-            "book_info_id"      => "BIGINT(20) NOT NULL",
-            "book_info_name"    => "TEXT NOT NULL",
-            "book_name_prefix"  => "TEXT NULL",
-            "book_name_suffix"  => "TEXT NULL",
+            "book_name_id"      => "BIGINT(20) NOT NULL",
+            "book_name"         => "TEXT NOT NULL",
             "slug"              => "TEXT NOT NULL",
             "status"            => "BOOLEAN NOT NULL DEFAULT TRUE",
+            "is_default"        => "BOOLEAN NOT NULL DEFAULT FALSE",
             "modified_by"       => "BIGINT(20) NOT NULL",
             "created_by"        => "BIGINT(20) NOT NULL",
             "modified_date"     => "DATETIME NOT NULL",
@@ -69,7 +68,7 @@ class TblBookInfoQuery extends TblBookInfo {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "book_info_id")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "book_name_id")
         );
         /*$dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, "user_auth_log_id", "test_table", "user_auth_log_id")
