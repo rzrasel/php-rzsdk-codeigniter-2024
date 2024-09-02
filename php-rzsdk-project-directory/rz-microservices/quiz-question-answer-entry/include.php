@@ -35,6 +35,21 @@ defined("DB_FILE") or define("DB_FILE", "quiz-question-answer-database.sqlite");
 defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FILE);
 ?>
 <?php
+$directoryList = array(
+    "database-tables",
+    "html-view",
+    "language-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    "route",
+    "shared",
+    "utils",
+);
+defined("RZ_PROJECT_DIR_LIST") or define("RZ_PROJECT_DIR_LIST", $directoryList);
+?>
+<?php
 $baseInclude = "rz-sdk-library/";
 //
 $baseDirectory = RZ_SDK_BASE_PATH;

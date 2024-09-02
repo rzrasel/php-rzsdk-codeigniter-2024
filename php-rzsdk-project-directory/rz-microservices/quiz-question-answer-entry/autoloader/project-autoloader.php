@@ -80,25 +80,6 @@ class ProjectAutoloader extends ProjectAutoloaderHelper {
 }
 ?>
 <?php
-$directoryList = array(
-    "database-tables",
-    "route",
-    "utils",
-    /*"database",
-    "date-time",
-    "debug-log",
-    "detect-client",
-    "encryption",
-    "identification",
-    "response",
-    "sql-query-builder" => array(
-        "module",
-    ),
-    "utils",
-    "validation",*/
-);
-?>
-<?php
-$projectAutoloader = new ProjectAutoloader($directoryList);
+$projectAutoloader = new ProjectAutoloader(RZ_PROJECT_DIR_LIST);
 //echo $projectAutoloader->existedFilePath;
 ?>

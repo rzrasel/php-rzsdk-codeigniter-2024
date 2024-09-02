@@ -2,7 +2,7 @@
 namespace RzSDK\Book\Navigation\Route;
 ?>
 <?php
-class SideRoureNavigation {
+class SideRouteNavigation {
     private $baseUrl;
 
     public function __construct($baseUrl = BASE_URL) {

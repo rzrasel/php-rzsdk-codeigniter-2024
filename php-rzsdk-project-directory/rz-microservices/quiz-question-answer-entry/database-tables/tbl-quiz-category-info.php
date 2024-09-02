@@ -2,9 +2,9 @@
 namespace RzSDK\Database\Quiz;
 ?>
 <?php
-class TblQuizCategory {
+class TblQuizCategoryInfo {
     public static $prefix = "";
-    public static $table = "quiz_category";
+    public static $table = "quiz_category_info";
     //
     public $lan_id          = "lan_id";
     public $category_id     = "category_id";
