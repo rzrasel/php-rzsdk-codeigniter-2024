@@ -2,7 +2,6 @@
 namespace RzSDK\Universal\Character\Token;
 ?>
 <?php
-use RzSDK\Universal\Book\Token\PullBookTokenList;
 use RzSDK\Universal\Character\Token\PullCharacterTokenList;
 use RzSDK\Log\DebugLog;
 ?>

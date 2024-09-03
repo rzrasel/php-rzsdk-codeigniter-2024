@@ -5,7 +5,7 @@ require_once("../include.php");
 use RzSDK\URL\SiteUrl;
 use RzSDK\Book\Navigation\Route\SideRouteNavigation;
 use RzSDK\View\Html\View\MainHtmlView;
-use RzSDK\Quiz\Activity\Language\Entry\LanguageEntryActivity;
+use RzSDK\Quiz\Activity\Category\Map\Entry\CharacterTableMapEntryActivity;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
 use RzSDK\Log\DebugLog;
@@ -31,7 +31,7 @@ $mainHtmlView->renderTopView();
     <tr>
         <td height="50px">
 <?php
-$languageEntryActivity = new LanguageEntryActivity(
+$characterTableMapEntryActivity = new CharacterTableMapEntryActivity(
     new class implements ServiceListener {
         private AlertMessageBox $alertMessageBox;
         public function __construct() {
@@ -49,7 +49,7 @@ $languageEntryActivity = new LanguageEntryActivity(
         }
     }
 );
-$languageEntryActivity->execute($_POST);
+$characterTableMapEntryActivity->execute($_POST);
 ?>
         </td>
     </tr>

@@ -67,10 +67,16 @@ $directoryList = array(
     "shared",
     "universal" => array(
         "book-token",
+        "character-table-token",
         "language",
     ),
     "utils",
     "character-table-token-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    "character-table-map-entry" => array(
         "activity",
         "model",
         "service",

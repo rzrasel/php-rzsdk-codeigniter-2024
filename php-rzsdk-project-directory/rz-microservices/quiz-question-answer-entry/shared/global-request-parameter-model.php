@@ -22,6 +22,10 @@ class GlobalRequestParameterModel {
     public $book_token_entry_form = "book-token-entry-form";
     public $book_name_entry_form = "book-name-entry-form";
     //
+    public $character_token_id = "character-token-id";
+    public $character_name = "character-name";
+    public $character_map_entry_form = "character-map-entry-form";
+    //
 
     public function __construct() {
     }
