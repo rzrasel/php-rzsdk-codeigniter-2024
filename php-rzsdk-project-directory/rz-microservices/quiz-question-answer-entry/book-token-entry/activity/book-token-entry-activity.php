@@ -5,6 +5,7 @@ namespace RzSDK\Quiz\Activity\Book\Token\Entry;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
 use RzSDK\Quiz\Service\Book\Token\Entry\BookTokenEntryActivityService;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -36,7 +37,8 @@ class BookTokenEntryActivity {
         foreach($queryParams as $key => $value) {
             //echo $key . ": " . $value . "\n";
             if(array_key_exists($value, $postedDataSet)) {
-                $this->bookTokenEntryQueryModel->$key = $postedDataSet[$value];
+                $data = StringHelper::toSingleSpace($postedDataSet[$value]);
+                $this->bookTokenEntryQueryModel->$key = $data;
             }
         }
         //DebugLog::log($this->bookTokenEntryQueryModel->getUrlParameters());

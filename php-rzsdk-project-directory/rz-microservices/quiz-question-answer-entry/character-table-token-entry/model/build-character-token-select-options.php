@@ -1,31 +1,18 @@
 <?php
-namespace RzSDK\Universal\Book\Token;
+namespace RzSDK\Universal\Character\Token;
 ?>
 <?php
 use RzSDK\Universal\Book\Token\PullBookTokenList;
+use RzSDK\Universal\Character\Token\PullCharacterTokenList;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class BuildBookTokenSelectOptions {
+class BuildCharacterTokenSelectOptions {
     //
-    private $name;
-    private $isAllData = false;
-    private $fieldName = "book-token";
+    private $fieldName = "character-token";
     private $isRequired = true;
-    private $selectedBookToken;
+    private $selectedCharacterToken;
     //
-
-    public function __construct() {
-    }
-
-    public function setBookTokenName(string $name): self {
-        $this->name = $name;
-        return $this;
-    }
-    public function setIsAllData(bool $isAllData): self {
-        $this->isAllData = $isAllData;
-        return $this;
-    }
 
     public function setFieldName(string $fieldName): self {
         $this->fieldName = $fieldName;
@@ -37,23 +24,21 @@ class BuildBookTokenSelectOptions {
         return $this;
     }
 
-    public function setSelectedOption(string $selectedBookToken): self {
-        $this->selectedBookToken = $selectedBookToken;
+    public function setSelectedOption(string $selectedCharacterToken): self {
+        $this->selectedCharacterToken = $selectedCharacterToken;
         return $this;
     }
 
-    /*public function getSelectOptions() {}*/
-
     public function execute() {
-        $bookTokenList = $this->getDbBookTokenList();
-        //DebugLog::log($languageList);
+        $characterTokenList = $this->getDbCharacterTokenList();
+        //DebugLog::log($characterList);
         $optionsValue = "";
         $haveSelected = false;
         $optionSelected = " selected=\"select\"";
-        foreach($bookTokenList as $bookToken) {
-            $id = $bookToken[PullBookTokenList::BOOK_TOKEN_ID];
-            $name = $bookToken[PullBookTokenList::BOOK_TOKEN_NAME];
-            if($id == $this->selectedBookToken) {
+        foreach($characterTokenList as $characterToken) {
+            $id = $characterToken[PullCharacterTokenList::TOKEN_ID];
+            $name = $characterToken[PullCharacterTokenList::TOKEN_NAME];
+            if($id == $this->selectedCharacterToken) {
                 $optionSelected = " selected=\"select\"";
                 $haveSelected = true;
             } else {
@@ -96,15 +81,9 @@ class BuildBookTokenSelectOptions {
         return $selectValue;
     }
 
-    private function getDbBookTokenList() {
-        $pullBookTokenList = new PullBookTokenList();
-        if(!empty($this->name)) {
-            $pullBookTokenList->setName($this->name);
-        }
-        if($this->isAllData) {
-            $pullBookTokenList->setIsAllData($this->isAllData);
-        }
-        $bookTokenList = $pullBookTokenList->getBookToken();
+    private function getDbCharacterTokenList() {
+        $pullCharacterTokenList = new PullCharacterTokenList();
+        $bookTokenList = $pullCharacterTokenList->getCharacterToken();
         //DebugLog::log($bookTokenList);
         return $bookTokenList;
     }

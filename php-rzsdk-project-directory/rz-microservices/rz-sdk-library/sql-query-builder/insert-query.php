@@ -2,6 +2,9 @@
 namespace RzSDK\SqlQueryBuilder;
 ?>
 <?php
+use InvalidArgumentException;
+?>
+<?php
 class InsertQuery {
     //
     protected $table;
@@ -47,7 +50,12 @@ class InsertQuery {
                     $values .= "FALSE, ";
                 }
             } else if(empty($item)) {
-                $values .= "NULL, ";
+                if(is_int($item) || is_numeric($item)) {
+                    $values .= "'" . $item . "', ";
+                } else {
+                    $values .= "NULL, ";
+                }
+                //$values .= "NULL, ";
             } else if(is_int($item) || is_numeric($item)) {
                 $values .= "" . $item . ", ";
             } else if(is_bool($item)) {

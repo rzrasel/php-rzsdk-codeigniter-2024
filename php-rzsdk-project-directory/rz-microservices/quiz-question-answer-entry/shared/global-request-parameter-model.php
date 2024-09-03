@@ -14,6 +14,7 @@ class GlobalRequestParameterModel {
     public $book_token_id = "book-token-id";
     public $book_token_name = "book-token-name";
     public $book_name = "book-name";
+    public $book_name_slug = "book-name-slug";
     public $book_name_is_default = "book-name-is-default";
     //
     public $language_entry_form = "language-entry-form";

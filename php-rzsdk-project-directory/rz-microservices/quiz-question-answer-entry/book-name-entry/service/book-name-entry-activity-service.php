@@ -3,15 +3,13 @@ namespace RzSDK\Quiz\Service\Book\Token\Entry;
 ?>
     <?php
 use RzSDK\Service\Listener\ServiceListener;
-use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
 use RzSDK\Database\SqliteConnection;
-use RzSDK\Database\Quiz\TblBookIndex;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\Database\Space\DbQuizTable;
-use RzSDK\Quiz\Model\Database\Book\Token\Entry\DbBookTokenEntryModel;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Name\Parameter\RequestBookNameEntryQueryModel;
 use RzSDK\Database\Quiz\TblBookName;
 use RzSDK\Quiz\Model\Database\Book\Name\Entry\DbBookNameEntryModel;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -45,15 +43,20 @@ class BookNameEntryActivityService implements ServiceListener {
         $colBookTokenId = $tempTblBookName->book_token_id;
         $colBookNameId = $tempTblBookName->book_name_id;
         $colBookName = $tempTblBookName->book_name;
+        $colBookSlug = $tempTblBookName->slug;
         $colIsDefault = $tempTblBookName->is_default;
         $tempTblBookName = null;
         //
         $lanId = $this->bookNameEntryQueryModel->language_id;
         $bookTokenId = $this->bookNameEntryQueryModel->book_token_id;
+        $bookName = $this->bookNameEntryQueryModel->book_name;
+        $bookName = StringHelper::toSingleSpace($bookName);
+        $bookSlug = $this->bookNameEntryQueryModel->book_name_slug;
+        $bookSlug = StringHelper::toSlugify($bookSlug);
         //
         $bookNameTableName = DbQuizTable::bookNameWithPrefix();
         //
-        $sqlQueryBuilder = new SqlQueryBuilder();
+        /*$sqlQueryBuilder = new SqlQueryBuilder();
         $sqlQuery = $sqlQueryBuilder
             ->select()
             ->from($bookNameTableName)
@@ -62,7 +65,33 @@ class BookNameEntryActivityService implements ServiceListener {
                 $colBookTokenId => $bookTokenId,
                 $colBookName => $this->bookNameEntryQueryModel->book_name,
             ))
-            ->build();
+            ->where($bookNameTableName, array(
+                $colBookSlug => $this->bookNameEntryQueryModel->book_name_slug,
+            ), false)
+            ->build();*/
+        /*$sqlQuery = "SELECT * FROM {$bookNameTableName} "
+            . " WHERE ("
+            . "{$colLanId} = '{$lanId}'"
+            . " AND {$colBookTokenId} = '{$bookTokenId}'"
+            . " AND {$colBookName} = '{$bookName}'"
+            . ")"
+            . " OR {$colBookSlug} = '{$bookSlug}'"
+            . ";";*/
+        $sqlQuery = "SELECT * FROM {$bookNameTableName} "
+            . " WHERE"
+            . " ("
+            . " {$colLanId} = '{$lanId}'"
+            . " AND {$colBookTokenId} = '{$bookTokenId}'"
+            . " AND {$colBookName} = '{$bookName}'"
+            . ")"
+            . " OR"
+            . " ("
+            . "{$colLanId} = '{$lanId}'"
+            . " AND {$colBookTokenId} = '{$bookTokenId}'"
+            . " AND {$colBookSlug} = '{$bookSlug}'"
+            . ")"
+            . ";";
+        $sqlQuery = StringHelper::toSingleSpace($sqlQuery);
         //DebugLog::log($sqlQuery);
         //
         $dbConn = $this->getDbConnection();
@@ -80,7 +109,7 @@ class BookNameEntryActivityService implements ServiceListener {
         $dbResult = null;
         //
         if($counter > 0) {
-            $this->onError(null, "Error! Book \"{$this->bookNameEntryQueryModel->book_name}\" already exist");
+            $this->onError(null, "Error! Book name \"{$this->bookNameEntryQueryModel->book_name}\" or slug \"{$this->bookNameEntryQueryModel->book_name_slug}\" already exist");
             return;
         }
         //
@@ -98,6 +127,7 @@ class BookNameEntryActivityService implements ServiceListener {
             $isDefault = true;
         }
         $defaultBookName = $this->getDefaultBookName($lanId, $bookTokenId);
+        //DebugLog::log($defaultBookName);
         if(empty($defaultBookName)) {
             $isDefault = true;
         }
@@ -123,7 +153,36 @@ class BookNameEntryActivityService implements ServiceListener {
     }
 
     private function onUpdateDefaultBookName($lanId, $bookTokenId, $defaultBookName) {
-        $this->onSuccess($this->bookNameEntryQueryModel, "ggSuccessfully inserted \"{$this->bookNameEntryQueryModel->book_name}\"");
+        //
+        $tempTblBookName = new TblBookName();
+        $colLanId = $tempTblBookName->lan_id;
+        $colBookTokenId = $tempTblBookName->book_token_id;
+        $colBookNameId = $tempTblBookName->book_name_id;
+        $colBookName = $tempTblBookName->book_name;
+        $colIsDefault = $tempTblBookName->is_default;
+        $tempTblBookName = null;
+        //
+        $updateDataSet = array(
+            $colIsDefault => false,
+        );
+        //
+        $wordWhereDataSet = array(
+            $colLanId => $lanId,
+            $colBookTokenId => $bookTokenId,
+        );
+        //
+        $bookNameTableName = DbQuizTable::bookNameWithPrefix();
+        $sqlQueryBuilder = new SqlQueryBuilder();
+        $sqlQuery = $sqlQueryBuilder
+            ->update($bookNameTableName)
+            ->set($updateDataSet)
+            ->where("", $wordWhereDataSet)
+            ->build();
+        //DebugLog::log($sqlQuery);
+        $dbConn = $this->getDbConnection();
+        $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
+        $dbResult = null;
+        //$this->onSuccess($this->bookNameEntryQueryModel, "ggSuccessfully inserted \"{$this->bookNameEntryQueryModel->book_name}\"");
     }
 
     private function doRunDatabaseQuery($dbConn, $sqlQuery) {

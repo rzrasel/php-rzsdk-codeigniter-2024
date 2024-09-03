@@ -33,6 +33,7 @@ class RequestBookNameEntryQueryModel extends GlobalRequestParameterModel {
             $parameterModel->language_id,
             $parameterModel->book_token_id,
             $parameterModel->book_name,
+            $parameterModel->book_name_slug,
             $parameterModel->book_name_is_default,
         );
         $parameterModel = null;

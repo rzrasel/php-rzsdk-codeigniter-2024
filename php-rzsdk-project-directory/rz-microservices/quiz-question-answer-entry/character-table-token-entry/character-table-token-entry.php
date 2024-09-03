@@ -5,10 +5,11 @@ require_once("../include.php");
 use RzSDK\URL\SiteUrl;
 use RzSDK\Book\Navigation\Route\SideRouteNavigation;
 use RzSDK\View\Html\View\MainHtmlView;
-use RzSDK\Quiz\Activity\Book\Name\Entry\BookNameEntryActivity;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
-use RzSDK\Utils\String\StringHelper;
+use RzSDK\Quiz\Activity\Character\Token\Entry\CharacterTableTokenEntryActivity;
+use RzSDK\Universal\Character\Token\PullCharacterTokenList;
+use RzSDK\Universal\Character\Token\BuildCharacterTokenSelectOptions;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -22,19 +23,23 @@ $sideNavigation = (new SideRouteNavigation($projectBaseUrl))->getSideNavigation(
 ?>
 <?php
 $mainHtmlView = new MainHtmlView($projectBaseUrl);
-$mainHtmlView->setPageTitle("Book Name Entry")
+$mainHtmlView->setPageTitle("Character Table Token Entry")
     ->setCss()
     ->setSideNavigation($sideNavigation)
-    ->setPageHeader("Book Name Entry");
+    ->setPageHeader("Character Table Token Entry");
 $mainHtmlView->renderTopView();
 ?>
 <?php
+/*$characterTokenSelectOptions = new BuildCharacterTokenSelectOptions();
+$dataSet = $characterTokenSelectOptions->execute();
+echo $dataSet;*/
+//DebugLog::log($dataSet);
 ?>
 <table width="100%">
     <tr>
         <td height="50px">
 <?php
-$bookNameEntryActivity = new BookNameEntryActivity(
+$characterTableTokenEntryActivity = new CharacterTableTokenEntryActivity(
     new class implements ServiceListener {
         private AlertMessageBox $alertMessageBox;
         public function __construct() {
@@ -52,13 +57,13 @@ $bookNameEntryActivity = new BookNameEntryActivity(
         }
     }
 );
-$bookNameEntryActivity->execute($_POST);
+$characterTableTokenEntryActivity->execute($_POST);
 ?>
         </td>
     </tr>
 </table>
 <?php
-require_once("view/book-name-entry-form.php");
+require_once("view/character-table-token-entry-from.php");
 ?>
 <?php
 $mainHtmlView->renderBotomView();

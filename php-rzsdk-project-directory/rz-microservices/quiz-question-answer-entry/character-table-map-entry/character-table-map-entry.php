@@ -5,10 +5,9 @@ require_once("../include.php");
 use RzSDK\URL\SiteUrl;
 use RzSDK\Book\Navigation\Route\SideRouteNavigation;
 use RzSDK\View\Html\View\MainHtmlView;
-use RzSDK\Quiz\Activity\Book\Name\Entry\BookNameEntryActivity;
+use RzSDK\Quiz\Activity\Language\Entry\LanguageEntryActivity;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
-use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -22,19 +21,17 @@ $sideNavigation = (new SideRouteNavigation($projectBaseUrl))->getSideNavigation(
 ?>
 <?php
 $mainHtmlView = new MainHtmlView($projectBaseUrl);
-$mainHtmlView->setPageTitle("Book Name Entry")
+$mainHtmlView->setPageTitle("Character Table Mapping Entry")
     ->setCss()
     ->setSideNavigation($sideNavigation)
-    ->setPageHeader("Book Name Entry");
+    ->setPageHeader("Character Table Mapping Entry");
 $mainHtmlView->renderTopView();
-?>
-<?php
 ?>
 <table width="100%">
     <tr>
         <td height="50px">
 <?php
-$bookNameEntryActivity = new BookNameEntryActivity(
+$languageEntryActivity = new LanguageEntryActivity(
     new class implements ServiceListener {
         private AlertMessageBox $alertMessageBox;
         public function __construct() {
@@ -52,13 +49,13 @@ $bookNameEntryActivity = new BookNameEntryActivity(
         }
     }
 );
-$bookNameEntryActivity->execute($_POST);
+$languageEntryActivity->execute($_POST);
 ?>
         </td>
     </tr>
 </table>
 <?php
-require_once("view/book-name-entry-form.php");
+require_once("view/character-table-map-entry-from.php");
 ?>
 <?php
 $mainHtmlView->renderBotomView();

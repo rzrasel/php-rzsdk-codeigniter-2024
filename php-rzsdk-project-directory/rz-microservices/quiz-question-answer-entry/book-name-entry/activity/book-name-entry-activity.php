@@ -3,12 +3,11 @@ namespace RzSDK\Quiz\Activity\Book\Name\Entry;
 ?>
 <?php
 use RzSDK\Service\Listener\ServiceListener;
-use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Name\Parameter\RequestBookNameEntryQueryModel;
 use RzSDK\Quiz\Service\Book\Token\Entry\BookNameEntryActivityService;
-use RzSDK\Universal\Language\PullLanguageList;
-use RzSDK\Universal\Language\Select\Option\BuildLanguageSelectOptions;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
+
 ?>
 <?php
 class BookNameEntryActivity {
@@ -40,7 +39,8 @@ class BookNameEntryActivity {
         foreach($queryParams as $key => $value) {
             //echo $key . ": " . $value . "\n";
             if(array_key_exists($value, $postedDataSet)) {
-                $this->bookNameEntryQueryModel->$key = $postedDataSet[$value];
+                $data = StringHelper::toSingleSpace($postedDataSet[$value]);
+                $this->bookNameEntryQueryModel->$key = $data;
             }
         }
         //DebugLog::log($this->bookNameEntryQueryModel);
@@ -70,6 +70,7 @@ class BookNameEntryActivity {
                     //$this->outerInstance->bookNameEntryQueryModel->language_id = "";
                     //$this->outerInstance->bookNameEntryQueryModel->book_token_id = "";
                     $this->outerInstance->bookNameEntryQueryModel->book_name = "";
+                    $this->outerInstance->bookNameEntryQueryModel->book_name_slug = "";
                     $this->outerInstance->bookNameEntryQueryModel->book_name_is_default = false;
                     $this->outerInstance->serviceListener->onSuccess($dataSet, $message);
                 }

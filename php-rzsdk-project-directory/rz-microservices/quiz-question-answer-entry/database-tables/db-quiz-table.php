@@ -6,6 +6,7 @@ namespace RzSDK\Database\Space;
 use RzSDK\Database\Quiz\TblBookName;
 use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Database\Quiz\TblBookIndex;
+use RzSDK\Database\Quiz\TblCharacterTableIndex;
 ?>
 <?php
 class DbQuizTable {
@@ -31,6 +32,14 @@ class DbQuizTable {
 
     public static function bookNameWithPrefix() {
         return TblBookName::tableWithPrefix();
+    }
+
+    public static function characterTableTokenName() {
+        return TblCharacterTableIndex::table();
+    }
+
+    public static function characterTableTokenWithPrefix() {
+        return TblCharacterTableIndex::tableWithPrefix();
     }
 }
 ?>

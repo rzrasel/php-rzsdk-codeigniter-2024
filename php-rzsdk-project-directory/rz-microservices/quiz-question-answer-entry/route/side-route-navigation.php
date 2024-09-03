@@ -54,6 +54,9 @@ class SideRouteNavigation {
             $this->baseUrl . "/word-search-module/" . "word-search-module-output.php" => "Word Search Module",*/
             // Database Schema Generator
             $this->baseUrl . "/pages/generate-database-schema.php" => "Database Table Home",
+            // Character Indexing
+            $this->baseUrl . "/character-table-token-entry/character-table-token-entry.php" => "Character Indexing",
+            $this->baseUrl . "/character-table-map-entry/character-table-map-entry.php" => "Character Mapping",
         );
     }
 }

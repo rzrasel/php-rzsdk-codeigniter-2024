@@ -70,6 +70,11 @@ $directoryList = array(
         "language",
     ),
     "utils",
+    "character-table-token-entry" => array(
+        "activity",
+        "model",
+        "service",
+    ),
 );
 defined("RZ_PROJECT_DIR_LIST") or define("RZ_PROJECT_DIR_LIST", $directoryList);
 ?>

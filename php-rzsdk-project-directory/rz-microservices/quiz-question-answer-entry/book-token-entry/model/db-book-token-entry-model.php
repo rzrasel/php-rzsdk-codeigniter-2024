@@ -5,10 +5,9 @@ namespace RzSDK\Quiz\Model\Database\Book\Token\Entry;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\DateTime\DateTime;
 use RzSDK\Utils\Id\Generator\IdGenerator;
-use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Database\Quiz\TblBookIndex;
-use RzSDK\Quiz\Model\HTTP\Request\Language\Parameter\RequestLanguageEntryQueryModel;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Token\Parameter\RequestBookTokenEntryQueryModel;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -21,6 +20,8 @@ class DbBookTokenEntryModel {
         $currentDate = DateTime::getCurrentDateTime();
         //
         $bookTokenName = trim($bookTokenEntryQueryModel->book_token_name);
+        $bookTokenName = StringHelper::toSingleSpace($bookTokenName);
+        $bookTokenName = StringHelper::toUCWords($bookTokenName);
         $bookTokenSlug = strtolower($bookTokenName);
         $bookTokenSlug = str_replace(" ","-", $bookTokenSlug);
         //

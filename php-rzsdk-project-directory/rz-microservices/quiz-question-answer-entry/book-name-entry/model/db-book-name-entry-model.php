@@ -6,6 +6,7 @@ use RzSDK\Database\Quiz\TblBookName;
 use RzSDK\Quiz\Model\HTTP\Request\Book\Name\Parameter\RequestBookNameEntryQueryModel;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\Utils\Id\Generator\IdGenerator;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\DateTime\DateTime;
 ?>
 <?php
@@ -17,9 +18,10 @@ class DbBookNameEntryModel {
         $sysUserId = IdGenerator::getSysUserId();
         $currentDate = DateTime::getCurrentDateTime();
         //
-        $bookName = trim($bookNameEntryQueryModel->book_name);
-        $bookSlug = strtolower($bookName);
-        $bookSlug = str_replace(" ","-", $bookSlug);
+        $bookName = StringHelper::toSingleSpace($bookNameEntryQueryModel->book_name);
+        $bookName = StringHelper::toUCWords($bookName);
+        $bookSlug = StringHelper::toSingleSpace($bookNameEntryQueryModel->book_name_slug);
+        $bookSlug = StringHelper::toSlugify($bookSlug);
         //
         $tblBookName = new TblBookName();
         $tblBookName->lan_id = $bookNameEntryQueryModel->language_id;

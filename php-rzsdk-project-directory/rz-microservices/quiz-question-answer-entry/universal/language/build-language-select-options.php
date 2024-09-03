@@ -54,6 +54,7 @@ class BuildLanguageSelectOptions {
             $id = $language[PullLanguageList::LANGUAGE_ID];
             $name = $language[PullLanguageList::LANGUAGE_NAME];
             if($id == $this->selectedLanguage) {
+                $optionSelected = " selected=\"select\"";
                 $haveSelected = true;
             } else {
                 $optionSelected = "";

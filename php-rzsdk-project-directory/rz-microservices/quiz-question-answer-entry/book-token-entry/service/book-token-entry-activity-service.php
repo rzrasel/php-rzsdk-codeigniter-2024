@@ -9,6 +9,7 @@ use RzSDK\Database\Quiz\TblBookIndex;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\Database\Space\DbQuizTable;
 use RzSDK\Quiz\Model\Database\Book\Token\Entry\DbBookTokenEntryModel;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -39,6 +40,12 @@ class BookTokenEntryActivityService implements ServiceListener {
         $colBookTokenName = $tempTblBookIndex->book_token_name;
         $tempTblBookIndex = null;
         //
+        $bookTokenName = $this->bookTokenEntryQueryModel->book_token_name;
+        $bookTokenName = StringHelper::toSingleSpace($bookTokenName);
+        $bookTokenName = StringHelper::toUCWords($bookTokenName);
+        //DebugLog::log($bookTokenName);
+        //return;
+        //
         $bookTokenTableName = DbQuizTable::bookTokenWithPrefix();
         //
         $sqlQueryBuilder = new SqlQueryBuilder();
@@ -46,7 +53,7 @@ class BookTokenEntryActivityService implements ServiceListener {
             ->select()
             ->from($bookTokenTableName)
             ->where($bookTokenTableName, array(
-                $colBookTokenName => $this->bookTokenEntryQueryModel->book_token_name,
+                $colBookTokenName => $bookTokenName,
             ))
             ->build();
         //DebugLog::log($sqlQuery);

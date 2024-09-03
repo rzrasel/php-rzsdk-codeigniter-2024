@@ -5,6 +5,7 @@ namespace RzSDK\Quiz\Activity\Language\Entry;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Quiz\Model\HTTP\Request\Language\Parameter\RequestLanguageEntryQueryModel;
 use RzSDK\Quiz\Service\Language\Entry\LanguageEntryActivityService;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -35,7 +36,8 @@ class LanguageEntryActivity {
         foreach($queryParams as $key => $value) {
             //echo $key . ": " . $value . "\n";
             if(array_key_exists($value, $postedDataSet)) {
-                $this->languageEntryQueryModel->$key = $postedDataSet[$value];
+                $data = StringHelper::toSingleSpace($postedDataSet[$value]);
+                $this->languageEntryQueryModel->$key = $data;
             }
         }
         //DebugLog::log($this->languageEntryQueryModel->getUrlParameters());

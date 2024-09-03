@@ -10,6 +10,7 @@ use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
 use RzSDK\Database\Space\DbQuizTable;
 use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Quiz\Model\Database\Language\Entry\DbLanguageEntryModel;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -40,6 +41,11 @@ class LanguageEntryActivityService implements ServiceListener {
         $colLanName = $tempTblLanguage->lan_name;
         $tempTblLanguage = null;
         //
+        $languageName = $this->languageEntryQueryModel->language_name;
+        $languageName = StringHelper::toSingleSpace($languageName);
+        $languageName = StringHelper::toUCWords($languageName);
+        //DebugLog::log($languageName);
+        //
         $languageTableName = DbQuizTable::languageWithPrefix();
         //
         $sqlQueryBuilder = new SqlQueryBuilder();
@@ -47,7 +53,7 @@ class LanguageEntryActivityService implements ServiceListener {
             ->select()
             ->from($languageTableName)
             ->where($languageTableName, array(
-                $colLanName => $this->languageEntryQueryModel->language_name,
+                $colLanName => $languageName,
             ))
             ->build();
         //DebugLog::log($sqlQuery);

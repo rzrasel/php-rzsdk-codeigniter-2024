@@ -9,13 +9,12 @@ use RzSDK\Log\DebugLog;
 $tempBookNameEntryQueryModel = new RequestBookNameEntryQueryModel();
 ?>
 <?php
+//echo $bookNameEntryActivity->bookNameEntryQueryModel->language_id;
 $languageSelectOptions = new BuildLanguageSelectOptions();
 $languageSelectOptions
     ->setFieldName($tempBookNameEntryQueryModel->language_id)
     ->setSelectedOption($bookNameEntryActivity->bookNameEntryQueryModel->language_id);
-/*$languageSelectOptions->setFieldName("lan")
-    ->setIsRequired(false)
-    ->setSelectedOption("172527478414712921");*/
+//
 $bookTokenSelectOptions = new BuildBookTokenSelectOptions();
 $bookTokenSelectOptions
     ->setFieldName($tempBookNameEntryQueryModel->book_token_id)
@@ -60,6 +59,16 @@ if(is_numeric($bookNameIsDefault)) {
             <td class="table-entry-form-field-left">Book Name: </td>
             <td class="table-entry-form-field-right">
                 <input type="text" name="<?= $tempBookNameEntryQueryModel->book_name; ?>" value="<?= $bookNameEntryActivity->bookNameEntryQueryModel->book_name; ?>" placeholder="Book Name" required="required" />
+            </td>
+        </tr>
+        <tr>
+            <td height="20px"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="table-entry-form-field-left">Book Name Slug: </td>
+            <td class="table-entry-form-field-right">
+                <input type="text" name="<?= $tempBookNameEntryQueryModel->book_name_slug; ?>" value="<?= $bookNameEntryActivity->bookNameEntryQueryModel->book_name_slug; ?>" placeholder="Book Name Slug (English Only)" required="required" />
             </td>
         </tr>
         <tr>

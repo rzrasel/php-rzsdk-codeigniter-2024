@@ -2,18 +2,16 @@
 namespace RzSDK\Database\Quiz;
 ?>
 <?php
-class TblBookInfo {
+class TblCharacterTableIndex {
     public static $prefix = "";
-    public static $table = "book_info";
+    public static $table = "character_table_index";
     //
-    public $lan_id          = "lan_id";
-    //public $book_token_id   = "book_token_id";
-    public $book_name_id    = "book_name_id";
-    public $book_info_id   = "book_info_id";
-    public $book_info_name = "book_info_name";
-    public $book_name_prefix    = "book_name_prefix";
-    public $book_name_suffix    = "book_name_suffix";
-    public $slug            = "slug";
+    public $char_index_id   = "char_index_id";
+    public $str_char        = "str_char";
+    public $char_ascii      = "char_ascii";
+    public $hex_code        = "hex_code";
+    public $u_plus_code     = "u_plus_code";
+    public $u_code          = "u_code";
     public $status          = "status";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";

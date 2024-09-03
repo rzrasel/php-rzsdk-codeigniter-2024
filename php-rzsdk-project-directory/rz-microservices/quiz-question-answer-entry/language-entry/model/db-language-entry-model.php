@@ -7,6 +7,7 @@ use RzSDK\DateTime\DateTime;
 use RzSDK\Utils\Id\Generator\IdGenerator;
 use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Quiz\Model\HTTP\Request\Language\Parameter\RequestLanguageEntryQueryModel;
+use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -19,6 +20,8 @@ class DbLanguageEntryModel {
         $currentDate = DateTime::getCurrentDateTime();
         //
         $languageName = trim($languageEntryQueryModel->language_name);
+        $languageName = StringHelper::toSingleSpace($languageName);
+        $languageName = StringHelper::toUCWords($languageName);
         $languageSlug = strtolower($languageName);
         $languageSlug = str_replace(" ","-", $languageSlug);
         //
