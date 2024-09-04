@@ -33,7 +33,11 @@ class StringHelper {
 
     // Convert ASCII to plaintext in PHP
     public static function toUHex($string) {
-        return strtoupper(str_replace("\"", "", json_encode($string)));
+        $str = str_replace("\"", "", json_encode($string));
+        if($str == $string) {
+            return $str;
+        }
+        return strtoupper($str);
     }
 
     public static function toHtmlEntities($string) {
@@ -49,12 +53,17 @@ class StringHelper {
         return ord($char);
     }
 
+    public static function isUnicode($string) {
+        return mb_strlen($string) != strlen($string);
+    }
+
     public static function toSlugify($text, string $divider = "-") {
         $string = preg_replace("/[^A-Za-z0-9-]+/", " ", trim($text));
         $slug = preg_replace("/[-\s]+/", $divider, $string);
         $slug = strtolower($slug);
         return $slug;
     }
+
     private static function toSlugify01($text, string $divider = "-") {
         // replace non letter or digits by divider
         $text = preg_replace("~[^\pL\d]+~u", $divider, $text);

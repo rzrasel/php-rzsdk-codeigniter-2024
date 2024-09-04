@@ -28,8 +28,9 @@ class CharacterTableTokenEntryActivityService implements ServiceListener {
     }
 
     private function runExecute() {
-        $dataSet = "001234456789abcdefghijklmnopqrstuvwxyz";
+        $dataSet = " 001234456789abcdefghijklmnopqrstuvwxyz";
         //$dataSet = "1234456789abcdefghijklmnopqrstuvwxyz";
+        //
         foreach(mb_str_split($dataSet) as $char) {
             $isExists = $this->isCharacterExists($char);
             if(!$isExists) {
@@ -40,12 +41,32 @@ class CharacterTableTokenEntryActivityService implements ServiceListener {
             //sleep(1);
             usleep(3000);
         }
+        //
+        $dataSet = array(
+            "aa", "ai", "au",
+            "cha", "chha",
+            "ee",
+            "ga", "gha",
+            "ka", "kha",
+            "na",
+        );
+        foreach($dataSet as $char) {
+            $isExists = $this->isCharacterExists($char);
+            if(!$isExists) {
+                $this->runCharacterInsert($char);
+                $this->onSuccess(null, "Successfully \"{$char}\" inserted");
+            }
+            //$this->onSuccess(null, "Successfully \"{$char}\" inserted");
+            //sleep(1);
+            usleep(3000);
+        }
+        //
         $this->onSuccess(null, "Successfully inserted");
     }
 
     private function runCharacterInsert($char) {
         $characterTableTokenEntryModel = new DbCharacterTableTokenEntryModel();
-        $insertDataSet = $characterTableTokenEntryModel->getBookNameInsertDataSet($char);
+        $insertDataSet = $characterTableTokenEntryModel->getCharacterTableTokenInsertDataSet($char);
         $insertDataSet = $insertDataSet->getColumnWithKey();
         //DebugLog::log($insertDataSet);
         $characterTableTokenTableName = DbQuizTable::characterTableTokenWithPrefix();
@@ -65,7 +86,7 @@ class CharacterTableTokenEntryActivityService implements ServiceListener {
         //
         $temTblCharTableIndex = new TblCharacterTableIndex();
         $colStrChar = $temTblCharTableIndex->str_char;
-        $tempTblBookName = null;
+        $temTblCharTableIndex = null;
         //
         $characterTableTokenTableName = DbQuizTable::characterTableTokenWithPrefix();
         //
@@ -113,7 +134,7 @@ class CharacterTableTokenEntryActivityService implements ServiceListener {
         $this->serviceListener->onError($dataSet, $message);
     }
 
-    function onSuccess($dataSet, $message) {
+    public function onSuccess($dataSet, $message) {
         /*DebugLog::log($dataSet);
         DebugLog::log($message);*/
         $this->serviceListener->onSuccess($dataSet, $message);

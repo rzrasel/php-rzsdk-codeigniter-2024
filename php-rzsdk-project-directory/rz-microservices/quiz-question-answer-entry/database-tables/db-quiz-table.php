@@ -7,6 +7,7 @@ use RzSDK\Database\Quiz\TblBookName;
 use RzSDK\Database\Quiz\TblLanguage;
 use RzSDK\Database\Quiz\TblBookIndex;
 use RzSDK\Database\Quiz\TblCharacterTableIndex;
+use RzSDK\Database\Quiz\TblCharacterMapping;
 ?>
 <?php
 class DbQuizTable {
@@ -40,6 +41,14 @@ class DbQuizTable {
 
     public static function characterTableTokenWithPrefix() {
         return TblCharacterTableIndex::tableWithPrefix();
+    }
+
+    public static function characterMappingName() {
+        return TblCharacterMapping::table();
+    }
+
+    public static function characterMappingWithPrefix() {
+        return TblCharacterMapping::tableWithPrefix();
     }
 }
 ?>

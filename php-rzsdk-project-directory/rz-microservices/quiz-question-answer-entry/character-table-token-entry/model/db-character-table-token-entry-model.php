@@ -10,7 +10,7 @@ use RzSDK\DateTime\DateTime;
 ?>
 <?php
 class DbCharacterTableTokenEntryModel {
-    public function getBookNameInsertDataSet($char): TblCharacterTableIndex {
+    public function getCharacterTableTokenInsertDataSet($char): TblCharacterTableIndex {
         //
         $uniqueIntId = new UniqueIntId();
         $charIndexId = $uniqueIntId->getId();

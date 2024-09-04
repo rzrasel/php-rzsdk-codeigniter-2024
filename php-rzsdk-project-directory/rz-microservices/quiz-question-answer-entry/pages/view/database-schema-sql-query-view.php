@@ -14,6 +14,7 @@ use RzSDK\Database\Quiz\TblBookInfoQuery;
 use RzSDK\Database\Quiz\TblQuizSubjectQuery;
 use RzSDK\Database\Quiz\TblQuizQuestionQuery;
 use RzSDK\Database\Quiz\TblCharacterTableIndexQuery;
+use RzSDK\Database\Quiz\TblCharacterMappingQuery;
 ?>
 <?php
 $dbType = DbType::SQLITE;
@@ -27,6 +28,7 @@ $databaseSchemaList = array(
     //new TblQuizSubjectQuery($dbType),
     //new TblQuizQuestionQuery($dbType),
     new TblCharacterTableIndexQuery($dbType),
+    new TblCharacterMappingQuery($dbType),
 );
 ?>
 <?php

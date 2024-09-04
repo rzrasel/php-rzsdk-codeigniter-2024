@@ -10,7 +10,7 @@ class BuildCharacterTokenSelectOptions {
     //
     private $fieldName = "character-token";
     private $isRequired = true;
-    private $selectedCharacterToken;
+    private $selectedCharacterToken = "";
     //
 
     public function setFieldName(string $fieldName): self {
@@ -37,7 +37,8 @@ class BuildCharacterTokenSelectOptions {
         foreach($characterTokenList as $characterToken) {
             $id = $characterToken[PullCharacterTokenList::TOKEN_ID];
             $name = $characterToken[PullCharacterTokenList::TOKEN_NAME];
-            if($id == $this->selectedCharacterToken) {
+            $selectedId = self::getDataSet($this->selectedCharacterToken);
+            if($id == $selectedId[0]) {
                 $optionSelected = " selected=\"select\"";
                 $haveSelected = true;
             } else {
@@ -51,7 +52,7 @@ class BuildCharacterTokenSelectOptions {
     }
 
     private function getOptionField($id, $name, $selected = "") {
-        $optionsValue = "<option value=\"{$id}\"{$selected}>{$name}</option>\n";
+        $optionsValue = "<option value=\"{$id}-{$name}\"{$selected}>{$name}</option>\n";
         return $optionsValue;
     }
 
@@ -85,6 +86,30 @@ class BuildCharacterTokenSelectOptions {
         $bookTokenList = $pullCharacterTokenList->getCharacterToken();
         //DebugLog::log($bookTokenList);
         return $bookTokenList;
+    }
+
+    public static function getDataSet($requestData) {
+        $dataSet = explode("-", $requestData);
+        //
+        $id = $dataSet;
+        $char = null;
+        if(count($dataSet) > 1) {
+            $id = $dataSet[0];
+            $char = $dataSet[1];
+        } else if(count($dataSet) > 2) {
+            $char = "";
+            //DebugLog::log($dataSet);
+            for($i = 1; $i < count($dataSet); $i++) {
+                $value = $dataSet[$i];
+                if(empty($value)) {
+                    $char .= "-";
+                } else {
+                    $char .= $value;
+                }
+            }
+        }
+        //
+        return array($id, $char);
     }
 }
 ?>

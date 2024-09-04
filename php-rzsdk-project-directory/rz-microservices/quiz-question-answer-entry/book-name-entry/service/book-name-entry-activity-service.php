@@ -200,7 +200,7 @@ class BookNameEntryActivityService implements ServiceListener {
         $this->serviceListener->onError($dataSet, $message);
     }
 
-    function onSuccess($dataSet, $message) {
+    public function onSuccess($dataSet, $message) {
         /*DebugLog::log($dataSet);
         DebugLog::log($message);*/
         $this->serviceListener->onSuccess($dataSet, $message);

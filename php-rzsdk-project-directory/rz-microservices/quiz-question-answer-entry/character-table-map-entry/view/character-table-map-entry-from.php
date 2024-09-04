@@ -26,7 +26,7 @@ $bookTokenSelectOptions
 $characterTokenSelectOptions = new BuildCharacterTokenSelectOptions();
 $characterTokenSelectOptions
     ->setFieldName($tempCharacterMapEntryQueryModel->character_token_id)
-    ->setSelectedOption($characterTableMapEntryActivity->characterMapEntryQueryModel->character_name);
+    ->setSelectedOption($characterTableMapEntryActivity->characterMapEntryQueryModel->character_token_id);
 ?>
 <?php
 /*$bookNameIsDefault = $bookNameEntryActivity->bookNameEntryQueryModel->book_name_is_default;
@@ -38,11 +38,16 @@ if(is_numeric($bookNameIsDefault)) {
 }*/
 ?>
 <?php
-$str = "আমি";
+/*$str = "আমি";
 foreach(mb_str_split($str) as $char) {
-    echo $char;
+    //echo StringHelper::toHexPlus($char);
+    //echo $char;
+    echo StringHelper::toUHex($char);
     echo "<br />";
-}
+}*/
+/*$str = "aa;;";
+$data = explode(";", $str);
+DebugLog::log($data);*/
 ?>
 <form action="<?= $pageUrlOnly; ?>" method="POST" enctype="multipart/form-data">
     <table border="1" class="table-entry-form-field-container">

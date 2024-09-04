@@ -57,7 +57,11 @@ class InsertQuery {
                 }
                 //$values .= "NULL, ";
             } else if(is_int($item) || is_numeric($item)) {
-                $values .= "" . $item . ", ";
+                if(is_string($item)) {
+                    $values .= "'" . $item . "', ";
+                } else {
+                    $values .= "" . $item . ", ";
+                }
             } else if(is_bool($item)) {
                 if($item) {
                     $values .= "TRUE, ";
