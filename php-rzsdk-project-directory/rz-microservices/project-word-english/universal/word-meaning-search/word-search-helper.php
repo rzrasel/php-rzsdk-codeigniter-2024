@@ -54,6 +54,8 @@ class WordSearchHelper {
             ->from($wordMappingTableName)
             ->where($wordMappingTableName, $whereData)
             ->orderBy($colWord)
+            ->limit(20)
+            ->offset(0)
             ->build();
         //DebugLog::log($sqlQuery);
         return $sqlQuery;

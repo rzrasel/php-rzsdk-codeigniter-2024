@@ -5,7 +5,7 @@ require_once("../include.php");
 use RzSDK\URL\SiteUrl;
 use RzSDK\Book\Navigation\Route\SideRouteNavigation;
 use RzSDK\View\Html\View\MainHtmlView;
-use RzSDK\Activity\Entry\Word\Meaning\WordMeaningSideBySideActivity;
+use RzSDK\Activity\Search\Word\Meaning\WordMeaningSideBySideActivity;
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Utils\Alert\Message\AlertMessageBox;
 use RzSDK\Log\DebugLog;

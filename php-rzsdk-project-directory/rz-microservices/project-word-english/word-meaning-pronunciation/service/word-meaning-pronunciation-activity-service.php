@@ -4,18 +4,18 @@ namespace RzSDK\Service\Activity\Translate\Word\Meaning;
 <?php
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Database\SqliteConnection;
-use RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Side\RequestWordMeaningSideBySideQueryModel;
 use RzSDK\Utils\String\StringHelper;
 use RzSDK\Database\Space\DbTableListing;
 use RzSDK\String\To\Word\Extension\StringToWordExtension;
 use RzSDK\Database\Schema\TblWordMapping;
+use RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Pronunciation\RequestWordMeaningPronunciationQueryModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class WordMeaningSideBySideActivityService implements ServiceListener {
+class WordMeaningPronunciationActivityService implements ServiceListener {
     //
     public ServiceListener $serviceListener;
-    public RequestWordMeaningSideBySideQueryModel $wordMeaningSideQueryModel;
+    public RequestWordMeaningPronunciationQueryModel $wordMeaningPronunciationQueryModel;
 
     //
 
@@ -23,10 +23,10 @@ class WordMeaningSideBySideActivityService implements ServiceListener {
         $this->serviceListener = $serviceListener;
     }
 
-    public function execute(RequestWordMeaningSideBySideQueryModel $wordMeaningSideQueryModel) {
+    public function execute(RequestWordMeaningPronunciationQueryModel $wordMeaningPronunciationQueryModel) {
         //DebugLog::log($wordMeaningSideQueryModel);
-        $this->wordMeaningSideQueryModel = $wordMeaningSideQueryModel;
-        $stringToWordList = StringToWordExtension::toStringToWord($wordMeaningSideQueryModel->source_text, false);
+        $this->wordMeaningPronunciationQueryModel = $wordMeaningPronunciationQueryModel;
+        $stringToWordList = StringToWordExtension::toStringToWord($wordMeaningPronunciationQueryModel->source_text, false);
         $removedWordList = StringToWordExtension::toRemovePunctuation($stringToWordList);
         //DebugLog::log($removedWordList);
         $this->runTranslateWord($stringToWordList, $removedWordList);
@@ -41,7 +41,7 @@ class WordMeaningSideBySideActivityService implements ServiceListener {
         }
         $retVal = trim($retVal);
         //DebugLog::log($retVal);
-        $this->wordMeaningSideQueryModel->formatted_text = $retVal;
+        $this->wordMeaningPronunciationQueryModel->formatted_text = $retVal;
     }
 
     private function runDatabaseQuery($word) {
@@ -69,7 +69,7 @@ class WordMeaningSideBySideActivityService implements ServiceListener {
             $word = $row[$colWord];
             $pronunciation = $row[$colPronunciation];
             $meaning = $row[$colMeaning];
-            $retVal = "({$pronunciation} - {$meaning})";
+            $retVal = "({$pronunciation})";
             $counter++;
         }
         $dbResult = null;

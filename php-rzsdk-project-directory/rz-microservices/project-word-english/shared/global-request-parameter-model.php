@@ -18,6 +18,8 @@ class GlobalRequestParameterModel {
     public $source_text = "source-text";
     public $formatted_text = "formatted-text";
     public $word_meaning_side_by_side_form = "word-meaning-side-by-side-form";
+    public $word_meaning_pronunciation_form = "word-meaning-pronunciation-form";
+    public $word_meaning_new_line_form = "word-meaning-new-line-form";
     //
 
     public function __construct() {

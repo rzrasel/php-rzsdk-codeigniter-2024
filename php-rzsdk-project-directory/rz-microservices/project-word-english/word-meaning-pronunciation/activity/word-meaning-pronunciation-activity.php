@@ -3,34 +3,34 @@ namespace RzSDK\Activity\Search\Word\Meaning;
 ?>
 <?php
 use RzSDK\Service\Listener\ServiceListener;
-use RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Side\RequestWordMeaningSideBySideQueryModel;
-use RzSDK\Service\Activity\Translate\Word\Meaning\WordMeaningSideBySideActivityService;
+use RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Pronunciation\RequestWordMeaningPronunciationQueryModel;
+use RzSDK\Service\Activity\Translate\Word\Meaning\WordMeaningPronunciationActivityService;
 use RzSDK\Utils\String\StringHelper;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class WordMeaningSideBySideActivity {
+class WordMeaningPronunciationActivity {
     //
     public ServiceListener $serviceListener;
-    public RequestWordMeaningSideBySideQueryModel $wordMeaningSideQueryModel;
+    public RequestWordMeaningPronunciationQueryModel $wordMeaningPronunciationQueryModel;
     //
     public function __construct(ServiceListener $serviceListener) {
         $this->serviceListener = $serviceListener;
-        $this->wordMeaningSideQueryModel = new RequestWordMeaningSideBySideQueryModel();
+        $this->wordMeaningPronunciationQueryModel = new RequestWordMeaningPronunciationQueryModel();
     }
 
     public function execute($postedDataSet) {
         //DebugLog::log($postedDataSet);
-        $queryParams = $this->wordMeaningSideQueryModel->getQueryParams();
+        $queryParams = $this->wordMeaningPronunciationQueryModel->getQueryParams();
         if (empty($postedDataSet)) {
             foreach ($queryParams as $key => $value) {
-                $this->wordMeaningSideQueryModel->$key = "";
+                $this->wordMeaningPronunciationQueryModel->$key = "";
             }
             //$this->bookNameEntryQueryModel->book_name_is_default = false;
             return;
         }
         //
-        if(!array_key_exists($this->wordMeaningSideQueryModel->getEntryFormName(), $postedDataSet)) {
+        if(!array_key_exists($this->wordMeaningPronunciationQueryModel->getEntryFormName(), $postedDataSet)) {
             return;
         }
         //DebugLog::log($postedDataSet);
@@ -38,17 +38,17 @@ class WordMeaningSideBySideActivity {
             //echo $key . ": " . $value . "\n";
             if(array_key_exists($value, $postedDataSet)) {
                 $data = StringHelper::toSingleSpace($postedDataSet[$value]);
-                $this->wordMeaningSideQueryModel->$key = $data;
+                $this->wordMeaningPronunciationQueryModel->$key = $data;
             }
         }
         //
-        $this->runServiceExecute($this->wordMeaningSideQueryModel);
+        $this->runServiceExecute($this->wordMeaningPronunciationQueryModel);
     }
 
-    private function runServiceExecute(RequestWordMeaningSideBySideQueryModel $wordMeaningSideQueryModel) {
-        (new WordMeaningSideBySideActivityService(
+    private function runServiceExecute(RequestWordMeaningPronunciationQueryModel $wordMeaningPronunciationQueryModel) {
+        (new WordMeaningPronunciationActivityService(
             new class($this) implements ServiceListener {
-                private WordMeaningSideBySideActivity $outerInstance;
+                private WordMeaningPronunciationActivity $outerInstance;
 
                 // Constructor to receive outer instance
                 public function __construct($outerInstance) {
@@ -73,7 +73,7 @@ class WordMeaningSideBySideActivity {
                 }
             }
         ))
-            ->execute($wordMeaningSideQueryModel);
+            ->execute($wordMeaningPronunciationQueryModel);
     }
 }
 ?>

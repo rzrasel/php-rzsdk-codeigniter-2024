@@ -43,6 +43,7 @@ $directoryList = array(
     "utils",
     "universal" => array(
         "word-meaning-search",
+        "string-to-word-extension",
     ),
     "word-meaning-entry" => array(
         "activity",
@@ -54,7 +55,17 @@ $directoryList = array(
         "model",
         "service",
     ),
+    "word-meaning-pronunciation" => array(
+        "activity",
+        "model",
+        "service",
+    ),
     "word-meaning-side-by-side" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    "word-meaning-new-line" => array(
         "activity",
         "model",
         "service",

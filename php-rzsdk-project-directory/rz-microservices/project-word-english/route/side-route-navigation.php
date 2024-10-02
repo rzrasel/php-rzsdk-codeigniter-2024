@@ -35,6 +35,7 @@ class SideRouteNavigation {
             $this->baseUrl . "/word-meaning-entry/" . "word-meaning-entry.php" => "Word Meaning Entry",
             // Category Router
             $this->baseUrl . "/word-meaning-search/" . "word-meaning-search.php" => "Word Meaning Search",
+            $this->baseUrl . "/word-meaning-pronunciation/" . "word-meaning-pronunciation.php" => "Word Meaning Pronunciation",
             $this->baseUrl . "/word-meaning-side-by-side/" . "word-meaning-side-by-side.php" => "Word Meaning Side By Side",
             $this->baseUrl . "/word-meaning-new-line/" . "word-meaning-new-line.php" => "Word Meaning New Line",
             // Sub Category Router
