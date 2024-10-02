@@ -1,8 +1,8 @@
 <?php
-use RzSDK\Quiz\Model\HTTP\Request\Category\Token\Parameter\RequestCategoryTokenEntryQueryModel;
+use RzSDK\Quiz\Model\HTTP\Request\Book\Information\Parameter\RequestBookInfoEntryQueryModel;
 ?>
 <?php
-$tempCategoryTokenEntryQueryModel = new RequestCategoryTokenEntryQueryModel();
+$tempBookInfoEntryQueryModel = new RequestBookInfoEntryQueryModel();
 ?>
 <form action="<?= $pageUrlOnly; ?>" method="POST" enctype="multipart/form-data">
     <table border="1" class="table-entry-form-field-container">
@@ -11,16 +11,37 @@ $tempCategoryTokenEntryQueryModel = new RequestCategoryTokenEntryQueryModel();
             <td width="200px" style="border: #5cb730 1px;"></td>
         </tr>
         <tr>
+            <td class="table-entry-form-field-left">Language: </td>
+            <td class="table-entry-form-field-right">
+                <input type="text" name="<?= $tempBookInfoEntryQueryModel->category_token_name; ?>" value="<?= $bookInfoEntryActivity->bookInfoEntryQueryModel->category_token_name; ?>" placeholder="Category Token Name" required="required" />
+            </td>
+        </tr>
+        <tr><td height="20px"></td><td></td></tr>
+        <tr>
+            <td class="table-entry-form-field-left">Book Name: </td>
+            <td class="table-entry-form-field-right">
+                <input type="text" name="<?= $tempBookInfoEntryQueryModel->category_token_name; ?>" value="<?= $bookInfoEntryActivity->bookInfoEntryQueryModel->category_token_name; ?>" placeholder="Category Token Name" required="required" />
+            </td>
+        </tr>
+        <tr><td height="20px"></td><td></td></tr>
+        <tr>
+            <td class="table-entry-form-field-left">Book Name: </td>
+            <td class="table-entry-form-field-right">
+                <input type="text" name="<?= $tempBookInfoEntryQueryModel->category_token_name; ?>" value="<?= $bookInfoEntryActivity->bookInfoEntryQueryModel->category_token_name; ?>" placeholder="Category Token Name" required="required" />
+            </td>
+        </tr>
+        <tr><td height="20px"></td><td></td></tr>
+        <tr>
             <td class="table-entry-form-field-left">Category Token Name: </td>
             <td class="table-entry-form-field-right">
-                <input type="text" name="<?= $tempCategoryTokenEntryQueryModel->category_token_name; ?>" value="<?= $categoryTokenEntryActivity->categoryTokenEntryQueryModel->category_token_name; ?>" placeholder="Category Token Name" required="required" />
+                <input type="text" name="<?= $tempBookInfoEntryQueryModel->category_token_name; ?>" value="<?= $bookInfoEntryActivity->bookInfoEntryQueryModel->category_token_name; ?>" placeholder="Category Token Name" required="required" />
             </td>
         </tr>
         <tr><td></td><td height="30px"></td></tr>
         <tr>
             <td></td>
             <td>
-                <input type="hidden" name="<?= $tempCategoryTokenEntryQueryModel->getEntryFormName(); ?>" value="language_entry_form_value">
+                <input type="hidden" name="<?= $tempBookInfoEntryQueryModel->getEntryFormName(); ?>" value="book_info_entry_form_value">
             </td>
         </tr>
         <tr>

@@ -1,23 +1,16 @@
 <?php
-namespace RzSDK\Database\Quiz;
+namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblBookInfo {
+class TblWordMapping {
     public static $prefix = "";
-    public static $table = "book_info";
+    public static $table = "word_mapping";
     //
-    public $lan_id              = "lan_id";
-    public $author_id           = "author_id";
-    //public $book_token_id   = "book_token_id";
-    public $book_name_id        = "book_name_id";
-    public $book_info_id        = "book_info_id";
-    public $book_info_name      = "book_info_name";
-    public $book_name_prefix    = "book_name_prefix";
-    public $book_name_suffix    = "book_name_suffix";
-    public $book_description    = "book_description";
-    public $slug            = "slug";
+    public $word_id         = "word_id";
+    public $word            = "word";
+    public $pronunciation   = "pronunciation";
+    public $meaning         = "meaning";
     public $status          = "status";
-    public $is_quiz         = "is_quiz";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";
     public $modified_date   = "modified_date";

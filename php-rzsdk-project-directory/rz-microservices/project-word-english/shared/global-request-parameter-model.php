@@ -7,25 +7,17 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class GlobalRequestParameterModel {
-    // Language Request Query Part
-    public $language_id = "language-id";
-    public $language_name = "language-name";
-    public $category_token_name = "category-token-name";
-    public $book_token_id = "book-token-id";
-    public $book_token_name = "book-token-name";
-    public $book_name = "book-name";
-    public $book_name_slug = "book-name-slug";
-    public $book_name_is_default = "book-name-is-default";
+    // Word Meaning Mapping Request Query Part
+    public $word_id = "word-id";
+    public $word = "word";
+    public $pronunciation = "pronunciation";
+    public $meaning = "meaning";
     //
-    public $language_entry_form = "language-entry-form";
-    public $category_token_entry_form = "category-token-entry-form";
-    public $book_token_entry_form = "book-token-entry-form";
-    public $book_name_entry_form = "book-name-entry-form";
-    public $book_info_entry_form = "book-info-entry-form";
+    public $word_meaning_entry_form = "word-meaning-entry-form";
     //
-    public $character_token_id = "character-token-id";
-    public $character_name = "character-name";
-    public $character_map_entry_form = "character-map-entry-form";
+    public $source_text = "source-text";
+    public $formatted_text = "formatted-text";
+    public $word_meaning_side_by_side_form = "word-meaning-side-by-side-form";
     //
 
     public function __construct() {

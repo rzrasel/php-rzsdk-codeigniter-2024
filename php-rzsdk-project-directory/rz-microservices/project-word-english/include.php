@@ -31,7 +31,7 @@ echo "<br />";*/
 ?>
 <?php
 defined("DB_PATH") or define("DB_PATH", "database");
-defined("DB_FILE") or define("DB_FILE", "quiz-question-answer-database.sqlite");
+defined("DB_FILE") or define("DB_FILE", "word-pronunciation-mapping.sqlite");
 defined("DB_FULL_PATH") or define("DB_FULL_PATH", "../" . DB_PATH . "/" . DB_FILE);
 ?>
 <?php
@@ -41,17 +41,25 @@ $directoryList = array(
     "route",
     "shared",
     "utils",
-    "language-entry" => array(
+    "universal" => array(
+        "word-meaning-search",
+    ),
+    "word-meaning-entry" => array(
         "activity",
         "model",
         "service",
     ),
-    "category-token-entry" => array(
+    "word-meaning-search" => array(
         "activity",
         "model",
         "service",
     ),
-    "book-token-entry" => array(
+    "word-meaning-side-by-side" => array(
+        "activity",
+        "model",
+        "service",
+    ),
+    /*"book-token-entry" => array(
         "activity",
         "model",
         "service",
@@ -66,11 +74,6 @@ $directoryList = array(
         "model",
         "service",
     ),
-    "universal" => array(
-        "book-token",
-        "character-table-token",
-        "language",
-    ),
     "character-table-token-entry" => array(
         "activity",
         "model",
@@ -80,7 +83,7 @@ $directoryList = array(
         "activity",
         "model",
         "service",
-    ),
+    ),*/
 );
 defined("RZ_PROJECT_DIR_LIST") or define("RZ_PROJECT_DIR_LIST", $directoryList);
 ?>

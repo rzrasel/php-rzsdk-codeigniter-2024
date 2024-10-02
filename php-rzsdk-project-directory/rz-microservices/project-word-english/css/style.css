@@ -1,0 +1,240 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+html, body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-family: "Noto Serif", "Noto Sans", "SolaimanLipi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+}
+/*Main Layout Design Start*/
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.table-main-body-container {
+    width: 100%;
+    vertical-align: top;
+    height: 100%;
+    position: absolute;
+}
+
+.table-main-side-bar-menu {
+    width: 300px;
+    background: #000000;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: top;
+}
+
+.table-main-side-bar-menu td:hover {
+    background: #333333;
+}
+
+.table-main-side-bar-menu a {
+    padding: 8px;
+    color: #999999;
+    text-decoration: none;
+    display: block;
+    width:100%;
+    border-left: #000000 2px solid;
+}
+
+.table-main-side-bar-menu a:hover {
+    color: #ffffff;
+    padding: 8px;
+    border-left: #ff0000 2px solid;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+}
+
+.table-main-body-content-container {
+    padding: 10px;
+    vertical-align: top;
+    border-left: 1px solid #5cb730;
+}
+
+/*Main Layout Design End*/
+/*Form Container Design Start*/
+.table-entry-form-holder, .table-entry-form-holder tbody {
+    vertical-align: top;
+    width: 100%;
+    height: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+    overflow-wrap: break-word;
+    /*border: 1px solid #DD8615;*/
+}
+
+.table-entry-form-holder-page-header {
+    text-align: center;
+    font-size: 24px;
+    height: 50px;
+    width: 100%;
+    /*border: 1px solid #DD8615;*/
+}
+
+.response-message-section {
+    height: 30px;
+}
+
+.table-entry-form-field-container {
+}
+
+.table-entry-form-field-left {
+    width: 200px;
+}
+.table-entry-form-field-right {
+    width: 600px;
+}
+
+/*Form Container Design End*/
+.table-entry-form-field-container td input, .table-entry-form-field-container td select {
+    height: 36px;
+    width: 100%;
+    font-family: "Noto Serif", "Noto Sans", "SolaimanLipi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+}
+
+.form-button {
+    align-content: end;
+    text-align: right;
+}
+
+.table-entry-form-field-container button {
+    font-size: 20px;
+    font-weight: bold;
+    height: 46px;
+    width: 250px;
+    cursor: pointer;
+}
+/*
+.table-entry-form-field-container tr:nth-child(odd) {
+    background-color: #f6f6f6;
+}
+.table-entry-form-field-container tr:nth-child(even) {
+    background-color: #e9e9e9;
+}*/
+
+/* CSS */
+.button-6 {
+    align-items: center;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: .25rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    box-sizing: border-box;
+    color: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: system-ui, -apple-system, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1.25;
+    margin: 0;
+    min-height: 3rem;
+    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    position: relative;
+    text-decoration: none;
+    transition: all 250ms;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
+    width: auto;
+}
+.button-6:hover,
+.button-6:focus {
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+    color: rgba(0, 0, 0, 0.65);
+}
+.button-6:hover {
+    transform: translateY(-1px);
+}
+.button-6:active {
+    background-color: #F0F0F1;
+    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+    color: rgba(0, 0, 0, 0.65);
+    transform: translateY(0);
+}
+input[type="text"] {
+    padding: 6px 10px;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: .25rem;
+}
+input[type="text"]:focus, select:focus {
+    /*outline: none;*/
+    outline: 1px solid rgba(0, 0, 0, 0.09);
+    box-shadow: rgba(0, 0, 0, 0.06) 0 1px 1px;
+}
+.response-message-section {
+    height: 36px;
+    padding: 8px 20px;
+    text-align: center;
+}
+.response-message-box {
+    /*line-height: 16px;
+    margin: auto;
+    background: #4eaf51;
+    color: #fdfdf9;
+    border: 1px solid #3a833d;
+    padding: 10px;
+    border-radius: 10px;*/
+}
+
+.table-entry-form-field-container select {
+
+    /* styling */
+    /*background-color: white;
+    border: thin solid blue;
+    border-radius: 4px;*/
+    display: inline-block;
+    font: inherit;
+    /*line-height: 1em;*/
+    padding: 0.5em 3.5em 0.5em 1em;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: .25rem;
+
+    /* reset */
+
+    margin: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+select, select option {
+    padding: 10px 10px;
+    font-size: 100%;
+    width: 100% !important;
+    /*height: 150px !important;*/
+    /*line-height: 30px;*/
+    cursor: pointer;
+}
+input[type="checkbox"] {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: .25rem;
+}
+
+textarea {
+    width: 100%;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    /*margin-top: 6px;
+    margin-bottom: 10px;*/
+    padding: 10px;
+}

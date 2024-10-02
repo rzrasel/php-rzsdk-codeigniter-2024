@@ -1,7 +1,7 @@
 <?php
 namespace RzSDK\Quiz\Service\Book\Token\Entry;
 ?>
-    <?php
+<?php
 use RzSDK\Service\Listener\ServiceListener;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\SqlQueryBuilder\SqlQueryBuilder;
