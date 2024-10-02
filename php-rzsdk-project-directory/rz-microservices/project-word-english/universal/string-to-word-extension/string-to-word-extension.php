@@ -46,7 +46,7 @@ class StringToWordExtension {
 
     public static function getDelimiterList() {
         return array(
-            ".", ",", ";", "'", "\"",
+            ".", "!", "।", ",", ";", "'", "\"",
             "‘", "’", "❛", "❜", "“", "”",
             "(", ")", "{", "}", "[", "]",
         );
