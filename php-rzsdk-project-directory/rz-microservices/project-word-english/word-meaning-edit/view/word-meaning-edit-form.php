@@ -11,6 +11,16 @@ $tempWordMeaningEditQueryModel = new RequestWordMeaningEditQueryModel();
             <td width="200px" style="border: #5cb730 1px;"></td>
         </tr>
         <tr>
+            <td class="table-entry-form-field-left">Word Id: </td>
+            <td class="table-entry-form-field-right">
+                <input type="text" name="<?= $tempWordMeaningEditQueryModel->word_id; ?>" value="<?= $wordMeaningEditActivity->wordMeaningEditQueryModel->word_id; ?>" placeholder="Word Id" required="required" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <td height="20px"></td>
+            <td></td>
+        </tr>
+        <tr>
             <td class="table-entry-form-field-left">Word: </td>
             <td class="table-entry-form-field-right">
                 <input type="text" name="<?= $tempWordMeaningEditQueryModel->word; ?>" value="<?= $wordMeaningEditActivity->wordMeaningEditQueryModel->word; ?>" placeholder="Word" required="required" />

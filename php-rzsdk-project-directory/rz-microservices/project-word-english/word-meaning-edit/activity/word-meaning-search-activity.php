@@ -22,7 +22,7 @@ class WordMeaningSearchActivity {
     public function execute($postedDataSet) {
         //DebugLog::log($postedDataSet);
         $queryParams = $this->wordMeaningSearchQueryModel->getQueryParams();
-        if (empty($postedDataSet)) {
+        if(empty($postedDataSet)) {
             foreach ($queryParams as $key => $value) {
                 $this->wordMeaningSearchQueryModel->$key = "";
             }

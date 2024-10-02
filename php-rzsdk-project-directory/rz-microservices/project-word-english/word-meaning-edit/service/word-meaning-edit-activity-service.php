@@ -10,6 +10,7 @@ use RzSDK\Database\Space\DbTableListing;
 use RzSDK\Model\Database\Word\Entry\DbWordMeaningEntryModel;
 use RzSDK\Database\Schema\TblWordMapping;
 use RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Edit\RequestWordMeaningEditQueryModel;
+use RzSDK\Model\Database\Word\Edit\DbWordMeaningEditModel;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -25,11 +26,11 @@ class WordMeaningEditActivityService implements ServiceListener {
 
     public function execute(RequestWordMeaningEditQueryModel $wordMeaningEditQueryModel) {
         $this->wordMeaningEditQueryModel = $wordMeaningEditQueryModel;
-        //DebugLog::log($this->wordMeaningEntryQueryModel);
-        $this->isWordExists();
+        //DebugLog::log($this->wordMeaningEditQueryModel);
+        $this->isWordExistsInOtherId();
     }
 
-    private function isWordExists() {
+    private function isWordExistsInOtherId() {
         //
         $tempTblWordMapping = new TblWordMapping();
         $colWordId = $tempTblWordMapping->word_id;
@@ -38,6 +39,7 @@ class WordMeaningEditActivityService implements ServiceListener {
         $colMeaning = $tempTblWordMapping->meaning;
         $tempTblWordMapping = null;
         //
+        $wordId = $this->wordMeaningEditQueryModel->word_id;
         $word = $this->wordMeaningEditQueryModel->word;
         $word = StringHelper::toSingleSpace($word);
         $word = strtolower($word);
@@ -47,6 +49,7 @@ class WordMeaningEditActivityService implements ServiceListener {
         $sqlQuery = "SELECT * FROM {$wordMappingTableName} "
             . " WHERE"
             . " {$colWord} = '{$word}'"
+            . " AND {$colWordId} <> '{$wordId}'"
             . ";";
         $sqlQuery = StringHelper::toSingleSpace($sqlQuery);
         //DebugLog::log($sqlQuery);
@@ -69,27 +72,42 @@ class WordMeaningEditActivityService implements ServiceListener {
             return;
         }
         //
-        $this->runWordDbInsert();
+        $this->runWordDbUpdate();
         //
     }
 
-    private function runWordDbInsert() {
-        $dbWordMeaningEntryModel = new DbWordMeaningEntryModel();
-        $insertDataSet = $dbWordMeaningEntryModel->getWordInsertDataSet($this->wordMeaningEditQueryModel);
-        $insertDataSet = $insertDataSet->getColumnWithKey();
-        //DebugLog::log($insertDataSet);
+    private function runWordDbUpdate() {
+        //
+        $tempTblWordMapping = new TblWordMapping();
+        $colWordId = $tempTblWordMapping->word_id;
+        $colWord = $tempTblWordMapping->word;
+        $colPronunciation = $tempTblWordMapping->pronunciation;
+        $colMeaning = $tempTblWordMapping->meaning;
+        $tempTblWordMapping = null;
+        //
+        $dbWordMeaningEditModel = new DbWordMeaningEditModel();
+        $updateDataSet = $dbWordMeaningEditModel->getWordMeaningUpdateDataSet($this->wordMeaningEditQueryModel);
+        //DebugLog::log($updateDataSet);
+        //
+        $wordWhereDataSet = array(
+            $colWordId => $this->wordMeaningEditQueryModel->word_id,
+        );
         //
         $wordMappingTableName = DbTableListing::wordMappingWithPrefix();
+        //
         $sqlQueryBuilder = new SqlQueryBuilder();
-        $sqlQuery = $sqlQueryBuilder->insert($wordMappingTableName)
-            ->values($insertDataSet)
+        $sqlQuery = $sqlQueryBuilder
+            ->update($wordMappingTableName)
+            ->set($updateDataSet)
+            ->where("", $wordWhereDataSet)
             ->build();
         //DebugLog::log($sqlQuery);
+        //
         $dbConn = $this->getDbConnection();
         $dbResult = $this->doRunDatabaseQuery($dbConn, $sqlQuery);
         $dbResult = null;
         //
-        $this->onSuccess($this->wordMeaningEditQueryModel, "Successfully inserted \"{$this->wordMeaningEditQueryModel->word}\"");
+        $this->onSuccess($this->wordMeaningEditQueryModel, "Successfully updated \"{$this->wordMeaningEditQueryModel->word}\"");
     }
 
     private function doRunDatabaseQuery($dbConn, $sqlQuery) {

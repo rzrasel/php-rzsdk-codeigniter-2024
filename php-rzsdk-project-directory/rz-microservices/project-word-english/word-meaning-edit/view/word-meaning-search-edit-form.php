@@ -54,6 +54,9 @@ if(!empty($searchWordId)) {
         </td>
     </tr>
     <tr>
+        <td height="20px"></td>
+    </tr>
+    <tr>
         <td>
 <?php
 require_once("word-meaning-search-form.php");

@@ -22,12 +22,26 @@ class WordMeaningEditActivity {
     public function execute($postedDataSet) {
         //DebugLog::log($postedDataSet);
         $queryParams = $this->wordMeaningEditQueryModel->getQueryParams();
-        if (empty($postedDataSet)) {
+        $searchWordIdParam = $this->wordMeaningEditQueryModel->word_id;
+        if(empty($_REQUEST)) {
             foreach ($queryParams as $key => $value) {
                 $this->wordMeaningEditQueryModel->$key = "";
             }
-            //$this->bookNameEntryQueryModel->book_name_is_default = false;
             return;
+        }
+        if(empty($_REQUEST[$searchWordIdParam])) {
+            foreach ($queryParams as $key => $value) {
+                $this->wordMeaningEditQueryModel->$key = "";
+            }
+            return;
+        }
+        //
+        foreach($queryParams as $key => $value) {
+            //echo $key . ": " . $value . "\n";
+            if(array_key_exists($value, $_REQUEST)) {
+                $data = StringHelper::toSingleSpace($_REQUEST[$value]);
+                $this->wordMeaningEditQueryModel->$key = $data;
+            }
         }
         //
         if(!array_key_exists($this->wordMeaningEditQueryModel->getEntryFormName(), $postedDataSet)) {
