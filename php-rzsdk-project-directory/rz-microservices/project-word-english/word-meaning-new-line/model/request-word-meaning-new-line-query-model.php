@@ -44,3 +44,4 @@ class RequestWordMeaningNewLineQueryModel extends GlobalRequestParameterModel {
         return $tempLanguageEntryForm;
     }
 }
+?>

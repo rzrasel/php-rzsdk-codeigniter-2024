@@ -33,6 +33,7 @@ class SideRouteNavigation {
             // Language Router
             $this->baseUrl => "Home",
             $this->baseUrl . "/word-meaning-entry/" . "word-meaning-entry.php" => "Word Meaning Entry",
+            $this->baseUrl . "/word-meaning-edit/" . "word-meaning-edit.php" => "Word Meaning Edit",
             // Category Router
             $this->baseUrl . "/word-meaning-search/" . "word-meaning-search.php" => "Word Meaning Search",
             $this->baseUrl . "/word-meaning-pronunciation/" . "word-meaning-pronunciation.php" => "Word Meaning Pronunciation",

@@ -44,3 +44,4 @@ class RequestWordMeaningPronunciationQueryModel extends GlobalRequestParameterMo
         return $tempLanguageEntryForm;
     }
 }
+?>

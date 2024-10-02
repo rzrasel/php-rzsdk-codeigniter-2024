@@ -1,12 +1,12 @@
 <?php
-namespace RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Entry;
+namespace RzSDK\Model\HTTP\Request\Parameter\Word\Meaning\Search\Edit;
 ?>
 <?php
 use RzSDK\Shared\HTTP\Request\Parameter\GlobalRequestParameterModel;
 use RzSDK\Utils\ObjectPropertyWizard;
 ?>
 <?php
-class RequestWordMeaningEntryQueryModel extends GlobalRequestParameterModel {
+class RequestWordMeaningSearchQueryModel extends GlobalRequestParameterModel {
     public function __construct() {
     }
 
@@ -30,10 +30,7 @@ class RequestWordMeaningEntryQueryModel extends GlobalRequestParameterModel {
         );*/
         $parameterModel = new GlobalRequestParameterModel();
         $tempParameterArray = array(
-            $parameterModel->word_id,
-            $parameterModel->word,
-            $parameterModel->pronunciation,
-            $parameterModel->meaning,
+            $parameterModel->search_word,
         );
         $parameterModel = null;
         return $this->getIndividualQuery($tempParameterArray);
@@ -41,7 +38,7 @@ class RequestWordMeaningEntryQueryModel extends GlobalRequestParameterModel {
 
     public function getEntryFormName() {
         $parameterModel = new GlobalRequestParameterModel();
-        $tempLanguageEntryForm = $parameterModel->word_meaning_entry_form;
+        $tempLanguageEntryForm = $parameterModel->word_meaning_search_form;
         $parameterModel = null;
         return $tempLanguageEntryForm;
     }

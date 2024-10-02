@@ -12,6 +12,8 @@ use RzSDK\Log\DebugLog;
 class WordSearchTableWithActionFrom extends WordSearchHelper {
     //
     private $searchWord = "";
+    private $htmlTableData = "";
+    private bool $isAnd = false;
     private WordSearchActionParameter $actionParameter;
     //
 
@@ -22,6 +24,11 @@ class WordSearchTableWithActionFrom extends WordSearchHelper {
 
     public function setActionParameter(WordSearchActionParameter $parameter) {
         $this->actionParameter = $parameter;
+        return $this;
+    }
+
+    public function setIsAnd(bool $isAnd) {
+        $this->isAnd = $isAnd;
         return $this;
     }
 
@@ -40,15 +47,14 @@ class WordSearchTableWithActionFrom extends WordSearchHelper {
         //
         $actionUrl = "action_url";
         if(isset($this->actionParameter)) {
-            //echo "====================";
-            if($this->actionParameter->isAnd) {
-                $this->actionParameter->editUrl = "&";
-                $this->actionParameter->deleteUrl = "&";
-            } else {
-                $this->actionParameter->editUrl = "?";
-                $this->actionParameter->deleteUrl = "?";
-            }
             $actionUrl = "";
+        }
+        if($this->isAnd) {
+            $this->actionParameter->editUrl .= "&";
+            $this->actionParameter->deleteUrl .= "&";
+        } else {
+            $this->actionParameter->editUrl .= "?";
+            $this->actionParameter->deleteUrl .= "?";
         }
         //
         $htmlTable = "\n<table class=\"table-search-word\" width=\"100%\">\n";
@@ -102,7 +108,12 @@ class WordSearchTableWithActionFrom extends WordSearchHelper {
         if($counter <= 0) {
             return null;
         }
-        echo $htmlTable;
+        //echo $htmlTable;
+        $this->htmlTableData = $htmlTable;
+    }
+
+    public function getHtmlTable() {
+        return $this->htmlTableData;
     }
 }
 ?>

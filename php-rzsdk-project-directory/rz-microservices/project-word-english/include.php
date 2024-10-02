@@ -50,6 +50,11 @@ $directoryList = array(
         "model",
         "service",
     ),
+    "word-meaning-edit" => array(
+        "activity",
+        "model",
+        "service",
+    ),
     "word-meaning-search" => array(
         "activity",
         "model",

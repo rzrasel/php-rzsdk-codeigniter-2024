@@ -44,3 +44,4 @@ class RequestWordMeaningSideBySideQueryModel extends GlobalRequestParameterModel
         return $tempLanguageEntryForm;
     }
 }
+?>
