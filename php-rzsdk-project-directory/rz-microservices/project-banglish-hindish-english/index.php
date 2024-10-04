@@ -7,7 +7,7 @@ require_once("include.php");
 use RzSDK\Utils\String\StringHelper;
 ?>
 <?php
-/*$string = "◌्";
+$string = "व्य";
 //$string = "০১";
 $charsCount = mb_strlen($string, 'UTF-8');
 for($i = 0; $i < $charsCount; $i++){
@@ -25,7 +25,7 @@ for($i = 0; $i < $charsCount; $i++){
     echo "<br />";
 }
 echo "<br />";
-echo "<br />";*/
+echo "<br />";
 
 
 /*$charConsonantShortMap = array(
@@ -38,10 +38,31 @@ echo "</pre>";*/
 /*$string = "अआइईउऊएऐओऔअंअःऋॠ";
 $string = "स्वैरिणी – ब्राह्मणी से इतर वर्ण-क्षत्रिय, वैश्य, शूद्र, जाति की स्त्री।";*/
 //
-function toBengaliHindi($string) {
+?>
+<?php
+function getHindiToBengali($string) {
     $retVal = "";
-    $bengaliHindiLetterMap = new BengaliHindiLetterMap();
-    $charMapList = $bengaliHindiLetterMap->getCharacterMapList();
+    $hindiToBengaliLetterMapping = new HindiToBengaliLetterMapping();
+    $charMapList = $hindiToBengaliLetterMapping->getCharacterMapList();
+    //
+    foreach(mb_str_split($string) as $char) {
+        $uPlusCode = StringHelper::toHexPlus($char);
+        if(array_key_exists($uPlusCode, $charMapList)) {
+            //echo $charMapList[$uPlusCode];
+            $retVal .= $charMapList[$uPlusCode];
+        } else {
+            //echo $uPlusCode;
+            $retVal .= $uPlusCode;
+        }
+    }
+    return $retVal;
+}
+?>
+<?php
+function getBengaliToHindi($string) {
+    $retVal = "";
+    $bengaliToHindiLetterMapping = new BengaliToHindiLetterMapping();
+    $charMapList = $bengaliToHindiLetterMapping->getCharacterMapList();
     //
     foreach(mb_str_split($string) as $char) {
         $uPlusCode = StringHelper::toHexPlus($char);
@@ -65,7 +86,7 @@ https://youtu.be/OZfVRYRVddg?t=7851
 */
 ?>
 <?php
-class BengaliHindiLetterMap {
+class HindiToBengaliLetterMapping {
     public function getCharacterMapList() {
         $charNumberMap = $this->getNumberMap();
         $charVowelMap = $this->getVowelMap();
@@ -95,12 +116,14 @@ class BengaliHindiLetterMap {
     public function getVowelMap() {
         return array(
             "U+0020" => " ",
+            //
             "U+0905" => "অ",
             "U+0906" => "আ",
             "U+0907" => "ই",
             "U+0908" => "ঈ",
             "U+0909" => "উ",
             "U+090A" => "ঊ",
+            //
             "U+0960" => "ঋ",
             "U+090B" => "ঋ",
             "U+090F" => "এ",
@@ -181,7 +204,147 @@ class BengaliHindiLetterMap {
             "U+094C" => "ৌ",
             //
             "U+094D" => "্",
-            "U+0902" => "(য়)",
+            //"U+0902" => "(য়)",
+            //"U+0902" => "ঙ",
+            "U+0902" => "ং",
+            //
+            "U+0964" => "।",
+            "U+2013" => "–",
+            "U+002D" => "–",
+            "U+002C" => ",",
+            "U+093C" => "়",
+            //
+            "U+0911" => "ও",
+        );
+    }
+
+    public function getConsonantShortMap() {
+        return array();
+    }
+}
+?>
+<?php
+class BengaliToHindiLetterMapping {
+    public function getCharacterMapList() {
+        $charNumberMap = $this->getNumberMap();
+        $charVowelMap = $this->getVowelMap();
+        $charConsonantMap = $this->getConsonantMap();
+        $charVowelShortMap = $this->getVowelShortMap();
+        $charConsonantShortMap = $this->getConsonantShortMap();
+        $charMapList = array_merge($charNumberMap, $charVowelMap, $charConsonantMap, $charVowelShortMap, $charConsonantShortMap);
+        return $charMapList;
+    }
+
+    public function getNumberMap() {
+        return array(
+            "U+0020" => " ",
+            "U+09E6" => "०",
+            "U+09E7" => "१",
+            "U+09E8" => "२",
+            "U+09E9" => "३",
+            "U+09EA" => "४",
+            "U+09EB" => "५",
+            "U+09EC" => "६",
+            "U+09ED" => "७",
+            "U+09EE" => "८",
+            "U+09EF" => "९",
+        );
+    }
+
+    public function getVowelMap() {
+        return array(
+            "U+0020" => " ",
+            //
+            "U+0985" => "अ",
+            "U+0986" => "आ",
+            "U+0987" => "इ",
+            "U+0988" => "ई",
+            "U+0989" => "उ",
+            "U+098A" => "ऊ",
+            //
+            //"U+098B" => "ऋ",
+            "U+09E0" => "ॠ",
+            "U+098B" => "ॠ",
+            "U+098F" => "ए",
+            "U+0990" => "ऐ",
+            "U+0993" => "ओ",
+            "U+0994" => "औ",
+        );
+    }
+
+    public function getConsonantMap() {
+        return array(
+            "U+0020" => " ",
+            "U+0915" => "ক",
+            "U+0916" => "খ",
+            "U+0917" => "গ",
+            "U+0918" => "ঘ",
+            "U+0919" => "ঙ",
+            //
+            "U+091A" => "চ",
+            "U+091B" => "ছ",
+            "U+091C" => "জ",
+            "U+091D" => "ঝ",
+            "U+091E" => "ঞ",
+            //
+            "U+091F" => "ট",
+            "U+0920" => "ঠ",
+            "U+0921" => "ড",
+            "U+0922" => "ঢ",
+            "U+0923" => "ণ",
+            //
+            "U+0924" => "ত",
+            "U+0925" => "থ",
+            "U+0926" => "দ",
+            "U+0927" => "ধ",
+            "U+0928" => "ন",
+            //
+            "U+092A" => "প",
+            "U+092B" => "ফ",
+            "U+092C" => "ব",
+            "U+092D" => "ভ",
+            "U+092E" => "ম",
+            //
+            "U+092F" => "য",
+            "U+0930" => "র",
+            "U+0932" => "ল",
+            "U+0935" => "ব",
+            "U+0936" => "শ",
+            //
+            "U+0937" => "ষ",
+            "U+0938" => "স",
+            "U+0939" => "হ",
+            "U+095C" => "ড়",
+            "U+095D" => "ঢ়",
+        );
+    }
+
+    public function getVowelShortMap() {
+        return array(
+            "U+0020" => " ",
+            "U+093E" => "া",
+            "U+093F" => "ি",
+            "U+0940" => "ী",
+            "U+0941" => "ু",
+            "U+0942" => "ূ",
+            //
+            "U+0943" => "ৃ",
+            //
+            "U+0945" => "ে",
+            "U+0946" => "ে",
+            "U+0947" => "ে",
+            //
+            "U+0948" => "ৈ",
+            //
+            "U+0949" => "ো",
+            "U+094A" => "ো",
+            "U+094B" => "ো",
+            //
+            "U+094C" => "ৌ",
+            //
+            "U+094D" => "্",
+            //"U+0902" => "(য়)",
+            "U+0902" => "ঙ",
             //
             "U+0964" => "।",
             "U+2013" => "–",
@@ -208,7 +371,8 @@ if(!empty($_POST)) {
     $input = $_POST["input"];
     //$output = $_POST["output"];
     if(!empty($input)) {
-        $output = toBengaliHindi($input);
+        $output = getHindiToBengali($input);
+        //$output = getBengaliToHindi($input);
         //echo $output;
     }
 }
