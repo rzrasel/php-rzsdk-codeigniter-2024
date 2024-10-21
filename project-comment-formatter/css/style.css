@@ -19,6 +19,7 @@ input, select {
 }
 button {
     font-size: 100%;
+    width:300px;
     padding: 10px 20px;
     border-bottom-color: #cccccc;
     transition: 0.4s;

@@ -61,11 +61,11 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
             <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST" enctype="multipart/form-data">
                 <table align="left" border="0" width="100%">
                     <tr>
-                        <td height="50px"></td>
+                        <td width="200px" height="50px"></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Total Characters</td>
+                        <td>Total Characters: </td>
                         <td><?= $numOfPaddingSelectBox; ?></td>
                     </tr>
                     <tr>
@@ -73,7 +73,7 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Number Of Tabs</td>
+                        <td>Number Of Tabs: </td>
                         <td><?= $numOfTabSelectBox; ?></td>
                     </tr>
                     <tr>
@@ -81,7 +81,7 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Padding Place</td>
+                        <td>Padding Place: </td>
                         <td><?= $paddingPlaceSelectBox; ?></td>
                     </tr>
                     <tr>
@@ -89,7 +89,7 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Text Case</td>
+                        <td>Text Case: </td>
                         <td><?= $textCaseSelectBox; ?></td>
                     </tr>
                     <tr>
@@ -97,9 +97,9 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Comment Text</td>
+                        <td>Comment Text: </td>
                         <td>
-                            <input type="text" name="comment_text" value="<?= $commentText; ?>" required="required" />
+                            <input type="text" name="comment_text" value="<?= $commentText; ?>" required="required" placeholder="Comment Text" />
                         </td>
                     </tr>
                     <tr>
@@ -107,9 +107,9 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                         <td></td>
                     </tr>
                     <tr>
-                        <td>Formatted Comment Text</td>
+                        <td>Formatted Comment Text: </td>
                         <td>
-                            <input type="text" name="formatted_text" value="<?= $formattedText; ?>" onclick="this.select();" />
+                            <input type="text" name="formatted_text" value="<?= $formattedText; ?>" onclick="this.select();" placeholder="Formatted Comment Text" />
                         </td>
                     </tr>
                     <tr>
@@ -118,7 +118,7 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                     </tr>
                     <tr>
                         <td></td>
-                        <td><button type="submit">Submit</button></td>
+                        <td align="center"><button type="submit">Submit</button></td>
                     </tr>
                 </table>
             </form>
