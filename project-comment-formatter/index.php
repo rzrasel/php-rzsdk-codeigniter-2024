@@ -8,29 +8,35 @@ use RzSDK\Code\Module\NumOfPaddingSelectBox;
 use RzSDK\Code\Module\NumOfTabSelectBox;
 use RzSDK\Code\Module\PaddingPlaceSelectBox;
 use RzSDK\Code\Module\TextCaseSelectBox;
-use RzSDK\String\Utils\StringUtils;
 use RzSDK\Activity\Formatter\CommentFormatterActivity;
 ?>
 <?php
+//|-----------------------|VARIABLE SCOPE|-----------------------|
 $commentText = "";
 $formattedText = "";
 $selectedPaddingPlace = PaddingPlace::CENTER->value;
 $selectedTextCase = TextCase::UPPER->value;
 $selectedPaddingNum = 64;
 $selectedNumOfTabs = 0;
-//
+
+//|----------------|SET POST DATA INTO VARIABLE|-----------------|
 if(!empty($_POST)) {
+    //|Set Post Data Into Variable|------------------------------|
     $selectedPaddingNum = $_POST["total_characters"];
     $selectedNumOfTabs = $_POST["total_tabs"];
     $selectedPaddingPlace = $_POST["padding_place"];
     $selectedTextCase = $_POST["text_case"];
     $commentText = $_POST["comment_text"];
+
+    //|Initialize And Setup CommentFormatterActivity Class Object|
     $commentFormatterActivity = new CommentFormatterActivity();
     $commentFormatterActivity->execute($_POST);
-    //$formattedText = StringUtils::toCaseConversion($commentText, TextCase::UCWORDS);
+
+    //|Set Formatted Text Data Into Variable|--------------------|
     $formattedText = $commentFormatterActivity->getFormattedText();
 }
-//
+
+//|-------------|SET SELECT BOX DATA INTO VARIABLE|--------------|
 $numOfPaddingSelectBox = NumOfPaddingSelectBox::getSelectBox($selectedPaddingNum);
 $numOfTabSelectBox = NumOfTabSelectBox::getSelectBox($selectedNumOfTabs);
 $paddingPlaceSelectBox = PaddingPlaceSelectBox::getSelectBox($selectedPaddingPlace);

@@ -22,11 +22,14 @@ use RzSDK\Padding\Property\SetPaddingEdge;
 use RzSDK\Padding\Utils\PaddingPlace;
 ?>
 <?php
+//|---------------------|CLASS TextPadding|----------------------|
 class TextPadding extends PaddingProperty {
+    //|---------------------|VARIABLE SCOPE|---------------------|
     use SetSourceText, SetFullLength;
     use SetNumberOfTabs;
     use SetTextCase, SetPaddingEdge;
 
+    //|---------------------|METHOD EXECUTE|---------------------|
     public function execute() {
         $this->sourceText = StringUtils::removeWhitespace($this->sourceText);
         $this->sourceText = StringUtils::toCaseConversion($this->sourceText, $this->textCase);
@@ -35,10 +38,12 @@ class TextPadding extends PaddingProperty {
         $this->calculatePadding();
     }
 
+    //|----------------|METHOD getFormattedText|-----------------|
     public function getFormattedText() {
         return $this->formattedText;
     }
 
+    //|----------------|METHOD calculatePadding|-----------------|
     private function calculatePadding() {
         //
         $this->tempFullLength = $this->fullLength;
@@ -50,10 +55,13 @@ class TextPadding extends PaddingProperty {
         if($this->remainingLength < 0) {
             $this->remainingLength = 0;
         }
+        //echo ceil(5 / 2);
         /*echo "<br />";
         echo $this->remainingLength;*/
         $this->addPadding();
     }
+
+    //|-------------------|METHOD addPadding|--------------------|
 
     private function addPadding() {
         /*echo "<br />";
@@ -69,6 +77,7 @@ class TextPadding extends PaddingProperty {
         echo $this->formattedText;*/
     }
 
+    //|-----------------|METHOD setPaddingLeft|------------------|
     private function setPaddingLeft() {
         $text = $this->sourceText;
         $padding = $this->padString;
@@ -78,6 +87,7 @@ class TextPadding extends PaddingProperty {
         $this->formattedText = "{$this->formattedText}|";
     }
 
+    //|-----------------|METHOD setPaddingRight|-----------------|
     private function setPaddingRight() {
         $text = $this->sourceText;
         $padding = $this->padString;
@@ -87,6 +97,7 @@ class TextPadding extends PaddingProperty {
         $this->formattedText = "|{$this->formattedText}";
     }
 
+    //|-----------------|METHOD setPaddingBoth|------------------|
     private function setPaddingBoth() {
         $text = $this->sourceText;
         $padding = $this->padString;
