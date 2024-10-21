@@ -1,0 +1,54 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+html, body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-family: "Noto Serif", "Noto Sans", "SolaimanLipi", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+}
+/*table, tr, th, td {
+    border: 1px solid black;
+}*/
+input, select {
+    width: 100%;
+    font-size: 100%;
+}
+button {
+    font-size: 100%;
+    padding: 10px 20px;
+    border-bottom-color: #cccccc;
+    transition: 0.4s;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    cursor: pointer;
+}
+input[type="text"] {
+    box-sizing: border-box;
+    border: 0;
+    padding: 5px 0 7px;
+    padding: 10px 10px;
+    border: 1px solid transparent;
+    border-bottom-color: #cccccc;
+    border-color: #cccccc;
+    transition: 0.4s;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+}
+select {
+    padding: 10px 10px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    cursor: pointer;
+}
+option {
+    padding: 60px 10px;
+    cursor: pointer;
+}
