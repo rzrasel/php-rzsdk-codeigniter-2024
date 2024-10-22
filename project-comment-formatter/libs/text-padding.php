@@ -9,6 +9,7 @@ require_once("text-padding/padding-property.php");
 require_once("text-padding/set-source-text.php");
 require_once("text-padding/set-full-length.php");
 require_once("text-padding/set-number-of-tabs.php");
+require_once("text-padding/set-padding-character.php");
 require_once("text-padding/set-text-case.php");
 require_once("text-padding/set-padding-edge.php");
 ?>
@@ -17,6 +18,7 @@ use RzSDK\Padding\Property\PaddingProperty;
 use RzSDK\Padding\Property\SetSourceText;
 use RzSDK\Padding\Property\SetFullLength;
 use RzSDK\Padding\Property\SetNumberOfTabs;
+use RzSDK\Padding\Property\SetPaddingCharacter;
 use RzSDK\Padding\Property\SetTextCase;
 use RzSDK\Padding\Property\SetPaddingEdge;
 use RzSDK\Padding\Utils\PaddingPlace;
@@ -27,6 +29,7 @@ class TextPadding extends PaddingProperty {
     //|---------------------|VARIABLE SCOPE|---------------------|
     use SetSourceText, SetFullLength;
     use SetNumberOfTabs;
+    use SetPaddingCharacter;
     use SetTextCase, SetPaddingEdge;
 
     //|---------------------|METHOD EXECUTE|---------------------|

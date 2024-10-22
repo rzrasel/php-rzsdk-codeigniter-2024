@@ -12,6 +12,7 @@ use RzSDK\Activity\Formatter\CommentFormatterActivity;
 ?>
 <?php
 //|-----------------------|VARIABLE SCOPE|-----------------------|
+$paddingCharacter = "-";
 $commentText = "";
 $formattedText = "";
 $selectedPaddingPlace = PaddingPlace::CENTER->value;
@@ -25,6 +26,7 @@ if(!empty($_POST)) {
     $selectedPaddingNum = $_POST["total_characters"];
     $selectedNumOfTabs = $_POST["total_tabs"];
     $selectedPaddingPlace = $_POST["padding_place"];
+    $paddingCharacter = $_POST["padding_character"];
     $selectedTextCase = $_POST["text_case"];
     $commentText = $_POST["comment_text"];
 
@@ -91,6 +93,16 @@ $textCaseSelectBox = TextCaseSelectBox::getSelectBox($selectedTextCase);
                     <tr>
                         <td>Text Case: </td>
                         <td><?= $textCaseSelectBox; ?></td>
+                    </tr>
+                    <tr>
+                        <td height="20px"></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Padding Character: </td>
+                        <td>
+                            <input type="text" name="padding_character" value="<?= $paddingCharacter; ?>" required="required" placeholder="Padding Character" />
+                        </td>
                     </tr>
                     <tr>
                         <td height="20px"></td>

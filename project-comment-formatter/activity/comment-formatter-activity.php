@@ -27,6 +27,7 @@ class CommentFormatterActivity {
         $totalCharacters = $postedDataSet["total_characters"];
         $totalTabs = $postedDataSet["total_tabs"];
         $paddingPlace = $postedDataSet["padding_place"];
+        $paddingCharacter = $postedDataSet["padding_character"];
         $sourceText = $postedDataSet["comment_text"];
         $textCase = $postedDataSet["text_case"];
 
@@ -39,6 +40,7 @@ class CommentFormatterActivity {
         $textPadding->setSourceText($sourceText)
             ->setFullLength($totalCharacters)
             ->setNumberOfTabs($totalTabs)
+            ->setPaddingCharacter($paddingCharacter)
             ->setTextCase($textCase)
             ->setPaddingPlace($paddingPlace);
         $textPadding->execute();
