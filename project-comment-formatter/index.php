@@ -11,6 +11,16 @@ use RzSDK\Code\Module\TextCaseSelectBox;
 use RzSDK\Activity\Formatter\CommentFormatterActivity;
 ?>
 <?php
+/*echo strlen("•");
+echo "<br />";
+echo mb_strlen("•");
+echo "<br />";
+echo strlen(".");
+echo "<br />";
+echo mb_strlen(".");
+echo "<br />";*/
+?>
+<?php
 //|-----------------------|VARIABLE SCOPE|-----------------------|
 $paddingCharacter = "-";
 $commentText = "";
