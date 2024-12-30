@@ -2,14 +2,16 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblSubjectInfo {
+class TblAnswerInfo {
     public static $prefix = "tbl_";
-    public static $table = "subject_info";
+    public static $table = "answer_info";
+    //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
-    public $subject_id      = "subject_id";
-    public $name_bn         = "name_bn";
-    public $name_en         = "name_en";
-    public $order           = "order";
+    public $question_id     = "question_id";
+    public $answer_id       = "answer_id";
+    public $answer_bn       = "answer_bn";
+    public $answer_en       = "answer_en";
+    public $is_correct      = "is_correct";
     public $status          = "status";
     public $modified_by     = "modified_by";
     public $created_by      = "created_by";

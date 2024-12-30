@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblSubjectInfoQuery extends TblSubjectInfo {
+class TblQuestionInfoQuery extends TblQuestionInfo {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -44,16 +44,16 @@ class TblSubjectInfoQuery extends TblSubjectInfo {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             $this->subject_id       => "BIGINT(20) NOT NULL",
-            $this->name_bn          => "TEXT NOT NULL",
-            $this->name_en          => "TEXT NOT NULL",
-            $this->order            => "INT(3) NOT NULL",
+            $this->question_id      => "BIGINT(20) NOT NULL",
+            $this->question_bn      => "TEXT NOT NULL",
+            $this->question_en      => "TEXT NULL",
+            $this->order            => "INT(8) NOT NULL",
             $this->status           => "BOOLEAN NOT NULL DEFAULT TRUE",
             $this->modified_by      => "BIGINT(20) NOT NULL",
             $this->created_by       => "BIGINT(20) NOT NULL",
             $this->modified_date    => "DATETIME NOT NULL",
             $this->created_date     => "DATETIME NOT NULL",
         );
-        //print_r($tablePropertyList);
         $tableColumns = parent::getColumnWithKey();
         if(count($tableColumns) != count($tablePropertyList)) {
             return null;
@@ -67,11 +67,11 @@ class TblSubjectInfoQuery extends TblSubjectInfo {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->subject_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->question_id)
         );
-        /*$dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, "user_auth_log_id", "test_table", "user_auth_log_id")
-        );*/
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->subject_id, TblSubjectInfo::table(), TblSubjectInfo::$prefix, $this->subject_id)
+        );
         return $dbTableProperty;
     }
 }

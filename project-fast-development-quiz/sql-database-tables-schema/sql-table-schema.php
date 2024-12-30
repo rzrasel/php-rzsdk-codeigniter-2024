@@ -5,6 +5,8 @@ require_once("include.php");
 use RzSDK\DateTime\DateTime;
 use RzSDK\URL\SiteUrl;
 use RzSDK\Database\Schema\TblSubjectInfoQuery;
+use RzSDK\Database\Schema\TblQuestionInfoQuery;
+use RzSDK\Database\Schema\TblAnswerInfoQuery;
 use RzSDK\Database\DbType;
 use RzSDK\Log\DebugLog;
 ?>
@@ -35,11 +37,8 @@ class SchemaTblLanguage {
 $dbType = DbType::SQLITE;
 $databaseSchemaList = array(
     new TblSubjectInfoQuery($dbType),
-    /* new TblReligionQuery($dbType),
-    new TblAuthorQuery($dbType),
-    new TblBookQuery($dbType),
-    new TblSectionQuery($dbType),
-    new TblSectionInfoQuery($dbType), */
+    new TblQuestionInfoQuery($dbType),
+    new TblAnswerInfoQuery($dbType),
 );
 ?>
 <br />
@@ -49,11 +48,12 @@ $databaseSchemaList = array(
 <br />
 <br />
 <?php
-foreach($databaseSchemaList as $databaseSchema) {
+foreach(array_reverse($databaseSchemaList) as $databaseSchema) {
     echo $databaseSchema->dropQuery();
     echo "<br />\n";
 }
 ?>
+<br />
 <pre>
 <?php
 foreach($databaseSchemaList as $databaseSchema) {
@@ -64,7 +64,7 @@ foreach($databaseSchemaList as $databaseSchema) {
 ?>
 </pre>
 <?php
-foreach($databaseSchemaList as $databaseSchema) {
+foreach(array_reverse($databaseSchemaList) as $databaseSchema) {
     echo $databaseSchema->deleteQuery();
     echo "<br />";
 }

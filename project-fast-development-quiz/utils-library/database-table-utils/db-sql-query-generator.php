@@ -73,7 +73,7 @@ class DbSqlQueryGenerator {
             $sqlQuery = "CONSTRAINT"
                 . " fk_{$constraintKey}"
                 . " FOREIGN KEY"
-                . " ({$constraintProperty->primaryColumns})"
+                . "({$constraintProperty->primaryColumns})"
                 . " REFERENCES"
                 . " {$primaryTableWithPrifix}"
                 . "({$constraintProperty->referenceColumn})"
@@ -86,7 +86,7 @@ class DbSqlQueryGenerator {
             $sqlQuery = "CONSTRAINT"
                 . " pk_{$constraintKey}"
                 . " PRIMARY KEY"
-                . " ({$primaryColumn})"
+                . "({$primaryColumn})"
                 . ",";
         } else if($constraintProperty->constraintType == DbColumnConstraintType::UNIQUE) {
             $primaryColumn = $constraintProperty->primaryColumns;
@@ -96,7 +96,7 @@ class DbSqlQueryGenerator {
             $sqlQuery = "CONSTRAINT"
                 . " uk_{$constraintKey}"
                 . " UNIQUE"
-                . " ({$primaryColumn})"
+                . "({$primaryColumn})"
                 . ",";
         }
         return $sqlQuery;

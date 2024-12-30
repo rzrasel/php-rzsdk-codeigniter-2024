@@ -2,16 +2,16 @@
 namespace RzSDK\Database\Space;
 ?>
 <?php
-use RzSDK\Database\Book\TblLanguage;
+use RzSDK\Database\Schema\TblSubjectInfo;
 ?>
 <?php
 class DbTableschema {
-    public static function language() {
-        return TblLanguage::table();
+    public static function subjectInfo() {
+        return TblSubjectInfo::table();
     }
 
-    public static function languageWithPrefix() {
-        return TblLanguage::tableWithPrefix();
+    public static function subjectInfoWithPrefix() {
+        return TblSubjectInfo::tableWithPrefix();
     }
 }
 ?>
