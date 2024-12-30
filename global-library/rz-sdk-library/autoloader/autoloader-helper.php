@@ -41,6 +41,10 @@ class AutoloaderHelper {
                     }
                     //$this->log($retVal);
                 } else {
+                    //print_r($value);
+                    /* if(!empty($value)) {
+                        
+                    } */
                     $value = trim($value);
                     $path = empty($directory) ? "{$value}/" : "{$directory}/{$value}/";
                     $path = rtrim($path, "/");

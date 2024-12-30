@@ -7,10 +7,11 @@ defined("RZ_SDK_LIB_ROOT_DIR") OR exit("No direct script access allowed");
 ?>
 <?php
 require_once("autoloader-helper.php");
+require_once("autoloader-config.php");
 ?>
 <?php
 use RzSDK\Autoloader\AutoloaderHelper;
-use RzSDK\File\FileAssist;
+use RzSDK\Autoloader\AutoloaderConfig;
 ?>
 <?php
 class Autoloader extends AutoloaderHelper {
@@ -18,7 +19,12 @@ class Autoloader extends AutoloaderHelper {
     private $directories;
     public $existedFilePath;
     //
-    public function __construct($directories = "") {
+    public function __construct(AutoloaderConfig $directories = new AutoloaderConfig()) {
+        $directories = $directories->getDirectories();
+        //echo "<pre>" . print_r($directories,1)  . "</pre>";
+        $directories = json_encode($directories);
+        $directories = json_decode($directories, true);
+        //echo "<pre>" . print_r($directories,1)  . "</pre>";
         $this->directories = is_array($directories) ? $directories : [$directories];
         spl_autoload_register(array($this, "autoloadRegister"));
     }
@@ -34,7 +40,8 @@ class Autoloader extends AutoloaderHelper {
         if(!empty($this->directories)) {
             //$pathList = parent::getDirectoryToPath("", $this->directories);
             //$pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
-            $pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
+            //$pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
+            $pathList = parent::getDirectoryToPath("", $this->directories);
             /*echo "<br /><br /><br /><br />";
             $this->log($pathList);
             echo "<br /><br /><br /><br />";
@@ -42,7 +49,8 @@ class Autoloader extends AutoloaderHelper {
             $filePath = parent::getExistedFilePath($pathList, $fileName);
             if(empty($filePath)) {
                 //$pathList = parent::getDirectoryToPath("rz-sdk-library", $this->directories);
-                $pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
+                //$pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
+                $pathList = parent::getDirectoryToPath("", $this->directories);
                 $filePath = parent::getExistedFilePath($pathList, $fileName);
             }
             /*echo "<br />";
@@ -80,8 +88,10 @@ class Autoloader extends AutoloaderHelper {
 }
 ?>
 <?php
-$directoryList = array(
-    "curl",
+/* $directoryList = array(
+    "",
+    "directory-file",
+    /-* "curl",
     "database",
     "date-time",
     "debug-log",
@@ -93,10 +103,11 @@ $directoryList = array(
         "module",
     ),
     "utils",
-    "validation",
-);
+    "validation", *-/
+); */
 ?>
 <?php
-$autoloader = new Autoloader($directoryList);
+global $autoloaderConfig;
+$autoloader = new Autoloader($autoloaderConfig);
 //echo $autoloader->existedFilePath;
 ?>

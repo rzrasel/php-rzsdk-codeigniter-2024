@@ -6,12 +6,12 @@ use RzSDK\Autoloader\AutoloaderConfig;
 use RzSDK\URL\SiteUrl;
 ?>
 <?php
-$directory = dirname(__DIR__);
+$directory = dirname(dirname(__DIR__));
 $baseDirectory = rtrim(rtrim($directory, "\\"), "/");
-$baseDirectory = trim("../", "/");
+//$baseDirectory = trim("../../", "/");
 //echo $baseDirectory;
 defined("RZ_SDK_BASE_PATH") or define("RZ_SDK_BASE_PATH", $baseDirectory);
-defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", trim("{$baseDirectory}/rz-sdk-library", "/"));
+defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", trim("{$baseDirectory}/global-library/rz-sdk-library", "/"));
 //defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", "../rz-sdk-library");
 /* echo "<br />";
 echo RZ_SDK_BASE_PATH;
@@ -26,7 +26,10 @@ require_once($baseInclude . "/autoloader-config.php");
 <?php
 global $autoloaderConfig;
 $directoryList = array(
-    "sql-database-schema",
+    //"../sql-database-tables-schema",
+    "../sql-database-tables-schema" => array(
+        "sql-database-schema",
+    ),
     /* "../utils-library" => array(
         "database-table-utils",
     ), */
