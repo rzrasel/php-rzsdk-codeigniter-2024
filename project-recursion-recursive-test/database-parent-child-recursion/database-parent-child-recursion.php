@@ -74,6 +74,17 @@ function displayRecursiveParent($parents, $level = 0) {
         }
     }
 }
+function displayProcessData($array, $callback, $level = 0) {
+    foreach ($array as $item) {
+        $callback($item, $level);
+        if (!empty($item["children"])) {
+            displayProcessData($item["children"], $callback, $level + 1);
+        }
+    }
+}
+displayProcessData($data, function($item, $level) {
+    echo str_repeat("--", $level) . " " . $item["name"] . "<br>";
+});
 ?>
 <?php
 function doRunDatabaseQuery($dbConn, $sqlQuery) {

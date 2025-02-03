@@ -42,6 +42,8 @@ class Autoloader extends AutoloaderHelper {
             //$pathList = parent::getDirectoryToPath("../rz-sdk-library", $this->directories);
             //$pathList = parent::getDirectoryToPath(RZ_SDK_LIB_ROOT_DIR, $this->directories);
             $pathList = parent::getDirectoryToPath("", $this->directories);
+            /*echo "<br />";
+            echo "<pre>" . print_r($pathList, true) . "</pre>";*/
             /*echo "<br /><br /><br /><br />";
             $this->log($pathList);
             echo "<br /><br /><br /><br />";

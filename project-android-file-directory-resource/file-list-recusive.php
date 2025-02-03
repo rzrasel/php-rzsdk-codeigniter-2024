@@ -59,7 +59,18 @@ enum ResourceType: string {
             self::RAW           => "raw",
         };
     }
+
+    public static function getAliases(string $status): array {
+        return match ($status) {
+            self::BRIEF->value      => ["started", "available"],
+            self::DRAWABLE->value   => ["finished", "completed"],
+            default                 => [],
+        };
+    }
 }
+// Example usage
+//print_r(ResourceType::getAliases('open'));
+// Output: ['started', 'available']
 ?>
 <?php
 function dirFileListToArray($dirList): array {
@@ -130,4 +141,178 @@ foreach($tree as $key => $value) {
     }
 }
 echo "End"; */
+?>
+<?php
+//Get data from array in recursion and make ul li list in php
+
+$data = [
+    [
+        'id' => 1,
+        'name' => 'Electronics',
+        'children' => [
+            [
+                'id' => 2,
+                'name' => 'Phones',
+                'children' => [
+                    ['id' => 4, 'name' => 'Accessories', 'children' => []],
+                ],
+            ],
+            [
+                'id' => 3,
+                'name' => 'Laptops',
+                'children' => [],
+            ],
+        ],
+    ],
+    [
+        'id' => 5,
+        'name' => 'Furniture',
+        'children' => [
+            ['id' => 6, 'name' => 'Chairs', 'children' => []],
+        ],
+    ],
+];
+
+function generateList($items) {
+    if (empty($items)) {
+        return '';
+    }
+
+    $html = '<ul>';
+    foreach ($items as $item) {
+        $html .= '<li>' . htmlspecialchars($item['name']);
+
+        // Recursively generate the list for children
+        if (!empty($item['children'])) {
+            $html .= generateList($item['children']);
+        }
+
+        $html .= '</li>';
+    }
+    $html .= '</ul>';
+
+    return $html;
+}
+
+// Generate the HTML list
+$htmlList = generateList($data);
+
+// Output the list
+echo $htmlList;
+?>
+<?php
+// Get data from array in recursion and generate ul li list in callback function in php
+
+$data = [
+    [
+        'id' => 1,
+        'name' => 'Electronics',
+        'children' => [
+            [
+                'id' => 2,
+                'name' => 'Phones',
+                'children' => [
+                    ['id' => 4, 'name' => 'Accessories', 'children' => []],
+                ],
+            ],
+            [
+                'id' => 3,
+                'name' => 'Laptops',
+                'children' => [],
+            ],
+        ],
+    ],
+    [
+        'id' => 5,
+        'name' => 'Furniture',
+        'children' => [
+            ['id' => 6, 'name' => 'Chairs', 'children' => []],
+        ],
+    ],
+];
+
+function generateListWithCallback($items, $callback) {
+    if (empty($items)) {
+        return '';
+    }
+
+    $html = '<ul>';
+    foreach ($items as $item) {
+        // Use the callback to generate content for each <li>
+        $html .= '<li>' . $callback($item);
+
+        // Recursively generate the list for children
+        if (!empty($item['children'])) {
+            $html .= generateListWithCallback($item['children'], $callback);
+        }
+
+        $html .= '</li>';
+    }
+    $html .= '</ul>';
+
+    return $html;
+}
+
+// Define a callback function
+$callback = function($item) {
+    return htmlspecialchars($item['name']); // Customize this as needed
+};
+
+// Generate the HTML list
+$htmlList = generateListWithCallback($data, $callback);
+
+// Output the list
+echo $htmlList;
+
+$callback = function($item) {
+    return '<span data-id="' . htmlspecialchars($item['id']) . '">' . htmlspecialchars($item['name']) . '</span>';
+};
+?>
+<?php
+// Callback class function in php
+
+class ListRenderer {
+    public function generateList($items) {
+        return $this->buildList($items, [$this, 'renderItem']);
+    }
+
+    private function buildList($items, $callback) {
+        if (empty($items)) {
+            return '';
+        }
+
+        $html = '<ul>';
+        foreach ($items as $item) {
+            $html .= '<li>' . call_user_func($callback, $item);
+            if (!empty($item['children'])) {
+                $html .= $this->buildList($item['children'], $callback);
+            }
+            $html .= '</li>';
+        }
+        $html .= '</ul>';
+        return $html;
+    }
+
+    public function renderItem($item) {
+        return htmlspecialchars($item['name']);
+    }
+}
+
+$data = [
+    [
+        'name' => 'Electronics',
+        'children' => [
+            ['name' => 'Phones', 'children' => []],
+            ['name' => 'Laptops', 'children' => []],
+        ],
+    ],
+    ['name' => 'Furniture', 'children' => []],
+];
+
+$renderer = new ListRenderer();
+echo $renderer->generateList($data);
+
+/* $callback = function($item) use ($renderer) {
+    return $renderer->renderItem($item);
+}; */
 ?>

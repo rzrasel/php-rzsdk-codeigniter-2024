@@ -24,10 +24,11 @@ echo "<pre>" . print_r($fileList,1)  . "</pre>";
 $directory = "{$directory}/rename";
 //
 $preZeros = "00";
-$filePreFix = "letter_ar_alphabet_";
+$filePreFix = "Hindu Gomutra Cow Urine - 2024-12-29 16.04 ";
 //$filePreFix = "audio_ar_alphabet_";
 $filePostFix = arabicFilePostFix();
-/**-/
+$filePostFix = "";
+/**/
 $fileRenameHelper = new FileRenameHelper();
 $fileRenameHelper->renameTopLevel(
     $fileList,

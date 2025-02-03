@@ -9,6 +9,10 @@ defined("RZ_SDK_LIB_ROOT_DIR") OR exit("No direct script access allowed");
 class AutoloaderConfig {
     private $directories = array();
     //
+    public function __construct() {
+        /*echo "<br />";
+        echo __CLASS__ . " " . __METHOD__ . PHP_EOL;*/
+    }
     public function setDirectories($directory): void {
         if(empty($directory)) {
             return;
@@ -43,6 +47,7 @@ class AutoloaderConfig {
         return $this->directories;
     }
 }
+global $autoloaderConfig;
 $autoloaderConfig = new AutoloaderConfig();
 ?>
 <?php
