@@ -40,10 +40,13 @@ $directoryList = array(
         "app-user-lot-schema",
         "app-user-manual-account-schema",
         "app-user-social-account-schema",
+        "app-user-open-account-schema",
         "app-user-password-schema",
         "app-user-email-schema",
         "app-user-mobile-schema",
-        //"app-user-token-info-schema",
+        "app-user-token-schema",
+        "app-user-session-schema",
+        "app-user-last-activity-schema",
     ),
 );
 $autoloaderConfig->setDirectories($directoryList);

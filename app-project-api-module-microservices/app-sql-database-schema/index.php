@@ -11,9 +11,13 @@ use RzSDK\Database\Schema\TblLanguageLotQuery;
 use RzSDK\Database\Schema\TblUserLotQuery;
 use RzSDK\Database\Schema\TblUserManualAccountQuery;
 use RzSDK\Database\Schema\TblUserSocialAccountQuery;
+use RzSDK\Database\Schema\TblUserOpenAccountQuery;
 use RzSDK\Database\Schema\TblUserPasswordQuery;
 use RzSDK\Database\Schema\TblUserEmailQuery;
 use RzSDK\Database\Schema\TblUserMobileQuery;
+use RzSDK\Database\Schema\TblUserTokenQuery;
+use RzSDK\Database\Schema\TblUserSessionQuery;
+use RzSDK\Database\Schema\TblUserLastActivityQuery;
 
 ?>
 <?php
@@ -52,9 +56,13 @@ $databaseSchemaList = array(
     new TblUserLotQuery($dbType),
     new TblUserManualAccountQuery($dbType),
     new TblUserSocialAccountQuery($dbType),
+    new TblUserOpenAccountQuery($dbType),
     new TblUserPasswordQuery($dbType),
     new TblUserEmailQuery($dbType),
     new TblUserMobileQuery($dbType),
+    new TblUserTokenQuery($dbType),
+    new TblUserSessionQuery($dbType),
+    new TblUserLastActivityQuery($dbType),
 );
 ?>
 <br/>

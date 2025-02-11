@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserPasswordQuery extends TblUserPassword {
+class TblUserSessionQuery extends TblUserSession {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -46,12 +46,22 @@ class TblUserPasswordQuery extends TblUserPassword {
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
             $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(hash_type IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
-            $this->password_salt    => "TEXT NULL",
-            $this->password_hash    => "TEXT NOT NULL",
-            $this->expiry           => "TIMESTAMP NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
-            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->session_salt     => "TEXT NOT NULL",
+            $this->session_id       => "TEXT NOT NULL",
+            $this->session_duration => "INT(4) DEFAULT 0",
+            $this->expires_at       => "TIMESTAMP NOT NULL",
+            $this->refresh_token    => "TEXT NULL",
+            $this->ip_address       => "VARCHAR(255) NULL",
+            $this->user_agent       => "VARCHAR(255) NULL",
+            $this->device           => "VARCHAR(255) NULL",
+            $this->browser          => "VARCHAR(255) NULL",
+            $this->os               => "VARCHAR(255) NULL",
+            $this->login_time       => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->logout_time      => "TIMESTAMP NULL",
+            $this->remember_me      => "BOOLEAN NOT NULL DEFAULT FALSE",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
+            $this->modified_date    => "DATETIME NOT NULL",
+            $this->created_date     => "DATETIME NOT NULL",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );
@@ -69,6 +79,9 @@ class TblUserPasswordQuery extends TblUserPassword {
         }
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
+        );
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->session_id, TblUserSession::table(), TblUserSession::$prefix, $this->session_id)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)

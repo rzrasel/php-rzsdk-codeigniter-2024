@@ -68,7 +68,7 @@ class TblUserManualAccountQuery extends TblUserManualAccount {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->user_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)

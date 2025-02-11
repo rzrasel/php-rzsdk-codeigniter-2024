@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserPasswordQuery extends TblUserPassword {
+class TblUserLastActivityQuery extends TblUserLastActivity {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,13 +45,13 @@ class TblUserPasswordQuery extends TblUserPassword {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(hash_type IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
-            $this->password_salt    => "TEXT NULL",
-            $this->password_hash    => "TEXT NOT NULL",
-            $this->expiry           => "TIMESTAMP NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
-            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->last_login       => "TIMESTAMP NULL",
+            $this->last_active      => "TIMESTAMP NULL",
+            $this->last_seen_at     => "TIMESTAMP NULL",
+            $this->failed_attempts  => "INT DEFAULT 0",
+            $this->lockout_until    => "TIMESTAMP NULL",
+            $this->modified_date    => "DATETIME NOT NULL",
+            $this->created_date     => "DATETIME NOT NULL",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

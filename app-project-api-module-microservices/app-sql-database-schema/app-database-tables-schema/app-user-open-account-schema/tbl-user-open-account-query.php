@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserTokenInfoQuery extends TblUserTokenInfo {
+class TblUserOpenAccountQuery extends TblUserOpenAccount {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,13 +43,19 @@ class TblUserTokenInfoQuery extends TblUserTokenInfo {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->user_id          => "BIGINT(20) NOT NULL",
-            $this->user_token_id    => "BIGINT(20) NOT NULL",
-            $this->status           => "BOOLEAN NOT NULL DEFAULT TRUE",
-            $this->modified_by      => "BIGINT(20) NOT NULL",
-            $this->created_by       => "BIGINT(20) NOT NULL",
+            $this->id               => "VARCHAR(36) NOT NULL",
+            $this->ip_address       => "VARCHAR(45) NULL",
+            $this->user_agent       => "TEXT NULL",
+            $this->device           => "VARCHAR(255) NULL",
+            $this->browser          => "VARCHAR(255) NULL",
+            $this->os               => "VARCHAR(255) NULL",
+            $this->first_seen_at    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->last_seen_at     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked', 'deleted', 'removed'))",
             $this->modified_date    => "DATETIME NOT NULL",
             $this->created_date     => "DATETIME NOT NULL",
+            $this->modified_by      => "VARCHAR(36) NOT NULL",
+            $this->created_by       => "VARCHAR(36) NOT NULL",
         );
         $tableColumns = parent::getColumnWithKey();
         if(count($tableColumns) != count($tablePropertyList)) {
@@ -64,11 +70,14 @@ class TblUserTokenInfoQuery extends TblUserTokenInfo {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->user_token_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
+        );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->social_id, TblUserSocialAccount::table(), TblUserSocialAccount::$prefix, $this->social_id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserInfo::table(), TblUserInfo::$prefix, $this->user_id)
-        );
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)
+        );*/
         return $dbTableProperty;
     }
 }

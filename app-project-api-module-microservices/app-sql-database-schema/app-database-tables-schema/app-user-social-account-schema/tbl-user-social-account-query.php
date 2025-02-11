@@ -46,7 +46,7 @@ class TblUserSocialAccountQuery extends TblUserSocialAccount {
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
             $this->social_id        => "VARCHAR(255) NOT NULL",
-            $this->provider         => "VARCHAR(50) NOT NULL CHECK(status IN ('google', 'facebook'))",
+            $this->provider         => "VARCHAR(50) NOT NULL CHECK(provider IN ('google', 'facebook'))",
             $this->auth_token       => "TEXT NULL",
             $this->is_verified      => "BOOLEAN NOT NULL DEFAULT TRUE",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked', 'deleted', 'removed'))",
@@ -68,7 +68,7 @@ class TblUserSocialAccountQuery extends TblUserSocialAccount {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->user_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->social_id, TblUserSocialAccount::table(), TblUserSocialAccount::$prefix, $this->social_id)
