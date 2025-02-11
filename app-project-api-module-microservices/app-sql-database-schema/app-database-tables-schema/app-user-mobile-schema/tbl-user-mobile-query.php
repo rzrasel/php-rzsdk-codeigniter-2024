@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserEmailQuery extends TblUserEmail {
+class TblUserMobileQuery extends TblUserMobile {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,7 +45,8 @@ class TblUserEmailQuery extends TblUserEmail {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->email            => "VARCHAR(320) NOT NULL",
+            $this->mobile           => "VARCHAR(20) NOT NULL",
+            $this->country_code     => "VARCHAR(5) NULL",
             $this->provider         => "VARCHAR(255) NOT NULL DEFAULT 'user' CHECK(status IN ('user', 'google', 'facebook'))",
             $this->is_primary       => "BOOLEAN NOT NULL DEFAULT FALSE",
             $this->verification_code    => "VARCHAR(8) NULL",
@@ -74,7 +75,7 @@ class TblUserEmailQuery extends TblUserEmail {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->email, TblUserEmail::table(), TblUserEmail::$prefix, $this->email)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->mobile, TblUserMobile::table(), TblUserMobile::$prefix, $this->mobile)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)

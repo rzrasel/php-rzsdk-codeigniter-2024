@@ -36,10 +36,14 @@ $baseProjectDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $baseProjectDir
 global $autoloaderConfig;
 $directoryList = array(
     $baseProjectDirectory . "app-database-tables-schema" => array(
-        "app-language-info-schema",
-        "app-user-info-schema",
+        "app-language-lot-schema",
+        "app-user-lot-schema",
+        "app-user-manual-account-schema",
+        "app-user-social-account-schema",
+        "app-user-password-schema",
         "app-user-email-schema",
-        "app-user-token-info-schema",
+        "app-user-mobile-schema",
+        //"app-user-token-info-schema",
     ),
 );
 $autoloaderConfig->setDirectories($directoryList);

@@ -2,21 +2,18 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblUserEmail {
+class TblUserPassword {
     public static $prefix = "tbl_";
-    public static $table = "user_email";
+    public static $table = "user_password";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
     public $user_id         = "user_id";
     public $id              = "id";
-    public $email           = "email";
-    public $provider        = "provider";
-    public $is_primary      = "is_primary";
-    public $verification_code   = "verification_code";
-    public $last_verification_sent_at   = "last_verification_sent_at";
-    public $verification_code_expiry    = "verification_code_expiry";
-    public $verification_status = "verification_status";
+    public $hash_type       = "hash_type";
+    public $password_salt   = "password_salt";
+    public $password_hash   = "password_hash";
     public $status          = "status";
+    public $expiry          = "expiry";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
     public $modified_by     = "modified_by";

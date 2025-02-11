@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserInfoQuery extends TblUserInfo {
+class TblLanguageLotQuery extends TblLanguageLot {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,12 +43,14 @@ class TblUserInfoQuery extends TblUserInfo {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->user_id          => "BIGINT(20) NOT NULL",
-            $this->status           => "BOOLEAN NOT NULL DEFAULT TRUE",
-            $this->modified_by      => "BIGINT(20) NOT NULL",
-            $this->created_by       => "BIGINT(20) NOT NULL",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->id               => "VARCHAR(36) NOT NULL",
+            $this->name             => "VARCHAR(255) NOT NULL",
+            $this->description      => "TEXT NULL",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
+            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->modified_by      => "VARCHAR(36) NOT NULL",
+            $this->created_by       => "VARCHAR(36) NOT NULL",
         );
         $tableColumns = parent::getColumnWithKey();
         if(count($tableColumns) != count($tablePropertyList)) {
@@ -63,11 +65,14 @@ class TblUserInfoQuery extends TblUserInfo {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->user_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         /*$dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_token_id, TblLanguageInfo::table(), TblLanguageInfo::$prefix, $this->user_token_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->question_id, TblQuestionInfo::table(), TblQuestionInfo::$prefix, $this->question_id)
         );*/
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->name, "", "", "")
+        );
         return $dbTableProperty;
     }
 }

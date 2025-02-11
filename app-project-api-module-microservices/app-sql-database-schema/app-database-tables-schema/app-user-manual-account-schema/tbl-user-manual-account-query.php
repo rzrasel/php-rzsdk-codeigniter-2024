@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserEmailQuery extends TblUserEmail {
+class TblUserManualAccountQuery extends TblUserManualAccount {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,14 +45,11 @@ class TblUserEmailQuery extends TblUserEmail {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->email            => "VARCHAR(320) NOT NULL",
-            $this->provider         => "VARCHAR(255) NOT NULL DEFAULT 'user' CHECK(status IN ('user', 'google', 'facebook'))",
-            $this->is_primary       => "BOOLEAN NOT NULL DEFAULT FALSE",
-            $this->verification_code    => "VARCHAR(8) NULL",
-            $this->last_verification_sent_at    => "TIMESTAMP NULL",
-            $this->verification_code_expiry => "TIMESTAMP NULL",
-            $this->verification_status  => "TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'verified', 'expired', 'blocked'))",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
+            $this->security_question    => "TEXT NULL",
+            $this->security_answer  => "TEXT NULL",
+            $this->is_email_verified    => "BOOLEAN NOT NULL DEFAULT TRUE",
+            $this->is_mobile_verified   => "BOOLEAN NOT NULL DEFAULT TRUE",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked', 'deleted', 'removed'))",
             $this->modified_date    => "DATETIME NOT NULL",
             $this->created_date     => "DATETIME NOT NULL",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
@@ -71,10 +68,7 @@ class TblUserEmailQuery extends TblUserEmail {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
-        );
-        $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->email, TblUserEmail::table(), TblUserEmail::$prefix, $this->email)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->user_id)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)

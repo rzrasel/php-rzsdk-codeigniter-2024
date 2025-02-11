@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserEmailQuery extends TblUserEmail {
+class TblUserPasswordQuery extends TblUserPassword {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,16 +45,13 @@ class TblUserEmailQuery extends TblUserEmail {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->email            => "VARCHAR(320) NOT NULL",
-            $this->provider         => "VARCHAR(255) NOT NULL DEFAULT 'user' CHECK(status IN ('user', 'google', 'facebook'))",
-            $this->is_primary       => "BOOLEAN NOT NULL DEFAULT FALSE",
-            $this->verification_code    => "VARCHAR(8) NULL",
-            $this->last_verification_sent_at    => "TIMESTAMP NULL",
-            $this->verification_code_expiry => "TIMESTAMP NULL",
-            $this->verification_status  => "TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'verified', 'expired', 'blocked'))",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(status IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
+            $this->password_salt    => "TEXT NULL",
+            $this->password_hash    => "TEXT NOT NULL",
+            $this->expiry           => "TIMESTAMP NULL",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
+            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );
@@ -72,9 +69,6 @@ class TblUserEmailQuery extends TblUserEmail {
         }
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
-        );
-        $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->email, TblUserEmail::table(), TblUserEmail::$prefix, $this->email)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)

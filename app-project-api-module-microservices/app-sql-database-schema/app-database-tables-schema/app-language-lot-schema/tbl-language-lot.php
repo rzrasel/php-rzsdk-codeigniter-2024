@@ -2,17 +2,19 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblUserInfo {
+class TblLanguageLot {
     public static $prefix = "tbl_";
-    public static $table = "user_info";
+    public static $table = "language_lot";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
-    public $user_id         = "user_id";
+    public $id              = "id";
+    public $name            = "name";
+    public $description     = "description";
     public $status          = "status";
-    public $modified_by     = "modified_by";
-    public $created_by      = "created_by";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
+    public $modified_by     = "modified_by";
+    public $created_by      = "created_by";
 
     public static function table() {
         return self::$table;

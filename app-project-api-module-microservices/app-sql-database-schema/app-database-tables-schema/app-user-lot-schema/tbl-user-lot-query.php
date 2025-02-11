@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblLanguageInfoQuery extends TblLanguageInfo {
+class TblUserLotQuery extends TblUserLot {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,13 +43,16 @@ class TblLanguageInfoQuery extends TblLanguageInfo {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->language_id      => "BIGINT(20) NOT NULL",
-            $this->language         => "VARCHAR(255) NOT NULL",
-            $this->status           => "BOOLEAN NOT NULL DEFAULT TRUE",
-            $this->modified_by      => "BIGINT(20) NOT NULL",
-            $this->created_by       => "BIGINT(20) NOT NULL",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->id               => "VARCHAR(36) NOT NULL",
+            $this->username         => "TEXT NOT NULL",
+            $this->role_type        => "TEXT NOT NULL DEFAULT 'user' CHECK(role_type IN ('admin', 'user', 'moderator', 'guest'))",
+            $this->account_expiry   => "TIMESTAMP NULL",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked'))",
+            $this->is_deleted       => "TEXT NOT NULL DEFAULT 'enabled' CHECK(is_deleted IN ('enabled', 'disabled', 'deleted', 'removed'))",
+            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->modified_by      => "VARCHAR(36) NOT NULL",
+            $this->created_by       => "VARCHAR(36) NOT NULL",
         );
         $tableColumns = parent::getColumnWithKey();
         if(count($tableColumns) != count($tablePropertyList)) {
@@ -64,13 +67,10 @@ class TblLanguageInfoQuery extends TblLanguageInfo {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->language_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
-        /*$dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->question_id, TblQuestionInfo::table(), TblQuestionInfo::$prefix, $this->question_id)
-        );*/
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->language, "", "", "")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->username, TblUserLot::table(), TblUserLot::$prefix, $this->username)
         );
         return $dbTableProperty;
     }
