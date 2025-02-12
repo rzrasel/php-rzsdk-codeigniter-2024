@@ -1,12 +1,15 @@
 <?php
 class FindArrayKeyByValue {
     public function findByValue($array, $value) {
+        $matchingKeys = [];
+
         foreach ($array as $key => $val) {
             if (strpos($val, $value) !== false) { // Check if $value exists in $val
-                return $key; // Return the matching key
+                $matchingKeys[] = $key; // Store matching key
             }
         }
-        return false; // Return false if no match is found
+
+        return !empty($matchingKeys) ? $matchingKeys : false; // Return array or false if no match
     }
 }
 ?>
@@ -17,16 +20,18 @@ $data = array(
     "key-2" => "value-2-part-2-data",
     "key-3" => "value-3-part-3-data",
     "key-4" => "value-4-part-4-data",
-    "key-5" => "value-5-part-5-data"
+    "key-5" => "value-5-part-5-data",
+    "key-6" => "value-6-part-5-data",
+    "key-7" => "value-7-part-5-data",
 );
 
 // Usage Example
 $find = new FindArrayKeyByValue();
 echo "<br />";
-echo $find->findByValue($data, "part-1");
+print_r($find->findByValue($data, "part-1")); // ["key-1"]
 echo "<br />";
-echo $find->findByValue($data, "value-3");
+print_r($find->findByValue($data, "value-3")); // ["key-3"]
 echo "<br />";
-echo $find->findByValue($data, "5-data");
+print_r($find->findByValue($data, "5-data")); // ["key-5", "key-6"]
 echo "<br />";
 ?>
