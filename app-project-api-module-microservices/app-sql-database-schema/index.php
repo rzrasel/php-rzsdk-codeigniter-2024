@@ -21,6 +21,9 @@ use RzSDK\Database\Schema\TblUserLastActivityQuery;
 use RzSDK\Database\Schema\TblUserLoginAttemptQuery;
 use RzSDK\Database\Schema\TblUserPasswordResetQuery;
 use RzSDK\Database\Schema\TblUserMfaSettingsQuery;
+use RzSDK\Database\Schema\TblUserPreferencesQuery;
+use RzSDK\Database\Schema\TblUserConsentsQuery;
+use RzSDK\Database\Schema\TblUserWebhooksQuery;
 
 ?>
 <?php
@@ -69,6 +72,9 @@ $databaseSchemaList = array(
     new TblUserLoginAttemptQuery($dbType),
     new TblUserPasswordResetQuery($dbType),
     new TblUserMfaSettingsQuery($dbType),
+    new TblUserPreferencesQuery($dbType),
+    new TblUserConsentsQuery($dbType),
+    new TblUserWebhooksQuery($dbType),
 );
 ?>
 <br/>

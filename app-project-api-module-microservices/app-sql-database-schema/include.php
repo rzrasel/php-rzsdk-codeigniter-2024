@@ -50,6 +50,9 @@ $directoryList = array(
         "app-user-login-attempt-schema",
         "app-user-password-reset-schema",
         "app-user-mfa-settings-schema",
+        "app-user-preferences-schema",
+        "app-user-consents-schema",
+        "app-user-webhooks-schema",
     ),
 );
 $autoloaderConfig->setDirectories($directoryList);
