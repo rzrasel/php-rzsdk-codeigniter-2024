@@ -54,8 +54,8 @@ class TblUserMobileQuery extends TblUserMobile {
             $this->verification_code_expiry => "TIMESTAMP NULL",
             $this->verification_status  => "TEXT NOT NULL DEFAULT 'pending' CHECK(verification_status IN ('pending', 'verified', 'expired', 'blocked'))",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

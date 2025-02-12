@@ -18,6 +18,9 @@ use RzSDK\Database\Schema\TblUserMobileQuery;
 use RzSDK\Database\Schema\TblUserTokenQuery;
 use RzSDK\Database\Schema\TblUserSessionQuery;
 use RzSDK\Database\Schema\TblUserLastActivityQuery;
+use RzSDK\Database\Schema\TblUserLoginAttemptQuery;
+use RzSDK\Database\Schema\TblUserPasswordResetQuery;
+use RzSDK\Database\Schema\TblUserMfaSettingsQuery;
 
 ?>
 <?php
@@ -63,11 +66,14 @@ $databaseSchemaList = array(
     new TblUserTokenQuery($dbType),
     new TblUserSessionQuery($dbType),
     new TblUserLastActivityQuery($dbType),
+    new TblUserLoginAttemptQuery($dbType),
+    new TblUserPasswordResetQuery($dbType),
+    new TblUserMfaSettingsQuery($dbType),
 );
 ?>
 <br/>
 <br/>
--- DATE CREATED: 2025-01-30, DATE MODIFIED: <?= DateTime::getCurrentDateTime("Y-m-d"); ?> VERSION: 1.1.1
+-- SQLite Database DATE CREATED: 2025-01-30, DATE MODIFIED: <?= DateTime::getCurrentDateTime("Y-m-d"); ?> VERSION: 1.1.1
 <br/>
 <br/>
 <br/>

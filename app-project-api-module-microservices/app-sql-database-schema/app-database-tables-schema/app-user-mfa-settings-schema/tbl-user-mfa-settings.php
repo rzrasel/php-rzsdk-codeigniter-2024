@@ -2,20 +2,20 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblUserOpenAccount {
+class TblUserMfaSettings {
     public static $prefix = "tbl_";
-    public static $table = "user_open_account";
+    public static $table = "user_mfa_settings";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
+    public $user_id         = "user_id";
     public $id              = "id";
-    public $ip_address       = "ip_address";
-    public $user_agent      = "user_agent";
-    public $device          = "device";
-    public $browser         = "browser";
-    public $os              = "os";
-    public $first_seen_at   = "first_seen_at";
-    public $last_seen_at    = "last_seen_at";
-    public $status          = "status";
+    public $method          = "method";
+    public $secret_key      = "secret_key";
+    public $is_enabled      = "is_enabled";
+    public $modified_date   = "modified_date";
+    public $created_date    = "created_date";
+    public $modified_by     = "modified_by";
+    public $created_by      = "created_by";
 
     public static function table() {
         return self::$table;

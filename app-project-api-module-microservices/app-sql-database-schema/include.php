@@ -47,6 +47,9 @@ $directoryList = array(
         "app-user-token-schema",
         "app-user-session-schema",
         "app-user-last-activity-schema",
+        "app-user-login-attempt-schema",
+        "app-user-password-reset-schema",
+        "app-user-mfa-settings-schema",
     ),
 );
 $autoloaderConfig->setDirectories($directoryList);

@@ -50,8 +50,8 @@ class TblUserPasswordQuery extends TblUserPassword {
             $this->password_hash    => "TEXT NOT NULL",
             $this->expiry           => "TIMESTAMP NULL",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
-            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

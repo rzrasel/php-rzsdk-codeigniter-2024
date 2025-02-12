@@ -2,20 +2,18 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblUserOpenAccount {
+class TblUserLoginAttempt {
     public static $prefix = "tbl_";
-    public static $table = "user_open_account";
+    public static $table = "user_login_attempt";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
+    public $user_id         = "user_id";
     public $id              = "id";
-    public $ip_address       = "ip_address";
-    public $user_agent      = "user_agent";
-    public $device          = "device";
-    public $browser         = "browser";
-    public $os              = "os";
-    public $first_seen_at   = "first_seen_at";
-    public $last_seen_at    = "last_seen_at";
-    public $status          = "status";
+    public $attempt_count   = "attempt_count";
+    public $attempt_time    = "attempt_time";
+    public $success         = "success";
+    public $ip_address      = "ip_address";
+    public $reason          = "reason";
 
     public static function table() {
         return self::$table;

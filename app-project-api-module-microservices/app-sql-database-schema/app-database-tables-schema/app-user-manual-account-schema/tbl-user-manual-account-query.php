@@ -50,8 +50,8 @@ class TblUserManualAccountQuery extends TblUserManualAccount {
             $this->is_email_verified    => "BOOLEAN NOT NULL DEFAULT TRUE",
             $this->is_mobile_verified   => "BOOLEAN NOT NULL DEFAULT TRUE",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked', 'deleted', 'removed'))",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

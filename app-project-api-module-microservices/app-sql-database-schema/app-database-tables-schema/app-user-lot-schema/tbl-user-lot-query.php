@@ -49,8 +49,8 @@ class TblUserLotQuery extends TblUserLot {
             $this->account_expiry   => "TIMESTAMP NULL",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked'))",
             $this->is_deleted       => "TEXT NOT NULL DEFAULT 'enabled' CHECK(is_deleted IN ('enabled', 'disabled', 'deleted', 'removed'))",
-            $this->modified_date    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-            $this->created_date     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

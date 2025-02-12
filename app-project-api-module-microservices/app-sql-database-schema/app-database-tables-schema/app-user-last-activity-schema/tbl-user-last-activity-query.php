@@ -50,8 +50,8 @@ class TblUserLastActivityQuery extends TblUserLastActivity {
             $this->last_seen_at     => "TIMESTAMP NULL",
             $this->failed_attempts  => "INT DEFAULT 0",
             $this->lockout_until    => "TIMESTAMP NULL",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
+            $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
+            $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
             $this->created_by       => "VARCHAR(36) NOT NULL",
         );

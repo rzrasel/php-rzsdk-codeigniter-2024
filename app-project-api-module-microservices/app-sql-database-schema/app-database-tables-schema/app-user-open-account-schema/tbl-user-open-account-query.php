@@ -52,10 +52,6 @@ class TblUserOpenAccountQuery extends TblUserOpenAccount {
             $this->first_seen_at    => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
             $this->last_seen_at     => "TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
             $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked', 'deleted', 'removed'))",
-            $this->modified_date    => "DATETIME NOT NULL",
-            $this->created_date     => "DATETIME NOT NULL",
-            $this->modified_by      => "VARCHAR(36) NOT NULL",
-            $this->created_by       => "VARCHAR(36) NOT NULL",
         );
         $tableColumns = parent::getColumnWithKey();
         if(count($tableColumns) != count($tablePropertyList)) {
