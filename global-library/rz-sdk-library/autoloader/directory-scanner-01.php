@@ -1,15 +1,15 @@
 <?php
+namespace RzSDK\Autoloader;
+?>
+<?php
 class DirectoryScanner {
     public function scanDirectory($dir) {
-        //echo "Starting scan for $dir<br />";
+        echo "Starting scan for $dir<br />";
         $param = $dir;
         $find = "";
         $replace = "";
         if(str_starts_with($dir, ".")) {
             $driList = explode("/", $dir);
-            if(empty($driList)) {
-                $driList = explode("\\", $dir);
-            }
             $dir = getcwd();
             $find = getcwd();
             foreach($driList as $item) {
@@ -29,7 +29,7 @@ class DirectoryScanner {
             $find = getcwd();
             $replace = "";
         }
-        //echo "dir: " . $dir . "<br />find: " . $find . "<br />replace: " . $replace . "<br />";
+        echo "dir: " . $dir . "<br />find: " . $find . "<br />replace: " . $replace . "<br />";
         return $this->scanDirectoryRecursion($dir, $param, $find, $replace);
     }
     public function scanDirectoryRecursion($dir, $param = "", $search = "", $replace = "") {
@@ -71,9 +71,8 @@ class DirectoryScanner {
         return $dirList;
     }
 }
-?>
-<?php
-/*// Example Usage
+
+// Example Usage
 $scanner = new DirectoryScanner();
 echo "<pre>" . print_r($scanner->scanDirectory(""), true) . "</pre>";
 echo "<pre>" . print_r($scanner->scanDirectory("../../global-library/rz-sdk-library"), true) . "</pre>";
@@ -84,6 +83,35 @@ echo "<br />";
 echo getcwd();
 echo "<br />";
 echo basename(__DIR__);
+echo "<br />";
+echo "<br />";
+echo "Scanning \"../\":";
+echo "<br />";
+//echo "<pre>" . print_r($scanner->scanDirectory(""), true) . "</pre>";
+//echo "<pre>" . print_r($scanner->scanDirectory("../../global-library/rz-sdk-library"), true) . "</pre>";
+echo "<pre>" . print_r($scanner->scanDirectory(__DIR__), true) . "</pre>";
+
+echo "<br />";
+echo "<br />";
+/*echo "<br />";
+echo "<br />";
+echo "Scanning: '../':\n";
+echo "<pre>" . print_r($scanner->scanDirectory(".."), true) . "</pre>"; // Scan from "../"
+
+echo "<br />";
+echo "<br />";
+echo "Scanning: '../':\n";
+echo "<pre>" . print_r($scanner->scanDirectory("../../"), true) . "</pre>"; // Scan from "../"
+
+echo "<br />";
+echo "<br />";
+echo "\nScanning: '':\n";
+echo "<pre>" . print_r($scanner->scanDirectory(""), true) . "</pre>"; // Scan from current directory
+
+echo "<br />";
+echo "<br />";
+echo "\nScanning full path:\n";
+echo "<pre>" . print_r($scanner->scanDirectory(__DIR__), true) . "</pre>"; // Scan from full path
 echo "<br />";
 echo "<br />";*/
 ?>

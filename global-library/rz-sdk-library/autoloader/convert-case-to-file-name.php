@@ -1,4 +1,7 @@
 <?php
+namespace RzSDK\Autoloader;
+?>
+<?php
 class ConvertCaseToFileName {
     public function isCamelCase($string) {
         return preg_match("/^[a-z]+([A-Z][a-z0-9]*)*$/", $string);

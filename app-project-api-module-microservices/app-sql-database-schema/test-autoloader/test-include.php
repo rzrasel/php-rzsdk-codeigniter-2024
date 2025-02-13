@@ -1,24 +1,28 @@
 <?php
 require_once("find-working-directory.php");
-require_once("autoloader-config.php");
-require_once("directory-scanner.php");
-require_once("autoloader.php");
+require_once("path-type.php");
 ?>
 <?php
+use RzSDK\Include\Import\FindWorkingDirectory;
+use RzSDK\Include\Import\PathType;
+?>
+
+<?php
 $startPath = __DIR__;
-$targetFolder = "app-sql-database-schema";
+$targetFolder = "global-library/rz-sdk-library";
 $relativePath = "../";
-$result = FindWorkingDirectory::findTopLevelDirectory($startPath, $targetFolder, $relativePath);
-if($result) {
-    $realPath = $result["realpath"];
-    $relativePath = $result["relativepath"];
+$results = FindWorkingDirectory::findTopLevelDirectory($startPath, $targetFolder, $relativePath);
+echo "<pre>" . print_r($results, true) . "</pre>";
+if($results) {
+    $realPath = $results["realpath"];
+    $relativePath = $results["relativepath"];
     $relativePath = dirname($relativePath);
     /*echo $relativePath;
     $directoryScanner = new DirectoryScanner();
     $results = $directoryScanner->scanDirectory($relativePath);
     echo "<pre>" . print_r($results, true) . "</pre>";*/
     global $autoloaderConfig;
-    $autoloaderConfig->setDirectories("");
+    $autoloaderConfig->setDirectories($realPath);
     /*$autoloaderConfig->setDirectories("../");
     $autoloaderConfig->setDirectories("../../");*/
     //$autoloaderConfig->setDirectories("../../../");

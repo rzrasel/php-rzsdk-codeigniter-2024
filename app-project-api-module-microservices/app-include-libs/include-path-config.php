@@ -6,7 +6,6 @@ require_once("find-working-directory.php");
 require_once("path-type.php");
 ?>
 <?php
-
 ?>
 <?php
 //

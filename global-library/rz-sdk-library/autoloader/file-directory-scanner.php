@@ -1,4 +1,7 @@
 <?php
+namespace RzSDK\Autoloader;
+?>
+<?php
 class FileDirectoryScanner {
     public function scanDirectory($dir) {
         $fileList = [];

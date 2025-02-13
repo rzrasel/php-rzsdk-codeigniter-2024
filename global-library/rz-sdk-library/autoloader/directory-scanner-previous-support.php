@@ -1,4 +1,7 @@
 <?php
+namespace RzSDK\Autoloader;
+?>
+<?php
 ?>
 <?php
 class DirectoryScanner {

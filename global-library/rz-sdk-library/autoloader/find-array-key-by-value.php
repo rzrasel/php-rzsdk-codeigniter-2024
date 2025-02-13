@@ -1,4 +1,7 @@
 <?php
+namespace RzSDK\Autoloader;
+?>
+<?php
 class FindArrayKeyByValue {
     public function findByValue($array, $value) {
         $matchingKeys = [];

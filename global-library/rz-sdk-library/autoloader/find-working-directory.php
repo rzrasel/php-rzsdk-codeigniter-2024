@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\Include\Import;
+namespace RzSDK\Autoloader;
 ?>
 <?php
 class FindWorkingDirectory {
