@@ -14,7 +14,7 @@ class FindArrayKeyByValue {
 }
 ?>
 <?php
-// Sample Data
+/*// Sample Data
 $data = array(
     "key-1" => "value-1-part-1-data",
     "key-2" => "value-2-part-2-data",
@@ -33,5 +33,5 @@ echo "<br />";
 print_r($find->findByValue($data, "value-3")); // ["key-3"]
 echo "<br />";
 print_r($find->findByValue($data, "5-data")); // ["key-5", "key-6"]
-echo "<br />";
+echo "<br />";*/
 ?>

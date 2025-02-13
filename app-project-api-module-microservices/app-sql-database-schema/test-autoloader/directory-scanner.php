@@ -7,6 +7,9 @@ class DirectoryScanner {
         $replace = "";
         if(str_starts_with($dir, ".")) {
             $driList = explode("/", $dir);
+            if(empty($driList)) {
+                $driList = explode("\\", $dir);
+            }
             $dir = getcwd();
             $find = getcwd();
             foreach($driList as $item) {
@@ -70,7 +73,7 @@ class DirectoryScanner {
 }
 ?>
 <?php
-// Example Usage
+/*// Example Usage
 $scanner = new DirectoryScanner();
 echo "<pre>" . print_r($scanner->scanDirectory(""), true) . "</pre>";
 echo "<pre>" . print_r($scanner->scanDirectory("../../global-library/rz-sdk-library"), true) . "</pre>";
@@ -82,5 +85,5 @@ echo getcwd();
 echo "<br />";
 echo basename(__DIR__);
 echo "<br />";
-echo "<br />";
+echo "<br />";*/
 ?>

@@ -32,12 +32,12 @@ class FindWorkingDirectory {
         return !empty($topLevelDir["realpath"]) ? $topLevelDir : false;
     }
 }
-$relativePath = "./";
 ?>
 <?php
-// Example Usage
+/*// Example Usage
 $startPath = __DIR__; // Starting directory
 $targetFolder = "global-library"; // Directory name to search
+$relativePath = "./";
 $result = FindWorkingDirectory::findTopLevelDirectory($startPath, $targetFolder, $relativePath);
 
 if($result) {
@@ -46,5 +46,5 @@ if($result) {
     echo "Relative Path: " . $result["relativepath"] . "\n";
 } else {
     echo "Directory not found.\n";
-}
+}*/
 ?>
