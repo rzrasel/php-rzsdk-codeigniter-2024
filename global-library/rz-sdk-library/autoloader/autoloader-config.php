@@ -3,11 +3,20 @@ namespace RzSDK\Autoloader;
 ?>
 <?php
 class AutoloaderConfig {
+    private static ?AutoloaderConfig $instance = null;
     private $directories = array();
-    public function __construct() {
+    private function __construct() {
         /*echo "<br />";
         echo __CLASS__ . " " . __METHOD__ . PHP_EOL;*/
     }
+
+    public static function getInstance(): AutoloaderConfig {
+        if (self::$instance === null || !isset(self::$instance)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
     public function setDirectories($directory): void {
         /*if(empty($directory)) {
             return;
@@ -46,6 +55,6 @@ class AutoloaderConfig {
 <?php
 $directoryList = array("");
 global $autoloaderConfig;
-$autoloaderConfig = new AutoloaderConfig();
+$autoloaderConfig = AutoloaderConfig::getInstance();
 $autoloaderConfig->setDirectories($directoryList);
 ?>

@@ -2,6 +2,10 @@
 namespace RzSDK\Autoloader;
 ?>
 <?php
+defined("RZ_SDK_BASE_PATH") or exit("No direct script access allowed");
+defined("RZ_SDK_LIB_ROOT_DIR") or exit("No direct script access allowed");
+?>
+<?php
 require_once("autoloader-helper.php");
 require_once("autoloader-config.php");
 require_once("directory-scanner.php");
@@ -9,13 +13,22 @@ require_once("convert-case-to-file-name.php");
 ?>
 <?php
 class Autoloader extends AutoloaderHelper{
+    private static ?Autoloader $instance = null;
     private $directories;
-    public function __construct(AutoloaderConfig $directories = new AutoloaderConfig()) {
+    private function __construct(AutoloaderConfig $directories = new AutoloaderConfig()) {
         $directories = $directories->getDirectories();
         $this->directories = is_array($directories) ? $directories : [$directories];
         //$this->scanDirectories();
         spl_autoload_register(array($this, "autoloadRegister"));
     }
+
+    public static function getInstance(AutoloaderConfig $directories = new AutoloaderConfig()): Autoloader {
+        if (self::$instance === null || !isset(self::$instance)) {
+            self::$instance = new self($directories);
+        }
+        return self::$instance;
+    }
+
     public function scanDirectories() {
         $dirList = [];
         foreach($this->directories as $directory) {
@@ -41,6 +54,6 @@ class Autoloader extends AutoloaderHelper{
 ?>
 <?php
 global $autoloaderConfig;
-$autoloader = new Autoloader($autoloaderConfig);
+$autoloader = Autoloader::getInstance($autoloaderConfig);
 //echo $autoloader->existedFilePath;
 ?>

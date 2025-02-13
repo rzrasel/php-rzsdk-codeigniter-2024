@@ -2,6 +2,10 @@
 namespace RzSDK\Autoloader;
 ?>
 <?php
+defined("RZ_SDK_BASE_PATH") or exit("No direct script access allowed");
+defined("RZ_SDK_LIB_ROOT_DIR") or exit("No direct script access allowed");
+?>
+<?php
 class AutoloaderHelper {
     public function toNamespace($class)
     {
