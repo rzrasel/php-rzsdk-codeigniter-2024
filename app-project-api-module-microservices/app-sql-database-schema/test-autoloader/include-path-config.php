@@ -108,16 +108,27 @@ class IncludePathConfig {
         $targetFolder = $this->projectDirName;
         $relativePath = $relative;
         //return $this->findRootDir($startPath, $targetFolder, $relativePath);
-        $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
-        if($isRemove) {
+        /*$path = $this->findRootDir($startPath, $targetFolder, $relativePath);
+        /*if($isRemove) {
             $path = ($this->pathTypeBeen == PathType::REAL_PATH) ? $path : dirname($path);
-        }
+        }*/
         $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
-        if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
+        /*if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
             for ($i = 0; $i < CONST_PROJECT_DIR_REMOVE; $i++) {
                 $path = dirname($path);
             }
+        }*/
+        for ($i = 0; $i < CONST_PROJECT_DIR_REMOVE; $i++) {
+            //$path = dirname($path);
+            $parts = explode("/", $path);
+            //echo "count-" . count($parts);
+            //print_r($parts);
+            if(count($parts) < 1 || $path == ".." || $path == ".") {
+                $path = "";
+            }
+            $path = dirname($path);
         }
+        //$path = $path . "[getProjectDirPath]: " . __LINE__;
         return $path;
     }
 
@@ -125,11 +136,22 @@ class IncludePathConfig {
         $targetFolder = CONST_WORKING_DIR_NAME;
         $relativePath = $relative;
         $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
-        if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
+        /*if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
             for ($i = 0; $i < CONST_WORKING_DIR_REMOVE; $i++) {
                 $path = dirname($path);
             }
+        }*/
+        for ($i = 0; $i < CONST_WORKING_DIR_REMOVE; $i++) {
+            //$path = dirname($path);
+            $parts = explode("/", $path);
+            //echo "count-" . count($parts);
+            //print_r($parts);
+            if(count($parts) < 1 || $path == ".." || $path == ".") {
+                $path = "";
+            }
+            $path = dirname($path);
         }
+        //$path = $path . "[getWorkingDirPath]: " . __LINE__;
         return $path;
     }
 

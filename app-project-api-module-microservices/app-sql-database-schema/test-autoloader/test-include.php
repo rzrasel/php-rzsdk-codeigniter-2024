@@ -1,4 +1,7 @@
 <?php
+namespace RzSDK\Include\Import;
+?>
+<?php
 require_once("path-type.php");
 require_once("find-working-directory.php");
 require_once("include-path-config.php");
@@ -15,22 +18,33 @@ global $pathTypeBeen;
 $pathTypeBeen = PathType::RELATIVE_PATH;
 ?>
 <?php
+$sdkDirName = "global-library/rz-sdk-library";
+$projectDir = __DIR__;
+$projectDirName = "test-autoloader";
+$workingDir = $projectDir;
+$workingDirName = basename($workingDir);
+?>
+<?php
 global $includePathConfig;
 global $includePathSetup;
 ?>
 <?php
-$includePathConfig = IncludePathConfig::getInstance();
+if($includePathConfig == null || !isset($includePathConfig)) {
+    $includePathConfig = IncludePathConfig::getInstance();
+}
 $includePathSetup = IncludePathSetup::getInstance();
 ?>
 <?php
 $includePathConfig
-    ->setRemoveNumberOfDir(0, 2, 1);
+    ->setRemoveNumberOfDir(0, 2, 2);
+?>
+<?php
 $includePathSetup
     ->setPathConfigObject($includePathConfig)
     ->setPathTypeBeen($pathTypeBeen)
-    ->setSDKDirName("global-library/rz-sdk-library")
-    ->setProjectDirName("app-project-api-module-microservices")
-    ->setWorkingDir(__DIR__)
+    ->setSDKDirName($sdkDirName)
+    ->setProjectDirName($projectDirName)
+    ->setWorkingDir($workingDir)
     ->defineSDKPath()
     ->defineProjectPath()
     ->defineWorkingPath();
@@ -38,8 +52,10 @@ $includePathSetup
 <?php
 require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader-config.php");
 $includePathSetup->setAutoloaderConfigDir();
-//echo RZ_SDK_BASE_PATH;
-//echo DIRECTORY_SEPARATOR
+?>
+<?php
+$baseInclude = RZ_SDK_BASE_PATH . "/autoloader";
+require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
 ?>
 <?php
 global $autoloaderConfig;
@@ -50,33 +66,17 @@ echo "<pre>" . print_r($results, true) . "</pre>";
 echo "<br />";
 ?>
 <?php
-$startPath = __DIR__;
-$targetFolder = "global-library/rz-sdk-library";
-$relativePath = "../";
-$results = FindWorkingDirectory::findTopLevelDirectory($startPath, $targetFolder, $relativePath);
-echo "<pre>" . print_r($results, true) . "</pre>";
-if($results) {
-    $realPath = $results["realpath"];
-    $relativePath = $results["relativepath"];
-    $relativePath = dirname($relativePath);
-    /*echo $relativePath;
-    $directoryScanner = new DirectoryScanner();
-    $results = $directoryScanner->scanDirectory($relativePath);
-    echo "<pre>" . print_r($results, true) . "</pre>";*/
-    global $autoloaderConfig;
-    $autoloaderConfig->setDirectories($realPath);
-    /*$autoloaderConfig->setDirectories("../");
-    $autoloaderConfig->setDirectories("../../");*/
-    //$autoloaderConfig->setDirectories("../../../");
-    $results = $autoloaderConfig->getDirectories();
-    //$autoloader = new Autoloader($autoloaderConfig);
-    new findTest_class();
-    //new FindTestClass();
-} else {
-    echo "Directory not found.\n";
-}
+use RzSDK\URL\SiteUrl;
 ?>
 <?php
-/*class FindTestClass {
-}*/
+$baseUrl = SiteUrl::getBaseUrl();
+defined("JOB_BASE_URL") or define("JOB_BASE_URL", $baseUrl);
+defined("JOB_ROOT_URL") or define("JOB_ROOT_URL", $baseUrl);
+$result = FindWorkingDirectory::findBaseUrl($baseUrl, $projectDirName);
+$projectBaseUrl = ($result) ? $result : $baseUrl;
+defined("BASE_URL") or define("BASE_URL", $projectBaseUrl);
+defined("ROOT_URL") or define("ROOT_URL", $projectBaseUrl);
+echo JOB_BASE_URL;
+echo "<br />";
+echo BASE_URL;
 ?>

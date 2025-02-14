@@ -36,6 +36,25 @@ class FindWorkingDirectory {
 
         return !empty($topLevelDir["realpath"]) ? $topLevelDir : false;
     }
+
+    public static function findBaseUrl($url, $target) {
+        // Normalize URL slashes
+        $url = str_replace("\\", "/", $url);
+
+        // Loop through directories
+        while ($url !== "/" && $url !== "" && $url !== "http:/") {
+            if(basename($url) === $target) {
+                return $url;
+            }
+
+            // Move up one directory
+            $url = dirname($url);
+            if(empty($url) || $url === "." || $url === "/") {
+                return false;
+            }
+        }
+        return false;
+    }
 }
 ?>
 <?php

@@ -43,12 +43,22 @@ class AutoloaderHelper {
                 return $fileName;
             }
             foreach($directories as $directory) {
+                $fileName = $item . $fileExtension;
                 $directory = trim(trim($directory, "\\"), "/");
                 $fileName = $directory . "/" . $fileName;
                 $fileName = trim(trim($fileName, "\\"), "/");
+                /*echo "<br />";
+                echo $fileName;
+                echo "<br />";*/
+                if(file_exists($fileName)) {
+                    /*echo "Exists: $fileName";
+                    echo "<br />";*/
+                    return $fileName;
+                }
             }
             $fileList[] = $fileName;
-            /*echo $fileName;
+            /*echo "<br />";
+            echo $fileName;
             echo "<br />";*/
             if(file_exists($fileName)) {
                 /*echo "Exists: $fileName";
