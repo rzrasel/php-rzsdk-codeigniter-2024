@@ -14,6 +14,18 @@ class FindArrayKeyByValue {
 
         return !empty($matchingKeys) ? $matchingKeys : false; // Return array or false if no match
     }
+
+    public function findByValueExactMatch($array, $value) {
+        $matchingKeys = [];
+
+        foreach ($array as $key => $val) {
+            if ($val === $value) { // Check for exact match
+                $matchingKeys[] = $key; // Store matching key
+            }
+        }
+
+        return !empty($matchingKeys) ? $matchingKeys : false; // Return array of keys or false
+    }
 }
 ?>
 <?php

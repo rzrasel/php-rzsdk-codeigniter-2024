@@ -54,16 +54,19 @@ require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader-config.php");
 $includePathSetup->setAutoloaderConfigDir();
 ?>
 <?php
-$baseInclude = RZ_SDK_BASE_PATH . "/autoloader";
-require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
-?>
-<?php
 global $autoloaderConfig;
+$autoloaderConfig
+    ->setCacheFilePath(RZ_PROJECT_ROOT_DIR)
+    ->setIsFileWrite(true);
 //$autoloaderConfig->setDirectories($realPath);
 /*$results = $autoloaderConfig->getDirectories();
 echo "<br />";
 echo "<pre>" . print_r($results, true) . "</pre>";
 echo "<br />";*/
+?>
+<?php
+$baseInclude = RZ_SDK_BASE_PATH . "/autoloader";
+require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
 ?>
 <?php
 use RzSDK\URL\SiteUrl;

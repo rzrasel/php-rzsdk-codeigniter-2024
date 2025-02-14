@@ -18,7 +18,7 @@ class AutoloaderHelper {
         $retVal = preg_replace("/([A-Z])/", $replaceBy . "$1", $text);
         return trim($retVal, $replaceBy);
     }
-    public function getClassToFilePath($className, $directories, $fileExtension = ".php") {
+    public function getClassToFilePath($className, $directories, AutoloaderConfig $autoloaderConfig, $fileExtension = ".php") {
         $dirList = [];
         foreach($directories as $directory) {
             $directoryScanner = new DirectoryScanner();
@@ -26,7 +26,11 @@ class AutoloaderHelper {
             $dirList = array_merge($dirList, $results);
         }
         //echo "<pre>" . print_r($dirList, true) . "</pre>";
+        //echo "isFileWrite: {$isFileWrite}";
         $fileName = $this->getFileList($className, $dirList, $fileExtension);
+        if($fileName && $autoloaderConfig->getIsFileWrite()) {
+            $this->writeCachePath($autoloaderConfig, $fileName, $className);
+        }
         return $fileName;
     }
     public function getFileList($className, $directories, $fileExtension = ".php") {
@@ -68,6 +72,75 @@ class AutoloaderHelper {
         }
         //echo "<pre>" . print_r($fileList, true) . "</pre>";
         return false;
+    }
+
+    public function writeCachePath(AutoloaderConfig $autoloaderConfig, $classFilePath, $className) {
+        $fileWriteDirPath = $autoloaderConfig->getCacheDirWritePath();
+        if(!is_dir($fileWriteDirPath) || !is_writable($fileWriteDirPath) || !file_exists($fileWriteDirPath)) {
+            mkdir($fileWriteDirPath);
+            chmod("$fileWriteDirPath", 0755);
+        }
+        $jsonFilePath = $autoloaderConfig->getCacheFileWritePath();
+        $fileData = array();
+        $fileData = $this->read($jsonFilePath);
+        if(empty($fileData)) {
+            $fileData = array();
+        } else {
+            $fileData = json_decode($fileData, true);
+            $fileData[$classFilePath] = $className;
+        }
+        /*echo "<br />";
+        echo "<br />";
+        echo "<pre>" . print_r($fileData, true) . "</pre>";
+        echo "<br />";
+        echo "<br />";*/
+        // Beautify the JSON
+        $prettyJson = json_encode($fileData, JSON_PRETTY_PRINT);
+        $this->write($jsonFilePath, $prettyJson);
+    }
+    public function readCachePath(AutoloaderConfig $autoloaderConfig, $className) {
+        $jsonFilePath = $autoloaderConfig->getCacheFileWritePath();
+        $fileData = $this->read($jsonFilePath);
+        if(!empty($fileData)) {
+            $fileData = json_decode($fileData, true);
+            $findArrayKeyByValue = new FindArrayKeyByValue();
+            $results = $findArrayKeyByValue->findByValueExactMatch($fileData, $className);
+            /*echo "<br />";
+            echo "<br />";
+            echo "<pre>" . print_r($results, true) . "</pre>";
+            echo "<br />";
+            echo "<br />";*/
+            if(!$results) {
+                return false;
+            }
+            if(!is_array($results)) {
+                return false;
+            }
+            $isFileExists = false;
+            foreach($results as $item) {
+                if(file_exists($item)) {
+                    $isFileExists = true;
+                    require_once($item);
+                }
+            }
+            return $isFileExists;
+        }
+        return false;
+    }
+
+    public function write($filePath, $fileData) {
+        /*$filePointer = fopen($filePath, "w");
+        fwrite($filePointer, $fileData);
+        fclose($filePointer);*/
+        // Write the beautified JSON to the file
+        file_put_contents($filePath, $fileData);
+    }
+
+    public function read($filePath) {
+        if(!file_exists($filePath)) {
+            return null;
+        }
+        return file_get_contents($filePath);
     }
 
     public function isFileExistsOld($path) {
