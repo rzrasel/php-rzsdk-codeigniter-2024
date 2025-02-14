@@ -3,49 +3,143 @@ namespace RzSDK\Include\Import;
 ?>
 <?php
 require_once("path-type.php");
+require_once("find-working-directory.php");
 require_once("include-path-config.php");
 ?>
 <?php
-$rootDirectory = __DIR__;
-$baseProjectDirectory = "app-project-api-module-microservices";
-$baseProjectRelativeDir = "";
-$isForceProjectRelative = false;
-$baseSDKLibsDir = "global-library";
-$sdkLibsDir = "rz-sdk-library";
-$sdkLibsRelativeDir = "";
-$isForceSDKRelative = false;
+use RzSDK\Include\Import\FindWorkingDirectory;
+use RzSDK\Include\Import\PathType;
+use RzSDK\Include\Import\IncludePathConfig;
 ?>
 <?php
-defined("INCLUDE_PROJECT_ROOT_DIR") or define("INCLUDE_PROJECT_ROOT_DIR", $rootDirectory);
-defined("INCLUDE_PROJECT_DIR_NAME") or define("INCLUDE_PROJECT_DIR_NAME", $baseProjectDirectory);
-defined("INCLUDE_PROJECT_RELATIVE_DIR") or define("INCLUDE_PROJECT_RELATIVE_DIR", $baseProjectRelativeDir);
-defined("INCLUDE_PROJECT_RELATIVE_FORCE") or define("INCLUDE_PROJECT_RELATIVE_FORCE", $isForceProjectRelative);
-defined("INCLUDE_BASE_SDK_LIBS_DIR_NAME") or define("INCLUDE_BASE_SDK_LIBS_DIR_NAME", $baseSDKLibsDir);
-defined("INCLUDE_SDK_LIBS_DIR_NAME") or define("INCLUDE_SDK_LIBS_DIR_NAME", $sdkLibsDir);
-defined("INCLUDE_SDK_LIBS_RELATIVE_DIR") or define("INCLUDE_SDK_LIBS_RELATIVE_DIR", $sdkLibsRelativeDir);
-defined("INCLUDE_SDK_RELATIVE_FORCE") or define("INCLUDE_SDK_RELATIVE_FORCE", $isForceSDKRelative);
+class IncludePathSetup {
+    private static ?IncludePathSetup $instance = null;
+    private $pathTypeBeen = PathType::REAL_PATH;
+    private IncludePathConfig $includePathConfig;
+    private function __construct(PathType $pathType = PathType::REAL_PATH) {
+        $this->pathTypeBeen = $pathType;
+    }
+
+    public static function getInstance(PathType $pathType = PathType::REAL_PATH): IncludePathSetup {
+        if (self::$instance === null || !isset(self::$instance)) {
+            self::$instance = new self($pathType);
+        }
+        return self::$instance;
+    }
+
+    public function setPathConfigObject(IncludePathConfig $includePathObject) {
+        $this->includePathConfig = $includePathObject;
+        if($this->includePathConfig != null) {
+            $this->pathTypeBeen = $this->includePathConfig->getPathTypeBeen();
+        }
+        return $this;
+    }
+
+    public function setPathTypeBeen(PathType $pathType) {
+        $this->pathTypeBeen = $pathType;
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $this->includePathConfig->setPathTypeBeen($this->pathTypeBeen);
+        return $this;
+    }
+
+    public function setSDKDirName($sdkDirName) {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $this->includePathConfig->setSDKDirName($sdkDirName);
+        return $this;
+    }
+
+    public function setProjectDirName($projectDirName) {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $this->includePathConfig->setProjectDirName($projectDirName);
+        return $this;
+    }
+
+    public function setWorkingDir($workingDir = __DIR__) {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $workingDir = trim(trim($workingDir, "\\"), "/");
+        $workingDirName = trim(trim(basename($workingDir), "\\"), "/");
+        $this->includePathConfig->setStartingPath($workingDir);
+        $this->includePathConfig->setWorkingDirName($workingDirName);
+        return $this;
+    }
+
+    public function defineSDKPath() {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $startingPath = $this->includePathConfig->getStartingPath();
+        $rzSDKDirPath = $this->includePathConfig->getSDKDirPath($startingPath);
+        defined("RZ_SDK_BASE_PATH") or define("RZ_SDK_BASE_PATH", $rzSDKDirPath);
+        defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", $rzSDKDirPath);
+        return $this;
+    }
+
+    public function defineProjectPath($startPath = __DIR__, $relative = "../", $isRemove = true) {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $startingPath = $this->includePathConfig->getStartingPath();
+        $projectPath = $this->includePathConfig->getProjectDirPath($startingPath, $relative, $isRemove);
+        defined("RZ_PROJECT_ROOT_DIR") or define("RZ_PROJECT_ROOT_DIR", $projectPath);
+        defined("RZ_PROJECT_ROOT_DIR") or define("RZ_PROJECT_ROOT_DIR", $projectPath);
+        return $this;
+    }
+
+    public function defineWorkingPath($startPath = __DIR__, $relative = "../", $isRemove = true) {
+        if($this->includePathConfig == null) {
+            return $this;
+        }
+        $startingPath = $this->includePathConfig->getStartingPath();
+        $workingPath = $this->includePathConfig->getWorkingDirPath($startingPath, $relative, $isRemove);
+        defined("RZ_WORKING_ROOT_DIR") or define("RZ_WORKING_ROOT_DIR", $workingPath);
+        defined("RZ_WORKING_ROOT_DIR") or define("RZ_WORKING_ROOT_DIR", $workingPath);
+        return $this;
+    }
+
+    public function setAutoloaderConfigDir() {
+        global $autoloaderConfig;
+        $autoloaderConfig->setDirectories(RZ_SDK_LIB_ROOT_DIR);
+        $autoloaderConfig->setDirectories(RZ_WORKING_ROOT_DIR);
+        $autoloaderConfig->setDirectories(RZ_PROJECT_ROOT_DIR);
+        return $this;
+    }
+}
 ?>
 <?php
 global $pathTypeBeen;
-$pathTypeBeen = PathType::REAL_PATH;
-$rootDirectory = INCLUDE_PROJECT_ROOT_DIR;
-$baseProjectDirectory = INCLUDE_PROJECT_DIR_NAME;
-$baseProjectRelativeDir = INCLUDE_PROJECT_RELATIVE_DIR;
-$isForceProjectRelative = INCLUDE_PROJECT_RELATIVE_FORCE;
-$baseSDKLibsDir = INCLUDE_BASE_SDK_LIBS_DIR_NAME;
-$sdkLibsDir = INCLUDE_SDK_LIBS_DIR_NAME;
-$sdkLibsRelativeDir = INCLUDE_SDK_LIBS_RELATIVE_DIR;
-$isForceSDKRelative = INCLUDE_SDK_RELATIVE_FORCE;
+$pathTypeBeen = PathType::RELATIVE_PATH;
 ?>
 <?php
-//require_once("app-include-libs/include-path-config.php");
+global $includePathConfig;
+global $includePathSetup;
 ?>
 <?php
-definedDirProjectPath($rootDirectory, $baseProjectDirectory, $isForceProjectRelative, $baseProjectRelativeDir);
-definedDirSDKLibsPath($rootDirectory, $baseSDKLibsDir, $sdkLibsDir, $isForceSDKRelative, $sdkLibsRelativeDir);
-importAutoLoaderConfig();
-/*echo "<br />";
-echo "Project Base Directory Name: " . RZ_PROJECT_ROOT_DIR . PHP_EOL;
-echo "<br />";
-echo "SDK Base Directory Name: " . RZ_SDK_LIB_ROOT_DIR . PHP_EOL;*/
+$includePathConfig = IncludePathConfig::getInstance();
+$includePathSetup = IncludePathSetup::getInstance();
+?>
+<?php
+$includePathSetup
+    ->setPathConfigObject($includePathConfig)
+    ->setPathTypeBeen($pathTypeBeen)
+    ->setSDKDirName("global-library/rz-sdk-library")
+    ->setProjectDirName("app-project-api-module-microservices")
+    ->setWorkingDir(__DIR__);
+/*$includePathSetup
+    ->setPathConfigObject($includePathConfig)
+    ->setPathTypeBeen($pathTypeBeen)
+    ->setSDKDirName("global-library/rz-sdk-library")
+    ->setProjectDirName("app-project-api-module-microservices")
+    ->setWorkingDir(__DIR__)
+    ->defineSDKPath()
+    ->defineProjectPath()
+    ->defineWorkingPath()
+    ->setAutoloaderConfigDir();*/
 ?>

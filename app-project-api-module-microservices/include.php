@@ -2,51 +2,81 @@
 namespace RzSDK\Include\Import;
 ?>
 <?php
-
-//   _____         _____                _            _____ _____
- // |  __ \       |  __ \              | |     /\   |  __ \_   _|
- // | |__) | ____ | |__) |__ _ ___  ___| |    /  \  | |__) || |
- // |  _  / |_  / |  _  // _` / __|/ _ \ |   / /\ \ |  ___/ | |
- // | | \ \  / /  | | \ \ (_| \__ \  __/ |  / ____ \| |    _| |_
- // |_|  \_\/___| |_|  \_\__,_|___/\___|_| /_/    \_\_|   |_____|
-
-?>
-<?php
+require_once("app-include-libs/path-type.php");
+require_once("app-include-libs/find-working-directory.php");
+require_once("app-include-libs/include-path-config.php");
 require_once("app-include-libs/include-path-setup.php");
 ?>
 <?php
-use RzSDK\Autoloader\AutoloaderConfig;
+use RzSDK\Include\Import\FindWorkingDirectory;
+use RzSDK\Include\Import\PathType;
+use RzSDK\Include\Import\IncludePathConfig;
+use RzSDK\Include\Import\IncludePathSetup;
 ?>
 <?php
 global $pathTypeBeen;
-$baseProjectDirectory = INCLUDE_PROJECT_DIR_NAME;
-$baseProjectDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $baseProjectDirectory : "";
+$pathTypeBeen = PathType::RELATIVE_PATH;
+?>
+<?php
+$sdkDirName = "global-library/rz-sdk-library";
+$projectDir = __DIR__;
+$projectDirName = "app-project-api-module-microservices";
+$workingDir = $projectDir;
+$workingDirName = basename($workingDir);
+?>
+<?php
+global $includePathConfig;
+global $includePathSetup;
+?>
+<?php
+if($includePathConfig == null || !isset($includePathConfig)) {
+    $includePathConfig = IncludePathConfig::getInstance();
+}
+$includePathSetup = IncludePathSetup::getInstance();
+?>
+<?php
+$includePathConfig
+    ->setRemoveNumberOfDir(0, 2, 2);
+?>
+<?php
+$includePathSetup
+    ->setPathConfigObject($includePathConfig)
+    ->setPathTypeBeen($pathTypeBeen)
+    ->setSDKDirName($sdkDirName)
+    ->setProjectDirName($projectDirName)
+    ->setWorkingDir($workingDir)
+    ->defineSDKPath()
+    ->defineProjectPath()
+    ->defineWorkingPath();
+?>
+<?php
+require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader-config.php");
+$includePathSetup->setAutoloaderConfigDir();
+?>
+<?php
+$baseInclude = RZ_SDK_BASE_PATH . "/autoloader";
+require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
 ?>
 <?php
 global $autoloaderConfig;
-$directoryList = array(
-    $baseProjectDirectory . "user-auth-token" => array(
-        "model",
-        "core",
-    ),
-);
-$autoloaderConfig->setDirectories($directoryList);
-/*$autoDirectories = $autoloaderConfig->getDirectories();
+//$autoloaderConfig->setDirectories($realPath);
+/*$results = $autoloaderConfig->getDirectories();
 echo "<br />";
-echo "<pre>" . print_r($autoDirectories, true) . "</pre>";
+echo "<pre>" . print_r($results, true) . "</pre>";
 echo "<br />";*/
-?>
-<?php
-//|----------------|INCLUDE AUTOLOADER.PHP FILE|-----------------|
-//
-$baseInclude = RZ_SDK_LIB_ROOT_DIR . "/autoloader";
-require_once($baseInclude . "/autoloader.php");
 ?>
 <?php
 use RzSDK\URL\SiteUrl;
 ?>
 <?php
-defined("BASE_URL") or define("BASE_URL", SiteUrl::getBaseUrl());
-defined("ROOT_URL") or define("ROOT_URL", SiteUrl::getBaseUrl());
-//echo SiteUrl::getBaseUrl();
+$baseUrl = SiteUrl::getBaseUrl();
+defined("JOB_BASE_URL") or define("JOB_BASE_URL", $baseUrl);
+defined("JOB_ROOT_URL") or define("JOB_ROOT_URL", $baseUrl);
+$result = FindWorkingDirectory::findBaseUrl($baseUrl, $projectDirName);
+$projectBaseUrl = ($result) ? $result : $baseUrl;
+defined("BASE_URL") or define("BASE_URL", $projectBaseUrl);
+defined("ROOT_URL") or define("ROOT_URL", $projectBaseUrl);
+/*echo JOB_BASE_URL;
+echo "<br />";
+echo BASE_URL;*/
 ?>

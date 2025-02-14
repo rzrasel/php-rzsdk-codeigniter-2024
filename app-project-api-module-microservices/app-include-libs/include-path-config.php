@@ -2,112 +2,186 @@
 namespace RzSDK\Include\Import;
 ?>
 <?php
-require_once("find-working-directory.php");
 require_once("path-type.php");
+require_once("find-working-directory.php");
 ?>
 <?php
+use RzSDK\Include\Import\FindWorkingDirectory;
+use RzSDK\Include\Import\PathType;
 ?>
 <?php
-//
-//|------|STATICALLY SET MODULE OR PROJECT DIRECTORY NAME|-------|
-//
-function definedDirProjectPath($rootDirectory, $baseDirectoryName, $forceRelativePath = false, $relativePath = "") {
-    global $pathTypeBeen;
-    $projectBaseDirectory = FindWorkingDirectory::findDirectory($rootDirectory, $baseDirectoryName);
-    $realPath = $projectBaseDirectory["realpath"];
-    $relativePathFound = $projectBaseDirectory["relativepath"];
-    if($forceRelativePath) {
-        $relativePathFound = $relativePath;
+class IncludePathConfig {
+    private static ?IncludePathConfig $instance = null;
+    private $pathTypeBeen = PathType::REAL_PATH;
+    private $startingPath = "";
+    private $rzSDKDirName = "global-library/rz-sdk-library";
+    private $projectDirName = "app-project-directory";
+    private $workingDirName = "app-working-directory";
+    private $rootDir = "";
+    public static $constStartingPath = "CONST_STARTING_PATH";
+    private function __construct(PathType $pathType = PathType::REAL_PATH) {
+        $this->pathTypeBeen = $pathType;
     }
-    $realPath = rtrim(rtrim($realPath, "\\"), "/");
-    //$relativePathFound = rtrim(rtrim($relativePathFound, "\\"), "/");
-    $projectBaseDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $realPath : $relativePathFound;
-    /*echo "<br />";
-    echo "Project Base Directory Name: " . $projectBaseDirectory . PHP_EOL;*/
-    defined("RZ_PROJECT_ROOT_DIR") or define("RZ_PROJECT_ROOT_DIR", $projectBaseDirectory);
-    defined("RZ_SDK_BASE_PATH") or define("RZ_SDK_BASE_PATH", $projectBaseDirectory);
-}
-/*$rootDirectory = __DIR__;
-$baseProjectDirectoryName = "app-project-module-microservices";
-echo "<br />";
-echo "Root Directory: {$rootDirectory}" . PHP_EOL;
-echo "<br />";
-echo "Base Project Directory Name: {$baseProjectDirectoryName}" . PHP_EOL;
 
-$projectBaseDirectory = getProjectDirectory($rootDirectory, $baseProjectDirectoryName);
-echo "<br />";
-echo "Project Base Directory Name: " . print_r($projectBaseDirectory, true) . PHP_EOL;*/
-/*$projectTargetDir = "project-module-microservices";
-$projectBaseDirectories = findNamedDirectory($startDir, $projectTargetDir);
-$realPath = $projectBaseDirectories["realpath"];
-$relativePath = $projectBaseDirectories["relativepath"];
-$projectBaseDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $realPath : "";
-$projectBaseDirectory = rtrim(rtrim($projectBaseDirectory, "\\"), "/");*/
-/* echo $pathTypeBeen->value;
-echo $pathTypeBeen->name; */
-//$projectBaseDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $projectBaseDirectory : "";
-/* echo "<br />";
-echo $baseDirectory;
-echo "<br />";
-echo $projectBaseDirectory; */
-//
-//|-----|DEFINED CONSTANT MODULE OR PROJECT DIRECTORY NAME|------|
-//
-/*defined("RZ_PROJECT_ROOT_DIR") or define("RZ_PROJECT_ROOT_DIR", $projectBaseDirectory);
-defined("RZ_SDK_BASE_PATH") or define("RZ_SDK_BASE_PATH", $projectBaseDirectory);*/
-//
-//
-//|--------|STATICALLY SET RZ-SDK-LIBRARY DIRECTORY NAME|--------|
-//
-//$startDir = __DIR__;
-//$startDir = $baseDirectory;
-/*global $pathTypeBeen;
-$startDir = RZ_PROJECT_DIR_INITIALIZATION;
-$libsTargetDir = "global-library/rz-sdk-library";
-$libsBaseDirectories = findNamedDirectory($startDir, $libsTargetDir);
-$realPath = trim($libsBaseDirectories["realpath"], "/");
-$relativePath = trim($libsBaseDirectories["relativepath"], "/");
-$libsBaseDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $realPath : "{$relativePath}/{$libsTargetDir}";
-$libsBaseDirectory = rtrim(rtrim($libsBaseDirectory, "\\"), "/");*/
-//
-//|-------|DEFINED CONSTANT RZ-SDK-LIBRARY DIRECTORY NAME|-------|
-//
-//defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", $baseDirectory . "/rz-sdk-library");
-//defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", trim("{$libsBaseDirectory}/global-library/rz-sdk-library", "/"));
-/*defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", trim($libsBaseDirectory, "/"));*/
-//
-//
-?>
-<?php
-function definedDirSDKLibsPath($rootDirectory, $baseDirectoryName, $baseSDKDir, $forceRelativePath = false, $relativePath = "") {
-    global $pathTypeBeen;
-    $projectBaseDirectory = FindWorkingDirectory::findDirectory($rootDirectory, $baseDirectoryName);
-    $realPath = $projectBaseDirectory["realpath"];
-    $relativePathFound = $projectBaseDirectory["relativepath"];
-    if($forceRelativePath) {
-        $relativePathFound = $relativePath;
+    public static function getInstance(PathType $pathType = PathType::REAL_PATH): IncludePathConfig {
+        if (self::$instance === null || !isset(self::$instance)) {
+            self::$instance = new self($pathType);
+        }
+        return self::$instance;
     }
-    $realPath = rtrim(rtrim($realPath, "\\"), "/");
-    //$relativePathFound = rtrim(rtrim($relativePathFound, "\\"), "/");
-    $projectBaseDirectory = ($pathTypeBeen == PathType::REAL_PATH) ? $realPath : $relativePathFound . $baseDirectoryName;
-    /*echo "<br />";
-    echo "Project Base Directory Name: " . $projectBaseDirectory . PHP_EOL;*/
-    $projectBaseDirectory = trim(trim($projectBaseDirectory, "\\"), "/");
-    $baseSDKDir = trim(trim($baseSDKDir, "\\"), "/");
-    $libsBaseDirectory = $projectBaseDirectory . "/" . $baseSDKDir;
-    $libsBaseDirectory = trim(trim($libsBaseDirectory, "\\"), "/");
-    defined("RZ_SDK_LIB_ROOT_DIR") or define("RZ_SDK_LIB_ROOT_DIR", $libsBaseDirectory);
+
+    public function setPathTypeBeen(PathType $pathType) {
+        $this->pathTypeBeen = $pathType;
+        return $this;
+    }
+
+    public function getPathTypeBeen(): PathType {
+        return $this->pathTypeBeen;
+    }
+
+    public function setStartingPath($startingPath = __DIR__) {
+        $startingPath = trim(trim($startingPath, "\\"), "/");
+        $this->startingPath = $startingPath;
+        //defined(self::$constStartingPath) or define(self::$constStartingPath, $startingPath);
+        defined("CONST_STARTING_PATH") or define("CONST_STARTING_PATH", $startingPath);
+        return $this;
+    }
+
+    public function getStartingPath() {
+        if (defined(CONST_STARTING_PATH)) {
+            return CONST_STARTING_PATH;
+        }
+        return false;
+    }
+
+    public function setSDKDirName($sdkDirName) {
+        $sdkDirName = trim(trim($sdkDirName, "\\"), "/");
+        $this->rzSDKDirName = $sdkDirName;
+        return $this;
+    }
+
+    public function getSDKDirName(): string {
+        return $this->rzSDKDirName;
+    }
+
+    public function setProjectDirName($projectDirName) {
+        $projectDirName = trim(trim($projectDirName, "\\"), "/");
+        $this->projectDirName = $projectDirName;
+        return $this;
+    }
+
+    public function getProjectDirName(): string {
+        return $this->projectDirName;
+    }
+
+    public function setWorkingDirName($workingDirName) {
+        $workingDirName = trim(trim($workingDirName, "\\"), "/");
+        $this->workingDirName = $workingDirName;
+        defined("CONST_WORKING_DIR_NAME") or define("CONST_WORKING_DIR_NAME", $workingDirName);
+        return $this;
+    }
+
+    public function setRemoveNumberOfDir($sdkDir = 0, $projcetDir = 0, $workingDir = 0) {
+        defined("CONST_SDK_DIR_REMOVE") or define("CONST_SDK_DIR_REMOVE", $sdkDir);
+        defined("CONST_PROJECT_DIR_REMOVE") or define("CONST_PROJECT_DIR_REMOVE", $projcetDir);
+        defined("CONST_WORKING_DIR_REMOVE") or define("CONST_WORKING_DIR_REMOVE", $workingDir);
+        return $this;
+    }
+
+    public function getWorkingDirName(): string {
+        return $this->workingDirName;
+    }
+
+    public function getSDKDirPath($startPath = __DIR__, $relative = "../") {
+        $targetFolder = $this->rzSDKDirName;
+        $relativePath = $relative;
+        $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
+        if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
+            for ($i = 0; $i < CONST_SDK_DIR_REMOVE; $i++) {
+                $path = $this->removeFirstDirectory($path);
+            }
+        }
+        return $path;
+    }
+
+    public function getProjectDirPath($startPath = __DIR__, $relative = "../", $isRemove = true) {
+        $targetFolder = $this->projectDirName;
+        $relativePath = $relative;
+        //return $this->findRootDir($startPath, $targetFolder, $relativePath);
+        /*$path = $this->findRootDir($startPath, $targetFolder, $relativePath);
+        /*if($isRemove) {
+            $path = ($this->pathTypeBeen == PathType::REAL_PATH) ? $path : dirname($path);
+        }*/
+        $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
+        /*if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
+            for ($i = 0; $i < CONST_PROJECT_DIR_REMOVE; $i++) {
+                $path = dirname($path);
+            }
+        }*/
+        for ($i = 0; $i < CONST_PROJECT_DIR_REMOVE; $i++) {
+            //$path = dirname($path);
+            $parts = explode("/", $path);
+            //echo "count-" . count($parts);
+            //print_r($parts);
+            if(count($parts) < 1 || $path == ".." || $path == ".") {
+                $path = "";
+            }
+            $path = dirname($path);
+        }
+        //$path = $path . "[getProjectDirPath]: " . __LINE__;
+        return $path;
+    }
+
+    public function getWorkingDirPath($startPath = __DIR__, $relative = "../", $isRemove = true) {
+        $targetFolder = CONST_WORKING_DIR_NAME;
+        $relativePath = $relative;
+        $path = $this->findRootDir($startPath, $targetFolder, $relativePath);
+        /*if($this->pathTypeBeen == PathType::RELATIVE_PATH) {
+            for ($i = 0; $i < CONST_WORKING_DIR_REMOVE; $i++) {
+                $path = dirname($path);
+            }
+        }*/
+        for ($i = 0; $i < CONST_WORKING_DIR_REMOVE; $i++) {
+            //$path = dirname($path);
+            $parts = explode("/", $path);
+            //echo "count-" . count($parts);
+            //print_r($parts);
+            if(count($parts) < 1 || $path == ".." || $path == ".") {
+                $path = "";
+            }
+            $path = dirname($path);
+        }
+        //$path = $path . "[getWorkingDirPath]: " . __LINE__;
+        return $path;
+    }
+
+    public function findRootDir($start, $target, $relative = "../") {
+        $start = trim(trim($start, "\\"), "/");
+        $results = FindWorkingDirectory::findTopLevelDirectory($start, $target, $relative);
+        if($results) {
+            $realPath = trim(trim($results["realpath"], "\\"), "/");
+            $relativePath = trim(trim($results["relativepath"], "\\"), "/");
+            $this->rootDir = ($this->pathTypeBeen == PathType::REAL_PATH) ? $realPath : $relativePath;
+            return $this->rootDir;
+        }
+        return false;
+    }
+
+    function removeFirstDirectory($path) {
+        $parts = explode(DIRECTORY_SEPARATOR, $path);
+        if(empty($parts) || count($parts) < 2) {
+            $parts = explode("/", $path);
+        }
+        //print_r($parts);
+        // Remove the first part (first directory)
+        array_shift($parts);
+        // Reconstruct the path
+        $path = implode("/", $parts);
+        return trim(trim($path, "\\"), "/");
+    }
 }
 ?>
 <?php
-//|-------------|INCLUDE AUTOLOADER-CONFIG.PHP FILE|-------------|
-//
-function importAutoLoaderConfig() {
-    $baseInclude = RZ_SDK_LIB_ROOT_DIR . "/autoloader";
-    /*echo "<br />";
-    echo "SDK Base Include Directory Name: " . $baseInclude . PHP_EOL;*/
-    require_once($baseInclude . "/autoloader-config.php");
-}
-/*$baseInclude = RZ_SDK_LIB_ROOT_DIR . "/autoloader";
-require_once($baseInclude . "/autoloader-config.php");*/
+global $includePathConfig;
+$includePathConfig = IncludePathConfig::getInstance();
 ?>

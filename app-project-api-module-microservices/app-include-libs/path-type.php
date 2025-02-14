@@ -17,5 +17,7 @@ enum PathType: string {
         return self::REAL_PATH;
     }
 }
+?>
+<?php
 //$pathTypeBeen = PathType::RELATIVE_PATH;
 ?>

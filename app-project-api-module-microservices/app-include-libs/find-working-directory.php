@@ -2,143 +2,73 @@
 namespace RzSDK\Include\Import;
 ?>
 <?php
-//\Directory\Current
 class FindWorkingDirectory {
-    public static function findDirectory($dirPath, $targetName) {
-        $currentDir = $dirPath;
-        $retVal = array("realpath" => "", "relativepath" => "",);
-        $relativepath = "";
-        //
-        while(true) {
+    public static function findTopLevelDirectory($dirPath, $targetName, $relevant = "../") {
+        $currentDir = realpath($dirPath);
+        $topLevelDir = array("realpath" => "", "relativepath" => "");
+
+        // Relative path accumulator
+        $relativePath = "";
+
+        while ($currentDir !== false) {
             // Check if the target directory exists in the current path
-            if(is_dir($currentDir . DIRECTORY_SEPARATOR . $targetName)) {
-                //return realpath($currentDir . DIRECTORY_SEPARATOR . $targetName);
-                $retVal = array(
-                    "realpath" => realpath($currentDir . DIRECTORY_SEPARATOR . $targetName),
-                    "relativepath" => $relativepath,
+            if (is_dir($currentDir . DIRECTORY_SEPARATOR . $targetName)) {
+                // Update the top-level directory found
+                $tempTargetName = trim(trim($targetName, "\\"), "/");
+                $tempRelativePath = trim(trim($relativePath, "\\"), "/");
+                $topLevelDir = array(
+                    "realpath" => realpath($currentDir . DIRECTORY_SEPARATOR . $tempTargetName),
+                    "relativepath" => $tempRelativePath . "/" . $tempTargetName,
                 );
-                return $retVal;
-            } else {
-                //---$relativepath .= "../";
-            }
-
-            $parentDir = dirname($currentDir);
-            $relativepath .= "../";
-
-            // Stop if we have reached the root directory
-            if ($parentDir === $currentDir) {
-                // Target directory not found
-                //return false;
-                return $retVal;
             }
 
             // Move up one directory
+            $parentDir = dirname($currentDir);
+            $relativePath .= $relevant;
+
+            // Stop if we have reached the root directory
+            if ($parentDir === $currentDir) {
+                break;
+            }
+
             $currentDir = $parentDir;
-            //$relativepath .= "../";
         }
+
+        return !empty($topLevelDir["realpath"]) ? $topLevelDir : false;
+    }
+
+    public static function findBaseUrl($url, $target) {
+        // Normalize URL slashes
+        $url = str_replace("\\", "/", $url);
+
+        // Loop through directories
+        while ($url !== "/" && $url !== "" && $url !== "http:/") {
+            if(basename($url) === $target) {
+                return $url;
+            }
+
+            // Move up one directory
+            $url = dirname($url);
+            if(empty($url) || $url === "." || $url === "/") {
+                return false;
+            }
+        }
+        return false;
     }
 }
 ?>
 <?php
-/*if(!function_exists("findNamedDirectory")) {
-    function findNamedDirectory($startDir, $targetName) {
-        $currentDir = $startDir;
-        $retVal = array("realpath" => "", "relativepath" => "",);
-        $relativepath = "";
-    
-        while(true) {
-            // Check if the target directory exists in the current path
-            if(is_dir($currentDir . DIRECTORY_SEPARATOR . $targetName)) {
-                //return realpath($currentDir . DIRECTORY_SEPARATOR . $targetName);
-                $retVal = array(
-                    "realpath" => realpath($currentDir . DIRECTORY_SEPARATOR . $targetName),
-                    "relativepath" => $relativepath,
-                );
-                return $retVal;
-            } else {
-                //---$relativepath .= "../";
-            }
-    
-            $parentDir = dirname($currentDir);
-            $relativepath .= "../";
-    
-            // Stop if we have reached the root directory
-            if ($parentDir === $currentDir) {
-                // Target directory not found
-                //return false;
-                return $retVal;
-            }
-    
-            // Move up one directory
-            $currentDir = $parentDir;
-            //$relativepath .= "../";
-        }
-    }
-}*/
-?>
-<?php
-/* function findNamedDirectory($startDir, $targetName) {
-    $currentDir = $startDir;
-    $retVal = array("realpath" => "", "relativepath" => "",);
-    $relativepath = "";
-
-    while(true) {
-        // Check if the target directory exists in the current path
-        if(is_dir($currentDir . DIRECTORY_SEPARATOR . $targetName)) {
-            //return realpath($currentDir . DIRECTORY_SEPARATOR . $targetName);
-            $retVal = array(
-                "realpath" => realpath($currentDir . DIRECTORY_SEPARATOR . $targetName),
-                "relativepath" => $relativepath,
-            );
-            return $retVal;
-        } else {
-            //---$relativepath .= "../";
-        }
-
-        $parentDir = dirname($currentDir);
-        //$relativepath .= "../";
-
-        // Stop if we have reached the root directory
-        if ($parentDir === $currentDir) {
-            // Target directory not found
-            return false;
-        }
-
-        // Move up one directory
-        $currentDir = $parentDir;
-        $relativepath .= "../";
-    }
-} */
-?>
-<?php
-
-/* function findExistingDirectory($startDir) {
-    $currentDir = $startDir;
-
-    while(!is_dir($currentDir)) {
-        $parentDir = dirname($currentDir);
-
-        // Stop if we have reached the root directory
-        if($parentDir === $currentDir) {
-            // Directory not found
-            return false;
-        }
-
-        // Move up one directory
-        $currentDir = $parentDir;
-    }
-
-    // Found directory
-    return $currentDir;
-}
-
-// Example usage
-$startDir = __DIR__ . "/global-library/nonexistent/directory";
-$result = findExistingDirectory($startDir);
+/*// Example Usage
+$startPath = __DIR__; // Starting directory
+$targetFolder = "global-library"; // Directory name to search
+$relativePath = "./";
+$result = FindWorkingDirectory::findTopLevelDirectory($startPath, $targetFolder, $relativePath);
 
 if($result) {
-    echo "Directory found at: $result\n";
+    echo "Top-Level Directory Found:\n";
+    echo "Real Path: " . $result["realpath"] . "\n";
+    echo "Relative Path: " . $result["relativepath"] . "\n";
 } else {
-    echo "No directory exists in the hierarchy.\n";
-} */
+    echo "Directory not found.\n";
+}*/
 ?>
