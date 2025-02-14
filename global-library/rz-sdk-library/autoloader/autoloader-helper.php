@@ -77,8 +77,10 @@ class AutoloaderHelper {
     public function writeCachePath(AutoloaderConfig $autoloaderConfig, $classFilePath, $className) {
         $fileWriteDirPath = $autoloaderConfig->getCacheDirWritePath();
         if(!is_dir($fileWriteDirPath) || !is_writable($fileWriteDirPath) || !file_exists($fileWriteDirPath)) {
-            mkdir($fileWriteDirPath);
-            chmod("$fileWriteDirPath", 0755);
+            $permissions = 0777; // Full read, write, and execute permissions
+            $permissions = 0770; // Full read, write, and execute permissions
+            mkdir($fileWriteDirPath, $permissions, true);
+            chmod("$fileWriteDirPath", $permissions);
         }
         $jsonFilePath = $autoloaderConfig->getCacheFileWritePath();
         $fileData = array();

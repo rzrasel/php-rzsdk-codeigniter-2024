@@ -39,6 +39,5 @@
     "..\/..\/global-library\/rz-sdk-library\/database-table-schema-utils\/Db-Column-Properties.php": "DbColumnProperties",
     "..\/..\/global-library\/rz-sdk-library\/database-table-schema-utils\/Db-Column-Constraints-Properties.php": "DbColumnConstraintsProperties",
     "..\/..\/global-library\/rz-sdk-library\/database-table-schema-utils\/Db-Column-Constraint-Type.php": "DbColumnConstraintType",
-    "..\/..\/global-library\/rz-sdk-library\/database-table-schema-utils\/Db-Sql-Query-Generator.php": "DbSqlQueryGenerator",
-    "..\/..\/global-library\/rz-sdk-library\/utils\/Site-Url.php": "SiteUrl"
+    "..\/..\/global-library\/rz-sdk-library\/database-table-schema-utils\/Db-Sql-Query-Generator.php": "DbSqlQueryGenerator"
 }
