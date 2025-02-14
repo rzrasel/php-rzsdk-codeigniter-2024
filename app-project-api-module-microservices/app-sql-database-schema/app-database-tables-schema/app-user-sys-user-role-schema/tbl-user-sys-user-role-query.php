@@ -45,6 +45,7 @@ class TblUserSysUserRoleQuery extends TblUserSysUserRole {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->role_id          => "VARCHAR(36) NOT NULL",
+            $this->assigned_by      => "VARCHAR(36) NOT NULL, -- Who assigned this role to the user?",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",

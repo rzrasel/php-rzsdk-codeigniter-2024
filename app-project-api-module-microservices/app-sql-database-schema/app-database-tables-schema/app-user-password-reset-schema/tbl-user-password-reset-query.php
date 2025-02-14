@@ -47,7 +47,7 @@ class TblUserPasswordResetQuery extends TblUserPasswordReset {
             $this->id               => "VARCHAR(36) NOT NULL",
             $this->reset_time       => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->expiry_time      => "TIMESTAMP NULL",
-            $this->reset_method     => "TEXT NOT NULL CHECK(status IN ('email', 'sms', 'manual'))",
+            $this->reset_method     => "TEXT NOT NULL CHECK(reset_method IN ('email', 'sms', 'manual'))",
             $this->request_ip       => "VARCHAR(45) NOT NULL",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",

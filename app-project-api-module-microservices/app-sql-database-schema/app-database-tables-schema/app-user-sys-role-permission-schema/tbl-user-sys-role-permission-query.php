@@ -45,6 +45,8 @@ class TblUserSysRolePermissionQuery extends TblUserSysRolePermission {
         $tablePropertyList = array(
             $this->role_id          => "VARCHAR(36) NOT NULL",
             $this->permission_id    => "VARCHAR(36) NOT NULL",
+            $this->description      => "TEXT NULL, -- Why is this permission assigned to this role?",
+            $this->is_active        => "BOOLEAN NOT NULL DEFAULT TRUE, -- Enable/disable this permission for the role",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",

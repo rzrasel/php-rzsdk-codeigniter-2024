@@ -9,6 +9,7 @@ class TblUserSysUserRole {
     //
     public $user_id         = "user_id";
     public $role_id         = "role_id";
+    public $assigned_by     = "assigned_by";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
     public $modified_by     = "modified_by";

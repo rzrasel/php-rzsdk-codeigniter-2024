@@ -10,6 +10,9 @@ class TblUserSysPermission {
     public $id              = "id";
     public $name            = "name";
     public $description     = "description";
+    public $user_type       = "user_type";
+    public $scope           = "scope";
+    public $is_public       = "is_public";
     public $status          = "status";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";

@@ -9,6 +9,8 @@ class TblUserSysRolePermission {
     //
     public $role_id         = "role_id";
     public $permission_id   = "permission_id";
+    public $description     = "description";
+    public $is_active       = "is_active";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
     public $modified_by     = "modified_by";

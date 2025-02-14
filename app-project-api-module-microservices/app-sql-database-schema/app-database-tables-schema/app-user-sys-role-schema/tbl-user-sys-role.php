@@ -10,6 +10,9 @@ class TblUserSysRole {
     public $id              = "id";
     public $name            = "name";
     public $description     = "description";
+    public $user_type       = "user_type";
+    public $priority        = "priority";
+    public $is_default      = "is_default";
     public $status          = "status";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";

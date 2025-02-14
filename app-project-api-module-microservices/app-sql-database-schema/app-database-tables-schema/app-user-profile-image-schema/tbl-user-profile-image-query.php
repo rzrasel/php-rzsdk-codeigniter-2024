@@ -70,7 +70,7 @@ class TblUserProfileImageQuery extends TblUserProfileImage {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->user_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
         );
         return $dbTableProperty;
     }
