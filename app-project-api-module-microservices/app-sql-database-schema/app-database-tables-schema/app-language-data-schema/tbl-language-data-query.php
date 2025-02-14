@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserPasswordQuery extends TblUserPassword {
+class TblLanguageDataQuery extends TblLanguageData {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,13 +43,10 @@ class TblUserPasswordQuery extends TblUserPassword {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(hash_type IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
-            $this->password_salt    => "TEXT NULL",
-            $this->password_hash    => "TEXT NOT NULL",
-            $this->expiry           => "TIMESTAMP NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
+            $this->name             => "VARCHAR(255) NOT NULL",
+            $this->description      => "TEXT NULL",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
@@ -70,8 +67,11 @@ class TblUserPasswordQuery extends TblUserPassword {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->question_id, TblQuestionInfo::table(), TblQuestionInfo::$prefix, $this->question_id)
+        );*/
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->name, "", "", "")
         );
         return $dbTableProperty;
     }

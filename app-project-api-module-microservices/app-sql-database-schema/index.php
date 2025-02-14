@@ -7,8 +7,8 @@ use RzSDK\DateTime\DateTime;
 use RzSDK\URL\SiteUrl;
 use RzSDK\Database\DbType;
 use RzSDK\Log\DebugLog;
-use RzSDK\Database\Schema\TblLanguageLotQuery;
-use RzSDK\Database\Schema\TblUserLotQuery;
+use RzSDK\Database\Schema\TblLanguageDataQuery;
+use RzSDK\Database\Schema\TblUserDataQuery;
 use RzSDK\Database\Schema\TblUserManualAccountQuery;
 use RzSDK\Database\Schema\TblUserSocialAccountQuery;
 use RzSDK\Database\Schema\TblUserOpenAccountQuery;
@@ -17,6 +17,10 @@ use RzSDK\Database\Schema\TblUserEmailQuery;
 use RzSDK\Database\Schema\TblUserMobileQuery;
 use RzSDK\Database\Schema\TblUserTokenQuery;
 use RzSDK\Database\Schema\TblUserSessionQuery;
+use RzSDK\Database\Schema\TblUserSysRoleQuery;
+use RzSDK\Database\Schema\TblUserSysPermissionQuery;
+use RzSDK\Database\Schema\TblUserSysRolePermissionQuery;
+use RzSDK\Database\Schema\TblUserSysUserRoleQuery;
 use RzSDK\Database\Schema\TblUserLastActivityQuery;
 use RzSDK\Database\Schema\TblUserLoginAttemptQuery;
 use RzSDK\Database\Schema\TblUserPasswordResetQuery;
@@ -24,6 +28,8 @@ use RzSDK\Database\Schema\TblUserMfaSettingsQuery;
 use RzSDK\Database\Schema\TblUserPreferencesQuery;
 use RzSDK\Database\Schema\TblUserConsentsQuery;
 use RzSDK\Database\Schema\TblUserWebhooksQuery;
+use RzSDK\Database\Schema\TblUserProfileQuery;
+use RzSDK\Database\Schema\TblUserProfileImageQuery;
 
 ?>
 <?php
@@ -58,8 +64,8 @@ class SchemaTblLanguage {
 <?php
 $dbType = DbType::SQLITE;
 $databaseSchemaList = array(
-    new TblLanguageLotQuery($dbType),
-    new TblUserLotQuery($dbType),
+    new TblLanguageDataQuery($dbType),
+    new TblUserDataQuery($dbType),
     new TblUserManualAccountQuery($dbType),
     new TblUserSocialAccountQuery($dbType),
     new TblUserOpenAccountQuery($dbType),
@@ -67,6 +73,10 @@ $databaseSchemaList = array(
     new TblUserEmailQuery($dbType),
     new TblUserMobileQuery($dbType),
     new TblUserTokenQuery($dbType),
+    new TblUserSysRoleQuery($dbType),
+    new TblUserSysPermissionQuery($dbType),
+    new TblUserSysRolePermissionQuery($dbType),
+    new TblUserSysUserRoleQuery($dbType),
     new TblUserSessionQuery($dbType),
     new TblUserLastActivityQuery($dbType),
     new TblUserLoginAttemptQuery($dbType),
@@ -75,6 +85,8 @@ $databaseSchemaList = array(
     new TblUserPreferencesQuery($dbType),
     new TblUserConsentsQuery($dbType),
     new TblUserWebhooksQuery($dbType),
+    new TblUserProfileQuery($dbType),
+    new TblUserProfileImageQuery($dbType),
 );
 ?>
 <br/>

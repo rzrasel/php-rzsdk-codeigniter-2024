@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserPasswordQuery extends TblUserPassword {
+class TblUserProfileQuery extends TblUserProfile {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -45,11 +45,11 @@ class TblUserPasswordQuery extends TblUserPassword {
         $tablePropertyList = array(
             $this->user_id          => "VARCHAR(36) NOT NULL",
             $this->id               => "VARCHAR(36) NOT NULL",
-            $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(hash_type IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
-            $this->password_salt    => "TEXT NULL",
-            $this->password_hash    => "TEXT NOT NULL",
-            $this->expiry           => "TIMESTAMP NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
+            $this->first_name       => "VARCHAR(255) NULL",
+            $this->last_name        => "VARCHAR(255) NULL",
+            $this->date_of_birth    => "DATE NULL",
+            $this->gender           => "TEXT NULL CHECK(gender IN ('male', 'female', 'other'))",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'limited', 'blocked'))",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
@@ -71,7 +71,7 @@ class TblUserPasswordQuery extends TblUserPassword {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->user_id)
         );
         return $dbTableProperty;
     }

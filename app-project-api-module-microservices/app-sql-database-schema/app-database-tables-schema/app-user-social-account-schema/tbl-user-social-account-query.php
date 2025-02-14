@@ -74,7 +74,7 @@ class TblUserSocialAccountQuery extends TblUserSocialAccount {
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->social_id, TblUserSocialAccount::table(), TblUserSocialAccount::$prefix, $this->social_id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
         );
         return $dbTableProperty;
     }

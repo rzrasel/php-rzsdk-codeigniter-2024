@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblLanguageLotQuery extends TblLanguageLot {
+class TblUserSysRoleQuery extends TblUserSysRole {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -46,7 +46,7 @@ class TblLanguageLotQuery extends TblLanguageLot {
             $this->id               => "VARCHAR(36) NOT NULL",
             $this->name             => "VARCHAR(255) NOT NULL",
             $this->description      => "TEXT NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'blocked', 'deleted', 'removed'))",
+            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'blocked', 'inactive', 'deleted'))",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
@@ -68,11 +68,8 @@ class TblLanguageLotQuery extends TblLanguageLot {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         /*$dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->question_id, TblQuestionInfo::table(), TblQuestionInfo::$prefix, $this->question_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->id, TblUserSysRole::table(), TblUserSysRole::$prefix, $this->id)
         );*/
-        $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->name, "", "", "")
-        );
         return $dbTableProperty;
     }
 }

@@ -252,6 +252,51 @@ CREATE TABLE IF NOT EXISTS webhooks (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+
+
+
+
+-- Table for storing roles
+CREATE TABLE IF NOT EXISTS tbl_roles (
+    id          VARCHAR(36) NOT NULL PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT NULL,
+    status      TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'deleted')),
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+-- Table for storing permissions
+CREATE TABLE IF NOT EXISTS tbl_permissions (
+    id          VARCHAR(36) NOT NULL PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT NULL,
+    status      TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'deleted')),
+    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+-- Mapping table for role-permission relationships (Many-to-Many)
+CREATE TABLE IF NOT EXISTS tbl_role_permissions (
+    role_id      VARCHAR(36) NOT NULL,
+    permission_id VARCHAR(36) NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    FOREIGN KEY (role_id) REFERENCES tbl_roles(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES tbl_permissions(id) ON DELETE CASCADE
+    );
+
+-- Table for storing user-role relationships (Many-to-Many)
+CREATE TABLE IF NOT EXISTS tbl_user_roles (
+    user_id  VARCHAR(36) NOT NULL,
+    role_id  VARCHAR(36) NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES tbl_user_data(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES tbl_roles(id) ON DELETE CASCADE
+    );
+
+
+
+
 -- Delete Tables
 DELETE FROM language_manager;
 DELETE FROM users;

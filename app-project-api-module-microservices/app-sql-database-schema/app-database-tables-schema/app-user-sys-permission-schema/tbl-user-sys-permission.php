@@ -2,18 +2,15 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblUserLot {
+class TblUserSysPermission {
     public static $prefix = "tbl_";
-    public static $table = "user_lot";
+    public static $table = "user_sys_permission";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
     public $id              = "id";
-    public $username        = "username";
-    public $role_type       = "role_type";
-    //public $lockout_until  = "lockout_until";
-    public $account_expiry  = "account_expiry";
+    public $name            = "name";
+    public $description     = "description";
     public $status          = "status";
-    public $is_deleted      = "is_deleted";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
     public $modified_by     = "modified_by";

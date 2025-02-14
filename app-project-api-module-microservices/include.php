@@ -57,7 +57,7 @@ $includePathSetup->setAutoloaderConfigDir();
 global $autoloaderConfig;
 $autoloaderConfig
     ->setCacheFilePath(RZ_PROJECT_ROOT_DIR)
-    ->setIsFileWrite(true);
+    ->setIsFileWrite(false);
 //$autoloaderConfig->setDirectories($realPath);
 /*$results = $autoloaderConfig->getDirectories();
 echo "<br />";

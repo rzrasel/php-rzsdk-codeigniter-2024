@@ -78,7 +78,7 @@ class TblUserMobileQuery extends TblUserMobile {
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->mobile, TblUserMobile::table(), TblUserMobile::$prefix, $this->mobile)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
         );
         return $dbTableProperty;
     }

@@ -11,7 +11,7 @@ use RzSDK\Database\DbSqlQueryGenerator;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class TblUserPasswordQuery extends TblUserPassword {
+class TblUserSysRolePermissionQuery extends TblUserSysRolePermission {
     private DbType $dbType;
 
     public function __construct(DbType $dbType) {
@@ -43,13 +43,8 @@ class TblUserPasswordQuery extends TblUserPassword {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->user_id          => "VARCHAR(36) NOT NULL",
-            $this->id               => "VARCHAR(36) NOT NULL",
-            $this->hash_type        => "TEXT NOT NULL DEFAULT 'password_hash' CHECK(hash_type IN ('password_hash', 'SHA256', 'bcrypt', 'argon2'))",
-            $this->password_salt    => "TEXT NULL",
-            $this->password_hash    => "TEXT NOT NULL",
-            $this->expiry           => "TIMESTAMP NULL",
-            $this->status           => "TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'expired'))",
+            $this->role_id          => "VARCHAR(36) NOT NULL",
+            $this->permission_id    => "VARCHAR(36) NOT NULL",
             $this->modified_date    => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->created_date     => "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP",
             $this->modified_by      => "VARCHAR(36) NOT NULL",
@@ -68,10 +63,13 @@ class TblUserPasswordQuery extends TblUserPassword {
             $dbTableProperty->setColumProperty($columnProperty);
         }
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, "{$this->role_id}, {$this->permission_id}")
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->role_id, TblUserSysRole::table(), TblUserSysRole::$prefix, (new TblUserSysRole())->id)
+        );
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->permission_id, TblUserSysPermission::table(), TblUserSysPermission::$prefix, (new TblUserSysPermission())->id)
         );
         return $dbTableProperty;
     }

@@ -2,14 +2,16 @@
 namespace RzSDK\Database\Schema;
 ?>
 <?php
-class TblLanguageLot {
+class TblUserProfileImage {
     public static $prefix = "tbl_";
-    public static $table = "language_lot";
+    public static $table = "user_profile_image";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
+    public $user_id         = "user_id";
     public $id              = "id";
-    public $name            = "name";
-    public $description     = "description";
+    public $image_url       = "image_url";
+    public $is_primary      = "is_primary";
+    public $is_deleted      = "is_deleted";
     public $status          = "status";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";

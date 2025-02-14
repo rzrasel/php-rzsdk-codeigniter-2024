@@ -77,7 +77,7 @@ class TblUserEmailQuery extends TblUserEmail {
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->email, TblUserEmail::table(), TblUserEmail::$prefix, $this->email)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
         );
         return $dbTableProperty;
     }

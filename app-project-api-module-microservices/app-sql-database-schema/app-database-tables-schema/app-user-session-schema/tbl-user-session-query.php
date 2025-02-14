@@ -84,7 +84,7 @@ class TblUserSessionQuery extends TblUserSession {
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->session_id, TblUserSession::table(), TblUserSession::$prefix, $this->session_id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserLot::table(), TblUserLot::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->user_id, TblUserData::table(), TblUserData::$prefix, $this->id)
         );
         return $dbTableProperty;
     }
