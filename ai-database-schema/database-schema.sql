@@ -340,3 +340,32 @@ CREATE TABLE users (
     role_type TEXT NOT NULL CHECK(role_type IN ('admin', 'user', 'moderator', 'guest')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+
+//
+
+CREATE TABLE database_schema (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    schema_name TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE tables (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    schema_id INTEGER NOT NULL,
+    table_name TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (schema_id) REFERENCES database_schema(id) ON DELETE CASCADE
+);
+
+CREATE TABLE columns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_id INTEGER NOT NULL,
+    column_name TEXT NOT NULL,
+    data_type TEXT NOT NULL,
+    is_nullable BOOLEAN NOT NULL DEFAULT 1,
+    is_primary_key BOOLEAN NOT NULL DEFAULT 0,
+    default_value TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
+);

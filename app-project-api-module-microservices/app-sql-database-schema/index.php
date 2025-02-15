@@ -7,8 +7,16 @@ use RzSDK\DateTime\DateTime;
 use RzSDK\URL\SiteUrl;
 use RzSDK\Database\DbType;
 use RzSDK\Log\DebugLog;
+//
+use RzSDK\Database\Schema\TblDatabaseSchemaQuery;
+use RzSDK\Database\Schema\TblTableDataQuery;
+use RzSDK\Database\Schema\TblColumnDataQuery;
+use RzSDK\Database\Schema\TblColumnKeyQuery;
+use RzSDK\Database\Schema\TblColumnCompositeKeyQuery;
+//
 use RzSDK\Database\Schema\TblLanguageDataQuery;
 use RzSDK\Database\Schema\TblUserDataQuery;
+use RzSDK\Database\Schema\TblUserDataExtQuery;
 use RzSDK\Database\Schema\TblUserManualAccountQuery;
 use RzSDK\Database\Schema\TblUserSocialAccountQuery;
 use RzSDK\Database\Schema\TblUserOpenAccountQuery;
@@ -64,8 +72,15 @@ class SchemaTblLanguage {
 <?php
 $dbType = DbType::SQLITE;
 $databaseSchemaList = array(
+    new TblDatabaseSchemaQuery($dbType),
+    new TblTableDataQuery($dbType),
+    new TblColumnDataQuery($dbType),
+    new TblColumnKeyQuery($dbType),
+    new TblColumnCompositeKeyQuery($dbType),
+    //
     new TblLanguageDataQuery($dbType),
     new TblUserDataQuery($dbType),
+    new TblUserDataExtQuery($dbType),
     new TblUserManualAccountQuery($dbType),
     new TblUserSocialAccountQuery($dbType),
     new TblUserOpenAccountQuery($dbType),
