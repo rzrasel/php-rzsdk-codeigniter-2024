@@ -63,6 +63,7 @@ class DatabaseSchemaMapper {
     }
 
     public static function toData($schema): DatabaseSchemaModel {
+        echo "<pre>" . print_r($schema, true) . "</pre>";
         $model = new DatabaseSchemaModel(
             $schema->id,
             $schema->schema_name,

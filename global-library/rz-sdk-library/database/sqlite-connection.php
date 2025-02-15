@@ -2,10 +2,14 @@
 namespace RzSDK\Database;
 ?>
 <?php
+use PDO;
+use PDOException;
+?>
+<?php
 class SqliteConnection {
     //|---------------|CLASS VARIABLE SCOPE START|---------------|
     private static ?SqliteConnection $instance = null;
-    private $pdo;
+    private ?PDO $pdo = null;
     private $sqliteFile = "sqlite-database.sqlite3";
     //|----------------|CLASS VARIABLE SCOPE END|----------------|
 
@@ -26,15 +30,15 @@ class SqliteConnection {
     public function connect($dbPath) {
         $this->sqliteFile = $dbPath;
         if (!file_exists($this->sqliteFile)) {
-            touch($this->sqliteFile); // Create the file if it doesn't exist
+            //touch($this->sqliteFile); // Create the file if it doesn't exist
         }
         //|SQLite PDO Connection|--------------------------------|
         if($this->pdo == null) {
             try {
-                $this->pdo = new \PDO("sqlite:" . $this->sqliteFile);
-                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-                $this->pdo->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_ASSOC);
-            } catch(\PDOException $e) {
+                $this->pdo = new PDO("sqlite:" . $this->sqliteFile);
+                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            } catch(PDOException $e) {
                 error_log("SQL Query Error: " . $e->getMessage());
                 return false;
             }
@@ -48,7 +52,7 @@ class SqliteConnection {
             $query = preg_replace("/escape_string\((.*?)\)/", $this->escapeString("$1"), $sqlQuery);
             try {
                 return $this->pdo->query($query);
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 error_log("SQL Query Error: " . $e->getMessage());
                 return false;
             }
@@ -65,8 +69,9 @@ class SqliteConnection {
                 $stmt = $this->pdo->prepare($sqlQuery);
                 $stmt->execute($params);
                 return $stmt;
-            } catch (\PDOException $e) {
+            } catch (PDOException $e) {
                 error_log("SQL Query Error: " . $e->getMessage());
+                echo "Database Error: " . $e->getMessage();
                 return false;
             }
         }
@@ -129,6 +134,35 @@ class SqliteConnection {
     public function escapeStringPdo($string) {
         return $this->pdo ? $this->pdo->quote($string) : addslashes($string);
     }
+
+    //|-------------------|CHECK IF DATA EXISTS|-----------------|
+    /**
+     * Check if data exists in the database based on a condition.
+     *
+     * @param string $table The table name.
+     * @param string $column The column to check.
+     * @param mixed $value The value to match.
+     * @return bool True if data exists, false otherwise.
+     */
+    public function isDataExists(string $table, string $column, $value): bool {
+        if($this->pdo === null) {
+            return false;
+        }
+
+        $sqlQuery = "SELECT COUNT(*) as count FROM $table WHERE $column = :value";
+        $params = [':value' => $value];
+
+        try {
+            $stmt = $this->pdo->prepare($sqlQuery);
+            $stmt->execute($params);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            return ($result['count'] > 0);
+        } catch (PDOException $e) {
+            error_log("SQL Query Error: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>
 <?php
@@ -184,4 +218,19 @@ $db->execute($sqlQuery, $params);
 $lastInsertId = $db->getLastInsertId();
 
 echo "Last Inserted ID: " . $lastInsertId;*/
+/*require_once 'SqliteConnection.php';
+use RzSDK\Database\SqliteConnection;
+
+$dbPath = "database.sqlite3";
+$db = SqliteConnection::getInstance($dbPath);
+
+$table = "users";
+$column = "email";
+$value = "john@example.com";
+
+if ($db->isDataExists($table, $column, $value)) {
+    echo "User with email $value exists in the database.";
+} else {
+    echo "User with email $value does not exist in the database.";
+}*/
 ?>

@@ -11,6 +11,7 @@ class TblDatabaseSchema {
     public $schema_name     = "schema_name";
     public $schema_version  = "schema_version";
     public $table_prefix    = "table_prefix";
+    public $database_comment    = "database_comment";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
 

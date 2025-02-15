@@ -67,6 +67,9 @@ class TblTableDataQuery extends TblTableData {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->table_name, "", "", "")
+        );
+        $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->schema_id, TblDatabaseSchema::table(), TblDatabaseSchema::$prefix, $this->id)
         );
         /*$dbTableProperty->setConstraintProperty(

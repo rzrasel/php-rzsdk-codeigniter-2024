@@ -75,16 +75,16 @@ $baseInclude = RZ_SDK_BASE_PATH . "/autoloader";
 require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
 ?>
 <?php
-//use RzSDK\URL\SiteUrl;
+use RzSDK\URL\SiteUrl;
 ?>
 <?php
-/*$baseUrl = SiteUrl::getBaseUrl();
+$baseUrl = SiteUrl::getBaseUrl();
 defined("JOB_BASE_URL") or define("JOB_BASE_URL", $baseUrl);
 defined("JOB_ROOT_URL") or define("JOB_ROOT_URL", $baseUrl);
 $result = FindWorkingDirectory::findBaseUrl($baseUrl, $projectDirName);
 $projectBaseUrl = ($result) ? $result : $baseUrl;
 defined("BASE_URL") or define("BASE_URL", $projectBaseUrl);
-defined("ROOT_URL") or define("ROOT_URL", $projectBaseUrl);*/
+defined("ROOT_URL") or define("ROOT_URL", $projectBaseUrl);
 /*echo JOB_BASE_URL;
 echo "<br />";
 echo BASE_URL;*/

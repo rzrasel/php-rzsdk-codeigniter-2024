@@ -11,8 +11,3 @@ defined("CONST_WORKING_DIR_NAME") or define("CONST_WORKING_DIR_NAME", $workingDi
 require_once("../include.php");
 //require_once("../../include.php");
 ?>
-<?php
-defined("DB_PATH") or define("DB_PATH", "database");
-defined("DB_FILE") or define("DB_FILE", "database-schema-database.sqlite");
-defined("DB_FULL_PATH") or define("DB_FULL_PATH", "" . DB_PATH . "/" . DB_FILE);
-?>
