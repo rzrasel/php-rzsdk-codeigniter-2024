@@ -38,7 +38,7 @@ class Autoloader extends AutoloaderHelper{
     }
 
     public static function getInstance(AutoloaderConfig $autoloaderConfig = new AutoloaderConfig()): Autoloader {
-        if (self::$instance === null || !isset(self::$instance)) {
+        if(self::$instance === null || !isset(self::$instance)) {
             self::$instance = new self($autoloaderConfig);
         }
         return self::$instance;

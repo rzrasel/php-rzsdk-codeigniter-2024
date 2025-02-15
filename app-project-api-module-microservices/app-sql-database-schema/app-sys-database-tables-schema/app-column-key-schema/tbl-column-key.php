@@ -11,6 +11,7 @@ class TblColumnKey {
     public $id              = "id";
     public $key_type        = "key_type";
     public $key_name        = "key_name";
+    public $main_table      = "main_table";
     public $reference_table = "reference_table";
     public $reference_column    = "reference_column";
     public $modified_date   = "modified_date";

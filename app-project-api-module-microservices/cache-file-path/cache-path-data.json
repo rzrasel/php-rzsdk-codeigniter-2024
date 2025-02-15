@@ -1,0 +1,10 @@
+{
+    "config\/Database.php": "Database",
+    "domain\/entities\/Database-Schema.php": "DatabaseSchema",
+    "data\/repositories\/Database-Schema-Repository.php": "DatabaseSchemaRepository",
+    "domain\/repositories\/Database-Schema-Repository-Interface.php": "DatabaseSchemaRepositoryInterface",
+    "..\/..\/app-sql-database-schema-sqlite\/config\/Database.php": "Database",
+    "..\/..\/app-sql-database-schema-sqlite\/domain\/entities\/Database-Schema.php": "DatabaseSchema",
+    "..\/..\/app-sql-database-schema-sqlite\/data\/repositories\/Database-Schema-Repository.php": "DatabaseSchemaRepository",
+    "..\/..\/app-sql-database-schema-sqlite\/domain\/repositories\/Database-Schema-Repository-Interface.php": "DatabaseSchemaRepositoryInterface"
+}

@@ -15,7 +15,7 @@ class AutoloaderConfig {
     }
 
     public static function getInstance(): AutoloaderConfig {
-        if (self::$instance === null || !isset(self::$instance)) {
+        if(self::$instance === null || !isset(self::$instance)) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -107,7 +107,7 @@ class AutoloaderConfig {
 }
 ?>
 <?php
-$directoryList = array("");
+$directoryList = array(__DIR__);
 global $autoloaderConfig;
 $autoloaderConfig = AutoloaderConfig::getInstance();
 $autoloaderConfig->setDirectories($directoryList);

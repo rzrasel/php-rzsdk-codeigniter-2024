@@ -7,14 +7,12 @@ defined("RZ_SDK_LIB_ROOT_DIR") or exit("No direct script access allowed");
 ?>
 <?php
 class AutoloaderHelper {
-    public function toNamespace($class)
-    {
+    public function toNamespace($class) {
         $classParts = explode("\\", $class);
         return end($classParts);
     }
 
-    public function fromCamelCase($text, $replaceBy = "-")
-    {
+    public function fromCamelCase($text, $replaceBy = "-") {
         $retVal = preg_replace("/([A-Z])/", $replaceBy . "$1", $text);
         return trim($retVal, $replaceBy);
     }
@@ -28,6 +26,8 @@ class AutoloaderHelper {
         //echo "<pre>" . print_r($dirList, true) . "</pre>";
         //echo "isFileWrite: {$isFileWrite}";
         $fileName = $this->getFileList($className, $dirList, $fileExtension);
+        /*echo "{$fileName} - " . __LINE__;
+        echo "<br />";*/
         if($fileName && $autoloaderConfig->getIsFileWrite()) {
             $this->writeCachePath($autoloaderConfig, $fileName, $className);
         }
@@ -41,23 +41,24 @@ class AutoloaderHelper {
         foreach($classToFileNameList as $item) {
             $fileName = $item . $fileExtension;
             $fileList[] = $fileName;
-            //echo realpath($fileName);
+            //echo $fileName;
             if(file_exists($fileName)) {
-                //echo "Exists: $fileName";
+                /*echo "Exists: $fileName";
+                echo "<br />";*/
                 return $fileName;
             }
             foreach($directories as $directory) {
                 $fileName = $item . $fileExtension;
                 $directory = trim(trim($directory, "\\"), "/");
-                $fileName = $directory . "/" . $fileName;
-                $fileName = trim(trim($fileName, "\\"), "/");
+                $filePath = $directory . "/" . $fileName;
+                $filePath = trim(trim($filePath, "\\"), "/");
                 /*echo "<br />";
-                echo $fileName;
+                echo $filePath;
                 echo "<br />";*/
-                if(file_exists($fileName)) {
-                    /*echo "Exists: $fileName";
+                if(file_exists($filePath)) {
+                    /*echo "Exists: $filePath - " . __LINE__;
                     echo "<br />";*/
-                    return $fileName;
+                    return $filePath;
                 }
             }
             $fileList[] = $fileName;

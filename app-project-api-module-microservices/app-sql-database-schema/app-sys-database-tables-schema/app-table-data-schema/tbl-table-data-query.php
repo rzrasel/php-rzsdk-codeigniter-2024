@@ -47,6 +47,7 @@ class TblTableDataQuery extends TblTableData {
             $this->id               => "BIGINT(20) NOT NULL",
             $this->table_name       => "TEXT NOT NULL",
             $this->table_comment    => "TEXT NULL",
+            $this->column_prefix    => "TEXT NULL",
             "modified_date"         => "DATETIME NOT NULL",
             "created_date"          => "DATETIME NOT NULL",
         );

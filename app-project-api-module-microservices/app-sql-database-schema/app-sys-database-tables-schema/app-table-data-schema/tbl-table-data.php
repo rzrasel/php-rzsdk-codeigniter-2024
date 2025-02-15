@@ -11,6 +11,7 @@ class TblTableData {
     public $id              = "id";
     public $table_name      = "table_name";
     public $table_comment   = "table_comment";
+    public $column_prefix   = "column_prefix";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
 

@@ -12,6 +12,11 @@ use RzSDK\Include\Import\PathType;
 use RzSDK\Include\Import\IncludePathConfig;
 ?>
 <?php
+global $pathTypeBeen;
+$pathTypeBeen = PathType::REAL_PATH;
+$pathTypeBeen = PathType::RELATIVE_PATH;
+?>
+<?php
 class IncludePathSetup {
     private static ?IncludePathSetup $instance = null;
     private $pathTypeBeen = PathType::REAL_PATH;
@@ -114,8 +119,9 @@ class IncludePathSetup {
 }
 ?>
 <?php
-global $pathTypeBeen;
-$pathTypeBeen = PathType::RELATIVE_PATH;
+/*global $pathTypeBeen;
+$pathTypeBeen = PathType::REAL_PATH;
+$pathTypeBeen = PathType::RELATIVE_PATH;*/
 ?>
 <?php
 global $includePathConfig;
