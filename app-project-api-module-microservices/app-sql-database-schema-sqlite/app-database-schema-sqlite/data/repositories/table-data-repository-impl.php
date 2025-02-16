@@ -20,12 +20,12 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         }
     }
 
-    public function getById(int $schemaId): ?TableDataModel {
+    public function getById(int $tableDataId): ?TableDataModel {
         // TODO: Implement getById() method.
         return new TableDataModel();
     }
 
-    public function findBySchemaId(int $schemaId): ?TableDataModel {
+    public function findBySchemaId(int $tableDataId): ?TableDataModel {
         // TODO: Implement getById() method.
         return new TableDataModel();
     }
@@ -42,7 +42,7 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
     public function save(TableDataModel $tableData): void {
         $data = TableDataMapper::toDomain($tableData);
 
-        if ($tableData->id) {
+        if($tableData->id) {
             // Update
             $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
             $stmt->execute($data);

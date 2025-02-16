@@ -30,5 +30,20 @@ class DatabaseSchemaModel {
         $this->createdDate = $createdDate ?? date('Y-m-d H:i:s');
         $this->tableData = $tableData;
     }
+
+    public function getVarList() {
+        $result = array_intersect_key(
+            get_object_vars($this),
+            get_mangled_object_vars($this)
+        );
+        return array_keys($result);
+    }
+
+    public function getVarListWithKey() {
+        return array_intersect_key(
+            get_object_vars($this),
+            get_mangled_object_vars($this)
+        );
+    }
 }
 ?>

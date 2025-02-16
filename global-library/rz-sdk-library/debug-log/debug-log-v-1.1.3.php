@@ -24,77 +24,37 @@ enum LogType: string {
 class DebugLog {
     // Default styles for HTML output
     private static $htmlStyles = [
-        'container' => 'line-height: 18px; margin: auto; padding: 10px; border-radius: 10px;',
-        'pre' => 'line-height: 18px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 12px;',
-    ];
-
-    // Styles for each log type
-    private static $logTypeStyles = [
-        LogType::INFORMATION->value => [
-            'background' => '#4eaf51', // Green
-            'color' => '#fdfdf9', // Light text
-            'border' => '#3a833d', // Darker green
-        ],
-        LogType::ERROR->value => [
-            'background' => '#ef1e62', // Red
-            'color' => '#fffbff', // Light text
-            'border' => '#b2164b', // Darker red
-        ],
-        LogType::MESSAGE->value => [
-            'background' => '#2196F3', // Blue
-            'color' => '#ffffff', // White text
-            'border' => '#1a73e8', // Darker blue
-        ],
-        LogType::WARNING->value => [
-            'background' => '#FFC107', // Yellow
-            'color' => '#000000', // Black text
-            'border' => '#FFA000', // Darker yellow
-        ],
+        'container' => 'line-height: 16px; margin: auto; background: #4eaf51; color: #fdfdf9; border: 1px solid #3a833d; padding: 10px; border-radius: 10px;',
+        'pre' => 'overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-size: 12px;',
     ];
 
     /**
      * Log a message, array, or object.
      *
      * @param mixed $message The message to log.
-     * @param LogType $logType The type of log (default: LogType::INFORMATION).
      * @param bool $htmlOutput Whether to format output for HTML (default: true).
      */
-    public static function log($message, LogType $logType = LogType::INFORMATION, bool $htmlOutput = true, $traceIndex = 0): void {
+    public static function log($message, LogType $logType = LogType::INFORMATION, bool $htmlOutput = true): void {
         // Format the message
         $debugData = is_array($message) || is_object($message) ? print_r($message, true) : $message;
-        //$traceIndex = 0;
 
         // Get the debug backtrace
         $debugBacktrace = debug_backtrace();
-        //echo "Count: " . count($debugBacktrace);
-        if($traceIndex >= count($debugBacktrace)) {
-            $traceIndex = count($debugBacktrace) - 1;
-        }
-        //echo "<pre>" . print_r($debugBacktrace, true) . "</pre>";
-        $file = $debugBacktrace[$traceIndex]['file'] ?? 'Unknown file';
+        $file = $debugBacktrace[0]['file'] ?? 'Unknown file';
         $fileOnly = basename($file);
-        $line = $debugBacktrace[$traceIndex]['line'] ?? 'Unknown line';
-        $class = $debugBacktrace[($traceIndex + 1)]['class'] ?? 'Undefined';
+        $line = $debugBacktrace[0]['line'] ?? 'Unknown line';
+        $class = $debugBacktrace[1]['class'] ?? 'Undefined';
         $classOnly = self::getClassNameWithoutNamespace($class);
-        $method = $debugBacktrace[($traceIndex + 1)]['function'] ?? 'Undefined';
+        $method = $debugBacktrace[1]['function'] ?? 'Undefined';
 
         // Prepare the debug information
         $debugInfo = "<span style=\"background-color:#dddddd; text-transform: uppercase; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">Debug Information:</span> <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ File With Path:</span> $file <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ Class With Namespace:</span> $class <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ File:</span> $fileOnly <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ Class:</span> $classOnly <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ Method:</span> $method <span style=\"background-color:#dddddd; font-weight: bold; color: #7c7e82; border-radius: 10px; padding: 1px 6px;\">→ Line:</span> $line";
-
-        // Get styles for the current log type
-        $logTypeStyle = self::$logTypeStyles[$logType->value] ?? self::$logTypeStyles[LogType::INFORMATION->value];
-        $containerStyle = self::$htmlStyles['container'] . sprintf(
-                'background: %s; color: %s; border: 1px solid %s;',
-                $logTypeStyle['background'],
-                $logTypeStyle['color'],
-                $logTypeStyle['border']
-            );
 
         // Output in HTML or plain text
         if ($htmlOutput) {
             echo "<br />";
             echo "<pre style=\"" . self::$htmlStyles['pre'] . "\">";
-            echo "<div style=\"" . $containerStyle . "\">";
+            echo "<div style=\"" . self::$htmlStyles['container'] . "\">";
             echo htmlspecialchars($debugData); // Output the message
             echo "<br /><br />";
             echo nl2br($debugInfo); // Output debug info with line breaks

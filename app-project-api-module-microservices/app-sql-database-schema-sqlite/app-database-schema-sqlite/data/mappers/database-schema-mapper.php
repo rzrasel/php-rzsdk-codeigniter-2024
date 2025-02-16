@@ -7,28 +7,34 @@ use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 
 class DatabaseSchemaMapper {
 
+    public static function getDataVarList(DatabaseSchema $modelData) {
+        return $modelData->getVarList();
+    }
+
+    public static function getDomainVarList(DatabaseSchemaModel $modelData) {
+        return $modelData->getVarList();
+    }
+
     public static function toData(DatabaseSchema $schema): array {
-        return [
-            'id' => $schema->id,
-            'schema_name' => $schema->schema_name,
-            'schema_version' => $schema->schema_version,
-            'table_prefix' => $schema->table_prefix,
-            'database_comment' => $schema->database_comment,
-            'modified_date' => $schema->modified_date,
-            'created_date' => $schema->created_date,
-        ];
+        // Model data to array data
+        $dataVarList = self::getDataVarList($schema);
+        $domainVarList = self::getDomainVarList(new DatabaseSchemaModel());
+        $dataList = array();
+        for($i = 0; $i < count($dataVarList); $i++) {
+            $dataList[$dataVarList[$i]] = $schema->{$dataVarList[$i]};
+        }
+        return $dataList;
     }
 
     public static function toDomain(DatabaseSchemaModel $schema): array {
-        return [
-            'id' => $schema->id,
-            'schema_name' => $schema->schemaName,
-            'schema_version' => $schema->schemaVersion,
-            'table_prefix' => $schema->tablePrefix,
-            'database_comment' => $schema->databaseComment,
-            'modified_date' => $schema->modifiedDate,
-            'created_date' => $schema->createdDate,
-        ];
+        // Model data to array data
+        $dataVarList = self::getDataVarList(new DatabaseSchema());
+        $domainVarList = self::getDomainVarList($schema);
+        $dataList = array();
+        for($i = 0; $i < count($dataVarList); $i++) {
+            $dataList[$dataVarList[$i]] = $schema->{$domainVarList[$i]};
+        }
+        return $dataList;
     }
 
     public static function toDataParams(DatabaseSchema $schema): array {
@@ -49,27 +55,55 @@ class DatabaseSchemaMapper {
         return $params;
     }
 
-    public function toEntity($schema): DatabaseSchema {
+    public static function toEntity($schema): DatabaseSchema {
+        // Database array or object data to "Data" data
         $model = new DatabaseSchema();
-        $model->id = $schema->id;
-        $model->schema_name = $schema->schema_name;
-        $model->schema_version = $schema->schema_version;
-        $model->table_prefix = $schema->table_prefix;
-        $model->database_comment = $schema->database_comment;
-        $model->modified_date = $schema->modified_date;
-        $model->created_date = $schema->created_date;
+        $dataVarList = self::getDataVarList($model);
+        $domainVarList = self::getDomainVarList($schema);
+        for($i = 0; $i < count($dataVarList); $i++) {
+            $model->{$dataVarList[$i]} = $schema->{$dataVarList[$i]};
+        }
         return $model;
     }
 
-    public function toModel($schema): DatabaseSchemaModel {
+    public static function toModel($schema): DatabaseSchemaModel {
+        // Database array or object data to model or domain data
         $model = new DatabaseSchemaModel();
-        $model->id = $schema->id;
-        $model->schemaName = $schema->schema_name;
-        $model->schemaVersion = $schema->schema_version;
-        $model->tablePrefix = $schema->table_prefix;
-        $model->databaseComment = $schema->database_comment;
-        $model->modifiedDate = $schema->modified_date;
-        $model->createdDate = $schema->created_date;
+        $dataVarList = self::getDataVarList($schema);
+        $domainVarList = self::getDomainVarList($model);
+        for($i = 0; $i < count($dataVarList); $i++) {
+            $model->{$domainVarList[$i]} = $schema->{$dataVarList[$i]};
+        }
+        return $model;
+    }
+
+    public static function toDomainToEntity(DatabaseSchemaModel $schema): DatabaseSchema {
+        $model = new DatabaseSchema();
+        $dataVarList = self::getDataVarList($model);
+        $domainVarList = self::getDomainVarList($schema);
+        for($i = 0; $i < count($dataVarList); $i++) {
+            /*if (array_key_exists($domainVarList[$i], $dataVarList)) {
+                echo "Exists";
+            }*/
+            if($i < count($domainVarList)) {
+                $model->{$dataVarList[$i]} = $schema->{$domainVarList[$i]};
+            }
+        }
+        return $model;
+    }
+
+    public static function toEntityToDomain(DatabaseSchema $schema): DatabaseSchemaModel {
+        $model = new DatabaseSchemaModel();
+        $dataVarList = self::getDataVarList($model);
+        $domainVarList = self::getDomainVarList($schema);
+        for($i = 0; $i < count($dataVarList); $i++) {
+            /*if (array_key_exists($domainVarList[$i], $dataVarList)) {
+                echo "Exists";
+            }*/
+            if($i < count($domainVarList)) {
+                $model->{$domainVarList[$i]} = $schema->{$dataVarList[$i]};
+            }
+        }
         return $model;
     }
 }

@@ -4,6 +4,10 @@ namespace RzSDK\Database;
 <?php
 use PDO;
 use PDOException;
+use PDOStatement;
+use RzSDK\Log\DebugLog;
+use RzSDK\Log\LogType;
+
 ?>
 <?php
 class SqliteConnection {
@@ -31,6 +35,8 @@ class SqliteConnection {
         $this->sqliteFile = $dbPath;
         if (!file_exists($this->sqliteFile)) {
             //touch($this->sqliteFile); // Create the file if it doesn't exist
+            DebugLog::log("Database file not found: " . $this->sqliteFile, LogType::ERROR, true, 3);
+            return false;
         }
         //|SQLite PDO Connection|--------------------------------|
         if($this->pdo == null) {
@@ -39,7 +45,8 @@ class SqliteConnection {
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             } catch(PDOException $e) {
-                error_log("SQL Query Error: " . $e->getMessage());
+                //error_log("SQL Query Error: " . $e->getMessage());
+                DebugLog::log("PDO initialization error: " . $e->getMessage(), LogType::WARNING, true, 2);
                 return false;
             }
         }
@@ -53,7 +60,8 @@ class SqliteConnection {
             try {
                 return $this->pdo->query($query);
             } catch (PDOException $e) {
-                error_log("SQL Query Error: " . $e->getMessage());
+                //error_log("SQL Query Error: " . $e->getMessage());
+                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 2);
                 return false;
             }
         }
@@ -63,6 +71,7 @@ class SqliteConnection {
     //|-------------------|QUERY EXECUTE SQL QUERY|--------------------|
     // Secure Query Execution with Parameters
     public function queryExecute($sqlQuery, $params = []) {
+        //DebugLog::log("Error executing SQL Query: " . __CLASS__, LogType::ERROR, true, 2);
         if ($this->pdo !== null) {
             $query = preg_replace("/escape_string\((.*?)\)/", $this->escapeString("$1"), $sqlQuery);
             try {
@@ -70,8 +79,9 @@ class SqliteConnection {
                 $stmt->execute($params);
                 return $stmt;
             } catch (PDOException $e) {
-                error_log("SQL Query Error: " . $e->getMessage());
-                echo "Database Error: " . $e->getMessage();
+                //error_log("SQL Query Error: " . $e->getMessage());
+                //echo "Database Error: " . $e->getMessage();
+                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 2);
                 return false;
             }
         }

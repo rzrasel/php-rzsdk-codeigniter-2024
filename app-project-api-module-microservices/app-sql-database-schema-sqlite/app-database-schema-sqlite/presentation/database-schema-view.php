@@ -35,7 +35,7 @@ class DatabaseSchemaView {
         $schema = new DatabaseSchemaModel();
         $schema->id = time();
         $schema->schemaName = "database-schema-database";
-        $schema->schemaVersion = "1.0";
+        $schema->schemaVersion = "v-1.0";
         $schema->tablePrefix = "tbl_";
         $schema->databaseComment = "Test schema";
         $schema->modifiedDate = date('Y-m-d H:i:s');
