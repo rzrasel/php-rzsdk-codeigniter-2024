@@ -91,6 +91,13 @@ class DebugLog {
      * @return string The formatted message.
      */
     private static function formatMessage($message): string {
+        if(empty($message)) {
+            if(is_null($message)) {
+                $message = "null";
+                return $message;
+            }
+            return is_array($message) || is_object($message) ? print_r($message, true) : $message;
+        }
         return is_array($message) || is_object($message) ? print_r($message, true) : $message;
     }
 
@@ -154,7 +161,7 @@ class DebugLog {
         $method = $debugBacktrace[$traceIndex + 1]['function'] ?? 'Undefined';
 
         return sprintf(
-            "<div style=\"line-height: 14px;\"><span style=\"%s\">Debug %s:</span>
+            "<div style=\"line-height: 14px; cursor: default;\"><span style=\"%s\">Debug %s:</span>
 <span style=\"%s\">→ File With Path:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
 <span style=\"%s\">→ File:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
 <span style=\"%s\">→ Class With Namespace:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s

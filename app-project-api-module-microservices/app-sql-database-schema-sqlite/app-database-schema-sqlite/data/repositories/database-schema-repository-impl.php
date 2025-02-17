@@ -28,6 +28,19 @@ class DatabaseSchemaRepositoryImpl implements DatabaseSchemaRepositoryInterface 
     }
 
     public function create(DatabaseSchemaModel $schema): void {
+        $schemaTableName = "tbl_database_schema";
+        $columnName = "id";
+        $value = $schema->id;
+        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+            //$this->save($schema);
+            return;
+        }
+        $columnName = "schema_name";
+        $value = $schema->schemaName;
+        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+            //$this->save($schema);
+            return;
+        }
         /*$data = DatabaseSchemaMapper::toEntity($schema);
         $data = DatabaseSchemaMapper::toData($data);*/
         $params = DatabaseSchemaMapper::toDomainParams($schema);
@@ -38,7 +51,7 @@ class DatabaseSchemaRepositoryImpl implements DatabaseSchemaRepositoryInterface 
         $stmt->execute($params);
         $schema->id = $this->db->lastInsertId();*/
         //$sqlQuery = "INSERT INTO tbl_database_schema (...) VALUES (...)";
-        $sqlQuery = "INSERT INTO tbl_database_schema
+        $sqlQuery = "INSERT INTO $schemaTableName
                 (id, schema_name, schema_version, table_prefix, database_comment, modified_date, created_date) 
                 VALUES (:id, :schema_name, :schema_version, :table_prefix, :database_comment, :modified_date, :created_date)";
         $tempDatabaseSchema = new DatabaseSchema();

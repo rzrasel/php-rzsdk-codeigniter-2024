@@ -69,11 +69,15 @@ class TblColumnDataQuery extends TblColumnData {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, "{$this->table_id}, {$this->column_name}", TblColumnData::table(), TblColumnData::$prefix, "")
+        );
+        $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->table_id, TblTableData::table(), TblTableData::$prefix, $this->id)
         );
         /*$dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->name, "", "", "")
         );*/
+        //"($this->table_id, $this->name)"
         return $dbTableProperty;
     }
 }

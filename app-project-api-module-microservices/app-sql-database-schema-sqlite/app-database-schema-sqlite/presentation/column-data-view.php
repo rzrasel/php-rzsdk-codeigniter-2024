@@ -5,6 +5,8 @@ namespace App\DatabaseSchema\Presentation\Views;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
 use RzSDK\Identification\UniqueIntId;
+use RzSDK\Log\DebugLog;
+
 ?>
 <?php
 class ColumnDataView {
@@ -15,7 +17,8 @@ class ColumnDataView {
     }
 
     public function render(array $tableIdList = null, array $columnDataList = null): void {
-        $tableDataList = array();
+        //DebugLog::log($tableIdList);
+        /*$tableDataList = array();
         if(!empty($schemaId)) {
             //echo "<pre>" . print_r($schemaId, true) . "</pre>";
             $uniqueIntId = new UniqueIntId();
@@ -44,6 +47,12 @@ class ColumnDataView {
         }
         foreach($tableDataList as $tableData) {
             $this->viewModel->createTable($tableData);
+        }*/
+        if(!empty($columnDataList)) {
+            foreach($columnDataList as $columnData) {
+                //DebugLog::log($columnData);
+                $this->viewModel->createTable($columnData);
+            }
         }
     }
 }

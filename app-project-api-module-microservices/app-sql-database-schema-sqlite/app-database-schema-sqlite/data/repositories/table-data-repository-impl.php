@@ -33,6 +33,19 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
     }
 
     public function create(TableDataModel $tableData): void {
+        $schemaTableName = "tbl_table_data";
+        $columnName = "id";
+        $value = $tableData->id;
+        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+            $this->save($tableData);
+            return;
+        }
+        $columnName = "table_name";
+        $value = $tableData->tableName;
+        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+            $this->save($tableData);
+            return;
+        }
         //DebugLog::log($tableData);
         $data = TableDataMapper::toDomainParams($tableData);
         //DebugLog::log($data);
@@ -49,7 +62,7 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO tbl_table_data ($columns) VALUES ($values)";
+        $sqlQuery = "INSERT INTO $schemaTableName ($columns) VALUES ($values)";
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $tableData->id = $this->dbConn->getLastInsertId();
@@ -57,17 +70,31 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
     }
 
     public function save(TableDataModel $tableData): void {
-        $data = TableDataMapper::toDomain($tableData);
+        //$data = TableDataMapper::toDomain($tableData);
+        //DebugLog::log($tableData);
+        $schemaTableName = "tbl_table_data";
 
         if($tableData->id) {
             // Update
-            $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
-            $stmt->execute($data);
+            /*$stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
+            $stmt->execute($data);*/
+            $data = TableDataMapper::toDomainParams($tableData);
+            $sqlQuery = "UPDATE $schemaTableName SET table_name = :table_name, table_comment = :table_comment, column_prefix = :column_prefix, modified_date = :modified_date WHERE id = :id OR table_name = :table_name";
+            $data = array(
+                ":id" => $tableData->id,
+                ":table_name" => $tableData->tableName,
+                ":table_comment" => $tableData->tableComment,
+                ":column_prefix" => $tableData->columnPrefix,
+                ":modified_date" => $tableData->modifiedDate,
+            );
+            //DebugLog::log($sqlQuery);
+            //DebugLog::log($data);
+            $this->dbConn->execute($sqlQuery, $data);
         } else {
             // Insert
-            $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
+            /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
             $stmt->execute($data);
-            $tableData->id = $this->db->lastInsertId();
+            $tableData->id = $this->db->lastInsertId();*/
         }
     }
 

@@ -160,6 +160,7 @@ class SqliteConnection {
         }
 
         $sqlQuery = "SELECT COUNT(*) as count FROM $table WHERE $column = :value";
+        //DebugLog::log($sqlQuery);
         $params = [':value' => $value];
 
         try {
@@ -238,7 +239,7 @@ $table = "users";
 $column = "email";
 $value = "john@example.com";
 
-if ($db->isDataExists($table, $column, $value)) {
+if($db->isDataExists($table, $column, $value)) {
     echo "User with email $value exists in the database.";
 } else {
     echo "User with email $value does not exist in the database.";

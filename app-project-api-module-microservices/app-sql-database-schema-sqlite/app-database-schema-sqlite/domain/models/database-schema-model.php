@@ -10,7 +10,7 @@ class DatabaseSchemaModel {
     public $databaseComment;
     public $modifiedDate;
     public $createdDate;
-    public array $tableData = []; // One-to-many relationship with TableData
+    public array $tableDataList = []; // One-to-many relationship with TableData
     public function __construct(
         int $id = 0,
         string $schemaName = "",
@@ -19,7 +19,7 @@ class DatabaseSchemaModel {
         ?string $databaseComment = "",
         string $modifiedDate = "",
         string $createdDate = "",
-        array $tableData = []
+        ?array $tableDataList = []
     ) {
         $this->id = $id;
         $this->schemaName = $schemaName;
@@ -28,7 +28,7 @@ class DatabaseSchemaModel {
         $this->databaseComment = $databaseComment;
         $this->modifiedDate = $modifiedDate ?? date('Y-m-d H:i:s');
         $this->createdDate = $createdDate ?? date('Y-m-d H:i:s');
-        $this->tableData = $tableData;
+        $this->tableDataList = $tableDataList;
     }
 
     public function getVarList() {

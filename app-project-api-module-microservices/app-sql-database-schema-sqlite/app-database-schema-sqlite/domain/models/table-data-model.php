@@ -3,18 +3,18 @@ namespace App\DatabaseSchema\Domain\Models;
 ?>
 <?php
 class TableDataModel {
-    public int $schemaId;
-    public int $id;
-    public string $tableName;
-    public ?string $columnPrefix;
-    public ?string $tableComment;
-    public string $modifiedDate;
-    public string $createdDate;
+    public $schemaId;
+    public $id;
+    public $tableName;
+    public $columnPrefix;
+    public $tableComment;
+    public $modifiedDate;
+    public $createdDate;
     public array $columnData = []; // One-to-many relationship with ColumnData
     public function __construct(
-        int $schemaId = 0,
-        int $id = 0,
-        string $tableName = null,
+        $schemaId = 0,
+        $id = 0,
+        ?string $tableName = null,
         ?string $tableComment = null,
         ?string $columnPrefix = null,
         ?string $modifiedDate = null,
