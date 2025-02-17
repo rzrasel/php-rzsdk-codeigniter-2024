@@ -35,18 +35,18 @@ class SqliteConnection {
         $this->sqliteFile = $dbPath;
         if (!file_exists($this->sqliteFile)) {
             //touch($this->sqliteFile); // Create the file if it doesn't exist
-            DebugLog::log("Database file not found: " . $this->sqliteFile, LogType::ERROR, true, 3);
+            DebugLog::log("Database file not found: " . $this->sqliteFile, LogType::ERROR, true, 0, __CLASS__);
             return false;
         }
         //|SQLite PDO Connection|--------------------------------|
         if($this->pdo == null) {
             try {
-                $this->pdo = new PDO("sqlite:" . $this->sqliteFile);
+                $this->pdo = new PDO("sqlitee:" . $this->sqliteFile);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             } catch(PDOException $e) {
                 //error_log("SQL Query Error: " . $e->getMessage());
-                DebugLog::log("PDO initialization error: " . $e->getMessage(), LogType::WARNING, true, 2);
+                DebugLog::log("PDO initialization error: " . $e->getMessage(), LogType::WARNING);
                 return false;
             }
         }
@@ -61,7 +61,7 @@ class SqliteConnection {
                 return $this->pdo->query($query);
             } catch (PDOException $e) {
                 //error_log("SQL Query Error: " . $e->getMessage());
-                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 2);
+                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
                 return false;
             }
         }
@@ -81,7 +81,7 @@ class SqliteConnection {
             } catch (PDOException $e) {
                 //error_log("SQL Query Error: " . $e->getMessage());
                 //echo "Database Error: " . $e->getMessage();
-                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 2);
+                DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
                 return false;
             }
         }
