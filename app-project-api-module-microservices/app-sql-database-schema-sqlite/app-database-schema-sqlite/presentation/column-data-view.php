@@ -14,7 +14,7 @@ class ColumnDataView {
         $this->viewModel = $viewModel;
     }
 
-    public function render(array $schemaId = null, array $tableData = null): void {
+    public function render(array $tableIdList = null, array $columnDataList = null): void {
         $tableDataList = array();
         if(!empty($schemaId)) {
             //echo "<pre>" . print_r($schemaId, true) . "</pre>";

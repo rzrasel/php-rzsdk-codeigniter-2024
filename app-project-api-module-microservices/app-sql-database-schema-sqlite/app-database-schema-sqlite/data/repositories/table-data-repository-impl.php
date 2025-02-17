@@ -53,7 +53,7 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $tableData->id = $this->dbConn->getLastInsertId();
-        DebugLog::log($tableData->id);
+        //DebugLog::log($tableData->id);
     }
 
     public function save(TableDataModel $tableData): void {

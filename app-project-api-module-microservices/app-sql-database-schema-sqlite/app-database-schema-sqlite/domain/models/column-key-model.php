@@ -15,15 +15,15 @@ class ColumnKeyModel {
     public array $compositeKey = []; // One-to-many relationship with CompositeKey
 
     public function __construct(
-        int $columnId,
-        int $id,
-        string $keyType,
-        ?string $keyName,
-        string $mainTable,
-        string $referenceTable,
-        string $referenceColumn,
-        ?string $modifiedDate,
-        ?string $createdDate
+        int $columnId = 0,
+        int $id = 0,
+        string $keyType = null,
+        ?string $keyName = null,
+        string $mainTable = null,
+        string $referenceTable = null,
+        string $referenceColumn = null,
+        ?string $modifiedDate = null,
+        ?string $createdDate = null
     ) {
         $this->columnId = $columnId;
         $this->id = $id;
@@ -49,6 +49,10 @@ class ColumnKeyModel {
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
+    }
+
+    public static function getVarByValue(string $value, array $array): string|null {
+        return array_search($value, $array, true) ?: null;
     }
 }
 ?>

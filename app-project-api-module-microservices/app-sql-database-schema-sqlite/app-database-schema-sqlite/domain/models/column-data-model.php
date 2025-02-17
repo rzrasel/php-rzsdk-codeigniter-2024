@@ -15,14 +15,14 @@ class ColumnDataModel {
     public array $columnKey = []; // One-to-many relationship with ColumnKey
 
     public function __construct(
-        $tableId,
-        $columnName,
-        $dataType,
-        $isNullable,
-        $defaultValue,
-        $columnComment,
-        $modifiedDate,
-        $createdDate
+        $tableId = null,
+        $columnName = null,
+        $dataType = null,
+        $isNullable = null,
+        $defaultValue = null,
+        $columnComment = null,
+        $modifiedDate = null,
+        $createdDate = null
     ) {
         $this->tableId = $tableId;
         $this->columnName = $columnName;
@@ -47,6 +47,10 @@ class ColumnDataModel {
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
+    }
+
+    public static function getVarByValue(string $value, array $array): string|null {
+        return array_search($value, $array, true) ?: null;
     }
 }
 ?>

@@ -14,7 +14,7 @@ class TableDataModel {
     public function __construct(
         int $schemaId = 0,
         int $id = 0,
-        string $tableName = "",
+        string $tableName = null,
         ?string $tableComment = null,
         ?string $columnPrefix = null,
         ?string $modifiedDate = null,
@@ -42,6 +42,10 @@ class TableDataModel {
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
+    }
+
+    public static function getVarByValue(string $value, array $array): string|null {
+        return array_search($value, $array, true) ?: null;
     }
 }
 ?>

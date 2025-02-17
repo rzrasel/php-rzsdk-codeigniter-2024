@@ -45,5 +45,9 @@ class DatabaseSchemaModel {
             get_mangled_object_vars($this)
         );
     }
+
+    public static function getVarByValue(string $value, array $array): string|null {
+        return array_search($value, $array, true) ?: null;
+    }
 }
 ?>

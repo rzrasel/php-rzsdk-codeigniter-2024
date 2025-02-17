@@ -6,7 +6,7 @@ use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\ColumnDataRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\ColumnData;
 use App\DatabaseSchema\Domain\Models\ColumnDataModel;
-use App\DatabaseSchema\Data\Mappers\TableDataMapper;
+use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -22,19 +22,19 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         }
     }
 
-    public function getById(int $columnDataId): ?ColumnData {
+    public function getById(int $columnDataId): ?ColumnDataModel {
         // TODO: Implement getById() method.
-        return new ColumnData();
+        return new ColumnDataModel();
     }
 
-    public function findBySchemaId(int $columnDataId): ?ColumnData {
+    public function findBySchemaId(int $columnDataId): ?ColumnDataModel {
         // TODO: Implement getById() method.
-        return new ColumnData();
+        return new ColumnDataModel();
     }
 
     public function create(ColumnDataModel $columnData): void {
         //DebugLog::log($tableData);
-        $data = TableDataMapper::toDomainParams($columnData);
+        $data = ColumnDataMapper::toDomainParams($columnData);
         //DebugLog::log($data);
         /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
         $stmt->execute($data);*/
@@ -49,7 +49,7 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO tbl_table_data ($columns) VALUES ($values)";
+        $sqlQuery = "INSERT INTO tbl_column_data ($columns) VALUES ($values)";
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $columnData->id = $this->dbConn->getLastInsertId();
@@ -57,7 +57,7 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
     }
 
     public function save(ColumnDataModel $columnData): void {
-        $data = TableDataMapper::toDomain($columnData);
+        $data = ColumnDataMapper::toDomain($columnData);
 
         if($columnData->id) {
             // Update
