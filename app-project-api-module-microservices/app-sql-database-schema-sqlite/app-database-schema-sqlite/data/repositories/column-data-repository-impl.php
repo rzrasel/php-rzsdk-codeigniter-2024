@@ -3,15 +3,15 @@ namespace App\DatabaseSchema\Data\Repositories;
 ?>
 <?php
 use RzSDK\Database\SqliteConnection;
-use App\DatabaseSchema\Domain\Repositories\TableDataRepositoryInterface;
-use App\DatabaseSchema\Data\Entities\TableData;
-use App\DatabaseSchema\Domain\Models\TableDataModel;
+use App\DatabaseSchema\Domain\Repositories\ColumnDataRepositoryInterface;
+use App\DatabaseSchema\Data\Entities\ColumnData;
+use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
 <?php
-class TableDataRepositoryImpl implements TableDataRepositoryInterface {
+class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
     private SqliteConnection $dbConn;
 
     public function __construct(SqliteConnection $dbConn = null) {
@@ -22,24 +22,24 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         }
     }
 
-    public function getById(int $tableDataId): ?TableDataModel {
+    public function getById(int $columnDataId): ?ColumnData {
         // TODO: Implement getById() method.
-        return new TableDataModel();
+        return new ColumnData();
     }
 
-    public function findBySchemaId(int $tableDataId): ?TableDataModel {
+    public function findBySchemaId(int $columnDataId): ?ColumnData {
         // TODO: Implement getById() method.
-        return new TableDataModel();
+        return new ColumnData();
     }
 
-    public function create(TableDataModel $tableData): void {
+    public function create(ColumnDataModel $columnData): void {
         //DebugLog::log($tableData);
-        $data = TableDataMapper::toDomainParams($tableData);
+        $data = TableDataMapper::toDomainParams($columnData);
         //DebugLog::log($data);
         /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
         $stmt->execute($data);*/
         //$sqlQuery = "INSERT INTO tbl_table_data (...) VALUES (...)";
-        $tempTableData = new TableData();
+        $tempTableData = new ColumnData();
         $dataVarList = $tempTableData->getVarList();
         $columns = "";
         $values = "";
@@ -52,14 +52,14 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         $sqlQuery = "INSERT INTO tbl_table_data ($columns) VALUES ($values)";
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
-        $tableData->id = $this->dbConn->getLastInsertId();
-        DebugLog::log($tableData->id);
+        $columnData->id = $this->dbConn->getLastInsertId();
+        DebugLog::log($columnData->id);
     }
 
-    public function save(TableDataModel $tableData): void {
-        $data = TableDataMapper::toDomain($tableData);
+    public function save(ColumnDataModel $columnData): void {
+        $data = TableDataMapper::toDomain($columnData);
 
-        if($tableData->id) {
+        if($columnData->id) {
             // Update
             $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
             $stmt->execute($data);
@@ -67,7 +67,7 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
             // Insert
             $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
             $stmt->execute($data);
-            $tableData->id = $this->db->lastInsertId();
+            $columnData->id = $this->db->lastInsertId();
         }
     }
 

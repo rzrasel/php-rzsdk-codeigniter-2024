@@ -61,7 +61,7 @@ class DebugLog {
      * @param int $traceIndex The index of the trace to use (default: 0).
      * @param string|null $upClass The class to look up in the trace (optional).
      */
-    public static function log($message, LogType $logType = LogType::INFORMATION, bool $htmlOutput = true, int $traceIndex = 1, ?string $upClass = __CLASS__): void {
+    public static function log($message, LogType $logType = LogType::MESSAGE, bool $htmlOutput = true, int $traceIndex = 1, ?string $upClass = __CLASS__): void {
         // Format the message
         $debugData = self::formatMessage($message);
         if($traceIndex <= 0) {
@@ -140,9 +140,12 @@ class DebugLog {
      * @return string The formatted debug information.
      */
     private static function getDebugInfo(int $traceIndex, LogType $logType): string {
-        echo $traceIndex;
+        //echo $traceIndex;
         $debugBacktrace = debug_backtrace();
         //echo "<pre>" . print_r($debugBacktrace, true) . "</pre>";
+        if($traceIndex >= count($debugBacktrace)) {
+            $traceIndex = count($debugBacktrace) - 1;
+        }
         $file = $debugBacktrace[$traceIndex]['file'] ?? 'Unknown file';
         $fileOnly = basename($file);
         $line = $debugBacktrace[$traceIndex]['line'] ?? 'Unknown line';

@@ -2,12 +2,14 @@
 namespace App\DatabaseSchema\Data\Entities;
 ?>
 <?php
-class TableData {
-    public $schema_id;
+class ColumnKey {
+    public $column_id;
     public $id;
-    public $table_name;
-    public $column_prefix;
-    public $table_comment;
+    public $key_type;
+    public $key_name;
+    public $main_table;
+    public $reference_table;
+    public $reference_column;
     public $modified_date;
     public $created_date;
 

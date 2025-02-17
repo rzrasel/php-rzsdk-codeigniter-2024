@@ -7,7 +7,7 @@ use App\DatabaseSchema\Domain\Models\TableDataModel;
 use App\DatabaseSchema\Domain\Repositories\TableDataRepositoryInterface;
 ?>
 <?php
-class TableDataViewModel {
+class ColumnKeyViewModel {
     private $repository;
 
     public function __construct(TableDataRepositoryInterface $repository) {

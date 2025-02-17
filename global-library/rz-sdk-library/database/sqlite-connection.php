@@ -41,7 +41,7 @@ class SqliteConnection {
         //|SQLite PDO Connection|--------------------------------|
         if($this->pdo == null) {
             try {
-                $this->pdo = new PDO("sqlitee:" . $this->sqliteFile);
+                $this->pdo = new PDO("sqlite:" . $this->sqliteFile);
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
             } catch(PDOException $e) {

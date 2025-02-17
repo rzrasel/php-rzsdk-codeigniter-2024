@@ -10,6 +10,7 @@ class TableDataModel {
     public ?string $tableComment;
     public string $modifiedDate;
     public string $createdDate;
+    public array $columnData = []; // One-to-many relationship with ColumnData
     public function __construct(
         int $schemaId = 0,
         int $id = 0,

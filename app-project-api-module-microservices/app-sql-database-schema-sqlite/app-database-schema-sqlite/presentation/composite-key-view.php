@@ -2,15 +2,15 @@
 namespace App\DatabaseSchema\Presentation\Views;
 ?>
 <?php
-use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
+use App\DatabaseSchema\Presentation\ViewModels\CompositeKeyViewModel;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
 use RzSDK\Identification\UniqueIntId;
 ?>
 <?php
-class TableDataView {
+class CompositeKeyView {
     private $viewModel;
 
-    public function __construct(TableDataViewModel $viewModel) {
+    public function __construct(CompositeKeyViewModel $viewModel) {
         $this->viewModel = $viewModel;
     }
 
