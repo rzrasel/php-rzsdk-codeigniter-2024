@@ -12,7 +12,7 @@ class ColumnKeyModel {
     public $referenceColumn;
     public $modifiedDate;
     public $createdDate;
-    public array $compositeKey = []; // One-to-many relationship with CompositeKey
+    public $compositeKeyList = []; // One-to-many relationship with CompositeKey
 
     public function __construct(
         int $columnId = 0,
@@ -20,10 +20,11 @@ class ColumnKeyModel {
         string $keyType = null,
         ?string $keyName = null,
         string $mainTable = null,
-        string $referenceTable = null,
-        string $referenceColumn = null,
+        ?string $referenceTable = null,
+        ?string $referenceColumn = null,
         ?string $modifiedDate = null,
-        ?string $createdDate = null
+        ?string $createdDate = null,
+        ?string $compositeKeyList = null
     ) {
         $this->columnId = $columnId;
         $this->id = $id;
@@ -34,6 +35,7 @@ class ColumnKeyModel {
         $this->referenceColumn = $referenceColumn;
         $this->modifiedDate = $modifiedDate;
         $this->createdDate = $createdDate;
+        $this->compositeKeyList = $compositeKeyList;
     }
 
     public function getVarList() {

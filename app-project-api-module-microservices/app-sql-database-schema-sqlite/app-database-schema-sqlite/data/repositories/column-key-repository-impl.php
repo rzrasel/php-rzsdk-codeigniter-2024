@@ -6,7 +6,7 @@ use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\ColumnKeyRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\ColumnKey;
 use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
-use App\DatabaseSchema\Data\Mappers\TableDataMapper;
+use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -34,7 +34,7 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
 
     public function create(ColumnKeyModel $columnKey): void {
         //DebugLog::log($tableData);
-        $data = TableDataMapper::toDomainParams($columnKey);
+        $data = CompositeKeyMapper::toDomainParams($columnKey);
         //DebugLog::log($data);
         /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
         $stmt->execute($data);*/

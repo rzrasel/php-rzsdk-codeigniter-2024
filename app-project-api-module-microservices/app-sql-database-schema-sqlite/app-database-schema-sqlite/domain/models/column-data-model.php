@@ -12,7 +12,7 @@ class ColumnDataModel {
     public $columnComment;
     public $modifiedDate;
     public $createdDate;
-    public array $columnKey = []; // One-to-many relationship with ColumnKey
+    public $columnKeyList = []; // One-to-many relationship with ColumnKey
 
     public function __construct(
         $tableId = null,
@@ -22,7 +22,8 @@ class ColumnDataModel {
         $defaultValue = null,
         $columnComment = null,
         $modifiedDate = null,
-        $createdDate = null
+        $createdDate = null,
+        $columnKeyList = null
     ) {
         $this->tableId = $tableId;
         $this->columnName = $columnName;
@@ -32,6 +33,7 @@ class ColumnDataModel {
         $this->columnComment = $columnComment;
         $this->modifiedDate = $modifiedDate;
         $this->createdDate = $createdDate;
+        $this->columnKeyList = $columnKeyList;
     }
 
     public function getVarList() {

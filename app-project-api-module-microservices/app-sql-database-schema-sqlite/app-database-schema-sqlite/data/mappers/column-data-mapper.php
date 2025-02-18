@@ -80,7 +80,7 @@ class ColumnDataMapper {
             for($i = 0; $i < count($dataVarList); $i++) {
                 $model->{$domainVarList[$i]} = $columnData[$dataVarList[$i]];
             }
-        }  else if(is_object($columnData)) {
+        } else if(is_object($columnData)) {
             $dataVarList = self::getDataVarList($columnData);
             $domainVarList = self::getDomainVarList($model);
             for ($i = 0; $i < count($dataVarList); $i++) {

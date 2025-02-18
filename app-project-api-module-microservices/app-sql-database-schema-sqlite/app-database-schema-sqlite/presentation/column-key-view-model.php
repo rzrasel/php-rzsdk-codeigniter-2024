@@ -3,27 +3,27 @@ namespace App\DatabaseSchema\Presentation\ViewModels;
 ?>
 <?php
 use App\DatabaseSchema\Data\Entities\TableData;
-use App\DatabaseSchema\Domain\Models\TableDataModel;
-use App\DatabaseSchema\Domain\Repositories\TableDataRepositoryInterface;
+use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
+use App\DatabaseSchema\Domain\Repositories\ColumnKeyRepositoryInterface;
 ?>
 <?php
 class ColumnKeyViewModel {
     private $repository;
 
-    public function __construct(TableDataRepositoryInterface $repository) {
+    public function __construct(ColumnKeyRepositoryInterface $repository) {
         $this->repository = $repository;
     }
 
-    public function getTable(int $id): ?TableDataModel {
+    public function getTable(int $id): ?ColumnKeyModel {
         return $this->repository->getById($id);
     }
 
-    public function insertTable(TableDataModel $tableData) {
-        $this->repository->save($tableData);
+    public function insertTable(ColumnKeyModel $columnKey) {
+        $this->repository->save($columnKey);
     }
 
-    public function createTable(TableDataModel $tableData): void {
-        $this->repository->create($tableData);
+    public function createTable(ColumnKeyModel $columnKey): void {
+        $this->repository->create($columnKey);
     }
 }
 ?>

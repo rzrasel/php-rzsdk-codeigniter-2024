@@ -36,14 +36,12 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         $columnTableName = "tbl_column_data";
         $colIdName = "id";
         $colIdValue = $columnData->id;
-        if($this->dbConn->isDataExists($columnTableName, $colIdName, $colIdValue)) {
-            $this->save($columnData, $colIdValue);
-            return;
-        }
+        //
         $colTableIdName = "table_id";
         $colColumnName = "column_name";
         $colTableIdValue = $columnData->tableId;
         $colColumnNameValue = $columnData->columnName;
+        //
         $conditions = [
             $colTableIdName => $colTableIdValue,
             $colColumnName => $colColumnNameValue,
@@ -53,6 +51,12 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
             $this->save($columnData);
             return;
         }
+        //
+        if($this->dbConn->isDataExists($columnTableName, $colIdName, $colIdValue)) {
+            $this->save($columnData, $colIdValue);
+            return;
+        }
+        //
         //DebugLog::log($tableData);
         $data = ColumnDataMapper::toDomainParams($columnData);
         //DebugLog::log($data);

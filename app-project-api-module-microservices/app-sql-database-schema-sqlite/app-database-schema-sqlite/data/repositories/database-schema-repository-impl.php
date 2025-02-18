@@ -9,6 +9,7 @@ use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
+use App\DatabaseSchema\Data\Mappers\ColumnKeyMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -147,7 +148,30 @@ class DatabaseSchemaRepositoryImpl implements DatabaseSchemaRepositoryInterface 
             //DebugLog::log($result);
             $columnData = ColumnDataMapper::toModel($result);
             //DebugLog::log($columnData);
+            $columnKeyList = $this->getAllColumnKey($columnData->id);
+            if($columnKeyList) {
+                $columnData->columnKeyList = $columnKeyList;
+            }
             $columnDataList[] = $columnData;
+        }
+        //DebugLog::log($results);
+        if(!empty($columnDataList)) {
+            return $columnDataList;
+        }
+        return false;
+    }
+
+    public function getAllColumnKey($columnId): array|bool {
+        $columnKeyName = "tbl_column_key";
+        $columnDataList = array();
+        $sqlQuery = "SELECT * FROM $columnKeyName WHERE column_id = '$columnId';";
+        DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            //$columnData = ColumnDataMapper::toModel($result);
+            //DebugLog::log($columnData);
+            //$columnDataList[] = $columnData;
         }
         //DebugLog::log($results);
         if(!empty($columnDataList)) {

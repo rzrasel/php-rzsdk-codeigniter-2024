@@ -2,8 +2,8 @@
 namespace App\DatabaseSchema\Presentation\Views;
 ?>
 <?php
-use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
+use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnDataView;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
@@ -81,13 +81,25 @@ class TableDataView {
             //
             $columnDataList = array();
             if($tableData->tableName == "language_data") {
+                $tableId = $tableData->id;
+                $columnName = "id";
+                $columnId = $this->getIdByColumnName($columnName, $tableData);
                 $columnModel = $this->getColumnDataModel(
-                    $tableData->id,
-                    "id", "VARCHAR(360)", $columnId, true
+                    $tableId, $columnName,
+                    "BIGINT(20)", $columnId, true
+                );
+                $columnDataList[] = $columnModel;
+                //
+                $columnName = "schema_name";
+                $columnId = $this->getIdByColumnName($columnName, $tableData);
+                $columnModel = $this->getColumnDataModel(
+                    $tableId, $columnName,
+                    "Text", $columnId, true
                 );
                 $columnDataList[] = $columnModel;
             }
             if(!empty($columnDataList)) {
+                //DebugLog::log($columnDataList);
                 return $columnDataList;
             }
         }
@@ -117,13 +129,23 @@ class TableDataView {
         $model->tableId = $tableId;
         $model->id = $columnId;
         $model->columnName = $name;
-        $model->dataType = $dataType;
+        $model->dataType = strtoupper($dataType);
         $model->isNullable = $isNull;
         $model->defaultValue = $defaultValue;
         $model->columnComment = $comment;
         $model->modifiedDate = date('Y-m-d H:i:s');
         $model->createdDate = date('Y-m-d H:i:s');
         return $model;
+    }
+
+    private function getIdByColumnName(string $columnName, TableDataModel $tableData): int {
+        if(!empty($tableData)) {
+            if(!empty($tableData->columnDataList)) {
+                $columnId = ColumnDataModel::getIdByNameFilter("id", $tableData->columnDataList);
+                return $columnId;
+            }
+        }
+        return 0;
     }
 }
 ?>

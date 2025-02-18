@@ -4,6 +4,9 @@ namespace App\DatabaseSchema\Presentation\Views;
 <?php
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
+use App\DatabaseSchema\Data\Repositories\ColumnKeyRepositoryImpl;
+use App\DatabaseSchema\Presentation\ViewModels\ColumnKeyViewModel;
+use App\DatabaseSchema\Presentation\Views\ColumnKeyView;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\Log\DebugLog;
 
@@ -48,6 +51,10 @@ class ColumnDataView {
         foreach($tableDataList as $tableData) {
             $this->viewModel->createTable($tableData);
         }*/
+        $repository = new ColumnKeyRepositoryImpl();
+        $viewModel = new ColumnKeyViewModel($repository);
+        $view = new ColumnKeyView($viewModel);
+        //
         if(!empty($columnDataList)) {
             foreach($columnDataList as $columnData) {
                 //DebugLog::log($columnData);

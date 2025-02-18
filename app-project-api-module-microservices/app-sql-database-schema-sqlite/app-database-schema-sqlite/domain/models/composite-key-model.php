@@ -11,12 +11,12 @@ class CompositeKeyModel {
     public $createdDate;
 
     public function __construct(
-        int $columnId,
-        int $keyId,
-        int $id,
-        string $keyName,
-        \DateTime $modifiedDate,
-        \DateTime $createdDate
+        int $columnId = 0,
+        int $keyId = 0,
+        int $id = 0,
+        ?string $keyName = null,
+        ?\DateTime $modifiedDate = null,
+        ?\DateTime $createdDate = null
     ) {
         $this->columnId = $columnId;
         $this->keyId = $keyId;
