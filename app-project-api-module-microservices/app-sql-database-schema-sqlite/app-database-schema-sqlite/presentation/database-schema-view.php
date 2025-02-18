@@ -9,6 +9,8 @@ use App\DatabaseSchema\Data\Repositories\TableDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
 use App\DatabaseSchema\Presentation\Views\TableDataView;
 use RzSDK\Identification\UniqueIntId;
+use RzSDK\Log\DebugLog;
+
 ?>
 <?php
 class DatabaseSchemaView {
@@ -19,34 +21,28 @@ class DatabaseSchemaView {
     }
 
     public function render(): void {
-        $uniqueIntId = new UniqueIntId();
 
         $databaseSchemaList = array();
+        $tableDataList = array();
 
-        // Create a new schema
-        $schema = $this->getSchemaModel("database-schema-database");
-        $databaseSchemaList[] = $schema;
-        $schema = $this->getSchemaModel("database-schema-database-test");
-        $databaseSchemaList[] = $schema;
-        /*$schema = new DatabaseSchemaModel();
-        $schema->id = $uniqueIntId->getId();
-        $schema->schemaName = "database-schema-database";
-        $schema->schemaVersion = "v-1.1.1";
-        $schema->tablePrefix = "tbl_";
-        $schema->databaseComment = "Test schema";
-        $schema->modifiedDate = date('Y-m-d H:i:s');
-        $schema->createdDate = date('Y-m-d H:i:s');
-        $databaseSchemaList[] = $schema;*/
-        //
-        /*$schema = new DatabaseSchemaModel();
-        $schema->id = $uniqueIntId->getId();
-        $schema->schemaName = "database-schema-database-test";
-        $schema->schemaVersion = "v-1.1.1";
-        $schema->tablePrefix = "tbl_";
-        $schema->databaseComment = "Test schema";
-        $schema->modifiedDate = date('Y-m-d H:i:s');
-        $schema->createdDate = date('Y-m-d H:i:s');
-        $databaseSchemaList[] = $schema;*/
+        $dbSchemaData = $this->viewModel->getAllDatabaseSchema();
+        if($dbSchemaData) {
+            $databaseSchemaList = $dbSchemaData;
+            //DebugLog::log($databaseSchemaList);
+        } else {
+
+            // Create a new schema
+            $schemaData = $this->getDatabaseSchemaModel("database-schema-database");
+            $schemaId = $schemaData->id;
+            $tableData = $this->getTableDataModel($schemaId, "language_data");
+            $tableDataList[] = $tableData;
+            $tableData = $this->getTableDataModel($schemaId, "user_data");
+            $tableDataList[] = $tableData;
+            $schemaData->tableDataList = $tableDataList;
+            $databaseSchemaList[] = $schemaData;
+            $schemaData = $this->getDatabaseSchemaModel("database-schema-database-test");
+            $databaseSchemaList[] = $schemaData;
+        }
         //
         $repository = new TableDataRepositoryImpl();
         $viewModel = new TableDataViewModel($repository);
@@ -69,15 +65,15 @@ class DatabaseSchemaView {
             $databaseSchemaId = $databaseSchema->id;
             $databaseSchemaIdList[] = $databaseSchemaId;
             $this->viewModel->createSchema($databaseSchema);
-        }
-        $databaseSchemaIdList = array(
-            "173979361554730734",
-            "173979361554790749",
+        }*/
+        /*$databaseSchemaIdList = array(
+            "173986148774312621",
+            "173986148774359334",
         );
         $view->render($databaseSchemaIdList);*/
     }
 
-    private function getSchemaModel($name, $prefix = "tbl_", $comment = null, $version = "1.1.1"): DatabaseSchemaModel {
+    private function getDatabaseSchemaModel($name, $prefix = "tbl_", $comment = null, $version = "1.1.1"): DatabaseSchemaModel {
         $uniqueIntId = new UniqueIntId();
         $model = new DatabaseSchemaModel();
         $model->id = $uniqueIntId->getId();
@@ -90,7 +86,7 @@ class DatabaseSchemaView {
         return $model;
     }
 
-    private function getTableModel($schemaId, $name, $comment = null, $prefix = null): TableDataModel {
+    private function getTableDataModel($schemaId, $name, $comment = null, $prefix = null): TableDataModel {
         $uniqueIntId = new UniqueIntId();
         $model = new TableDataModel();
         $model->schemaId = $schemaId;

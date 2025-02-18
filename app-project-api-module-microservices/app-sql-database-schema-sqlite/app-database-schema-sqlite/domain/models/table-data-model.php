@@ -10,7 +10,7 @@ class TableDataModel {
     public $tableComment;
     public $modifiedDate;
     public $createdDate;
-    public array $columnData = []; // One-to-many relationship with ColumnData
+    public array $columnDataList = []; // One-to-many relationship with ColumnData
     public function __construct(
         $schemaId = 0,
         $id = 0,
@@ -18,7 +18,8 @@ class TableDataModel {
         ?string $tableComment = null,
         ?string $columnPrefix = null,
         ?string $modifiedDate = null,
-        ?string $createdDate = null
+        ?string $createdDate = null,
+        ?array $columnDataList = []
     ) {
         $this->schemaId = $schemaId;
         $this->id = $id;
@@ -27,6 +28,7 @@ class TableDataModel {
         $this->columnPrefix = $columnPrefix;
         $this->modifiedDate = $modifiedDate ?? date('Y-m-d H:i:s');
         $this->createdDate = $createdDate ?? date('Y-m-d H:i:s');
+        $this->columnDataList = $columnDataList;
     }
 
     public function getVarList() {
@@ -46,6 +48,20 @@ class TableDataModel {
 
     public static function getVarByValue(string $value, array $array): string|null {
         return array_search($value, $array, true) ?: null;
+    }
+
+    public function getIdByName(string $name): int|bool {
+        if ($this->tableName === $name) {
+            return $this->id;
+        }
+        return false;
+    }
+
+    public static function getStaticIdByName(string $name, TableDataModel $tableData): int|bool {
+        if ($tableData->tableName === $name) {
+            return $tableData->id;
+        }
+        return false;
     }
 }
 ?>

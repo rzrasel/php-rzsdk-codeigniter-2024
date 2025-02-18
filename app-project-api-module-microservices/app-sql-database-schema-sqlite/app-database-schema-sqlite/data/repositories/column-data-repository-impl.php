@@ -33,6 +33,26 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
     }
 
     public function create(ColumnDataModel $columnData): void {
+        $columnTableName = "tbl_column_data";
+        $colIdName = "id";
+        $colIdValue = $columnData->id;
+        if($this->dbConn->isDataExists($columnTableName, $colIdName, $colIdValue)) {
+            $this->save($columnData, $colIdValue);
+            return;
+        }
+        $colTableIdName = "table_id";
+        $colColumnName = "column_name";
+        $colTableIdValue = $columnData->tableId;
+        $colColumnNameValue = $columnData->columnName;
+        $conditions = [
+            $colTableIdName => $colTableIdValue,
+            $colColumnName => $colColumnNameValue,
+        ];
+        if($this->dbConn->isDataExistsMultiple($columnTableName, $conditions)) {
+            //DebugLog::log("Ddddddddddd");
+            $this->save($columnData);
+            return;
+        }
         //DebugLog::log($tableData);
         $data = ColumnDataMapper::toDomainParams($columnData);
         //DebugLog::log($data);
@@ -49,25 +69,50 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO tbl_column_data ($columns) VALUES ($values)";
+        $sqlQuery = "INSERT INTO $columnTableName ($columns) VALUES ($values)";
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $columnData->id = $this->dbConn->getLastInsertId();
-        DebugLog::log($columnData->id);
+        //DebugLog::log($columnData->id);
     }
 
-    public function save(ColumnDataModel $columnData): void {
+    public function save(ColumnDataModel $columnData, $columnId = -1): void {
         $data = ColumnDataMapper::toDomain($columnData);
 
         if($columnData->id) {
             // Update
-            $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
-            $stmt->execute($data);
+            $columnTableName = "tbl_column_data";
+            if($columnId > 0) {
+                $sqlQuery = "UPDATE $columnTableName SET column_name = :column_name, data_type = :data_type, is_nullable = :is_nullable, default_value = :default_value, column_comment = :column_comment, modified_date = :modified_date WHERE id = :id";
+                $data = array(
+                    ":id" => $columnData->id,
+                    ":column_name" => $columnData->columnName,
+                    ":data_type" => $columnData->dataType,
+                    ":is_nullable" => $columnData->isNullable,
+                    ":default_value" => $columnData->defaultValue,
+                    ":column_comment" => $columnData->columnComment,
+                    ":modified_date" => $columnData->modifiedDate,
+                );
+            } else {
+                $sqlQuery = "UPDATE $columnTableName SET data_type = :data_type, is_nullable = :is_nullable, default_value = :default_value, column_comment = :column_comment, modified_date = :modified_date WHERE table_id = :table_id AND column_name = :column_name";
+                $data = array(
+                    ":table_id" => $columnData->tableId,
+                    ":column_name" => $columnData->columnName,
+                    ":data_type" => $columnData->dataType,
+                    ":is_nullable" => $columnData->isNullable,
+                    ":default_value" => $columnData->defaultValue,
+                    ":column_comment" => $columnData->columnComment,
+                    ":modified_date" => $columnData->modifiedDate,
+                );
+            }
+            //DebugLog::log($sqlQuery);
+            //DebugLog::log($data);
+            $this->dbConn->execute($sqlQuery, $data);
         } else {
             // Insert
-            $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
+            /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
             $stmt->execute($data);
-            $columnData->id = $this->db->lastInsertId();
+            $columnData->id = $this->db->lastInsertId();*/
         }
     }
 

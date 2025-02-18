@@ -161,8 +161,7 @@ class DebugLog {
         $method = $debugBacktrace[$traceIndex + 1]['function'] ?? 'Undefined';
 
         return sprintf(
-            "<div style=\"line-height: 14px; cursor: default;\"><span style=\"%s\">Debug %s:</span>
-<span style=\"%s\">→ File With Path:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
+            "<div style=\"line-height: 14px; cursor: default;\"><span style=\"%s\">Debug %s:</span> <span style=\"%s\">→ File With Path:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
 <span style=\"%s\">→ File:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
 <span style=\"%s\">→ Class With Namespace:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s
 <span style=\"%s\">→ Class:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s&nbsp;<span style=\"%s\">→ Method:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s&nbsp;<span style=\"%s\">→ Line:<span style=\"%s\"></span></span>&nbsp;&nbsp;%s</div>",

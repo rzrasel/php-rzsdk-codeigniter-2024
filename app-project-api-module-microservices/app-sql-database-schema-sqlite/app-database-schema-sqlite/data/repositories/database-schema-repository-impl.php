@@ -7,6 +7,8 @@ use App\DatabaseSchema\Domain\Repositories\DatabaseSchemaRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
+use App\DatabaseSchema\Data\Mappers\TableDataMapper;
+use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -20,6 +22,29 @@ class DatabaseSchemaRepositoryImpl implements DatabaseSchemaRepositoryInterface 
         } else {
             $this->dbConn = $dbConn;
         }
+    }
+
+    public function getAllData(): array|bool {
+        $schemaTableName = "tbl_database_schema";
+        $databaseSchemaList = array();
+        $sqlQuery = "SELECT * FROM $schemaTableName;";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $databaseSchema = DatabaseSchemaMapper::toModel($result);
+            //DebugLog::log($databaseSchema);
+            $tableDataList = $this->getAllTableData($databaseSchema->id);
+            if($tableDataList) {
+                $databaseSchema->tableDataList = $tableDataList;
+            }
+            $databaseSchemaList[] = $databaseSchema;
+        }
+        //DebugLog::log($results);
+        if(!empty($databaseSchemaList)) {
+            return $databaseSchemaList;
+        }
+        return false;
     }
 
     public function getById(int $id): ?DatabaseSchemaModel {
@@ -87,6 +112,48 @@ class DatabaseSchemaRepositoryImpl implements DatabaseSchemaRepositoryInterface 
 
     public function delete(int $id): void {
         // TODO: Implement delete() method.
+    }
+
+    public function getAllTableData($schemaId): array|bool {
+        $tableDataName = "tbl_table_data";
+        $tableDataList = array();
+        $sqlQuery = "SELECT * FROM $tableDataName WHERE schema_id = '$schemaId';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $tableData = TableDataMapper::toModel($result);
+            //DebugLog::log($tableData);
+            $columnDataList = $this->getAllColumnData($tableData->id);
+            if($columnDataList) {
+                $tableData->columnDataList = $columnDataList;
+            }
+            $tableDataList[] = $tableData;
+        }
+        //DebugLog::log($results);
+        if(!empty($tableDataList)) {
+            return $tableDataList;
+        }
+        return false;
+    }
+
+    public function getAllColumnData($tableId): array|bool {
+        $columnDataName = "tbl_column_data";
+        $columnDataList = array();
+        $sqlQuery = "SELECT * FROM $columnDataName WHERE table_id = '$tableId';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $columnData = ColumnDataMapper::toModel($result);
+            //DebugLog::log($columnData);
+            $columnDataList[] = $columnData;
+        }
+        //DebugLog::log($results);
+        if(!empty($columnDataList)) {
+            return $columnDataList;
+        }
+        return false;
     }
 }
 ?>

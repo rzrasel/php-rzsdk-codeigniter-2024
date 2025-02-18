@@ -14,6 +14,10 @@ class DatabaseSchemaViewModel {
         $this->repository = $repository;
     }
 
+    public function getAllDatabaseSchema(): array|bool {
+        return $this->repository->getAllData();
+    }
+
     public function getSchema(int $id): ?DatabaseSchemaModel {
         return $this->repository->getById($id);
     }

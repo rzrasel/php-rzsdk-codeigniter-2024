@@ -72,12 +72,20 @@ class ColumnDataMapper {
         return $model;
     }
 
-    public function toModel($columnData): ColumnDataModel {
+    public static function toModel($columnData): ColumnDataModel {
         $model = new ColumnDataModel();
-        $dataVarList = self::getDataVarList(new ColumnData());
-        $domainVarList = self::getDomainVarList($columnData);
-        for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$domainVarList[$i]} = $columnData->{$dataVarList[$i]};
+        if(is_array($columnData)) {
+            $dataVarList = self::getDataVarList(new ColumnData());
+            $domainVarList = self::getDomainVarList($model);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $columnData[$dataVarList[$i]];
+            }
+        }  else if(is_object($columnData)) {
+            $dataVarList = self::getDataVarList($columnData);
+            $domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $columnData->{$dataVarList[$i]};
+            }
         }
         return $model;
     }

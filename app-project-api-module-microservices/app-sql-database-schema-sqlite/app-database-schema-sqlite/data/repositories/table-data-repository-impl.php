@@ -33,16 +33,16 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
     }
 
     public function create(TableDataModel $tableData): void {
-        $schemaTableName = "tbl_table_data";
-        $columnName = "id";
-        $value = $tableData->id;
-        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+        $tableName = "tbl_table_data";
+        $colIdName = "id";
+        $colIdValue = $tableData->id;
+        if($this->dbConn->isDataExists($tableName, $colIdName, $colIdValue)) {
             $this->save($tableData);
             return;
         }
-        $columnName = "table_name";
-        $value = $tableData->tableName;
-        if($this->dbConn->isDataExists($schemaTableName, $columnName, $value)) {
+        $colTableName = "table_name";
+        $colTableNameValue = $tableData->tableName;
+        if($this->dbConn->isDataExists($tableName, $colTableName, $colTableNameValue)) {
             $this->save($tableData);
             return;
         }
@@ -62,7 +62,7 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO $schemaTableName ($columns) VALUES ($values)";
+        $sqlQuery = "INSERT INTO $tableName ($columns) VALUES ($values)";
         //DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $tableData->id = $this->dbConn->getLastInsertId();
@@ -72,14 +72,14 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
     public function save(TableDataModel $tableData): void {
         //$data = TableDataMapper::toDomain($tableData);
         //DebugLog::log($tableData);
-        $schemaTableName = "tbl_table_data";
+        $tableName = "tbl_table_data";
 
         if($tableData->id) {
             // Update
             /*$stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
             $stmt->execute($data);*/
-            $data = TableDataMapper::toDomainParams($tableData);
-            $sqlQuery = "UPDATE $schemaTableName SET table_name = :table_name, table_comment = :table_comment, column_prefix = :column_prefix, modified_date = :modified_date WHERE id = :id OR table_name = :table_name";
+            //$data = TableDataMapper::toDomainParams($tableData);
+            $sqlQuery = "UPDATE $tableName SET table_name = :table_name, table_comment = :table_comment, column_prefix = :column_prefix, modified_date = :modified_date WHERE id = :id OR table_name = :table_name";
             $data = array(
                 ":id" => $tableData->id,
                 ":table_name" => $tableData->tableName,

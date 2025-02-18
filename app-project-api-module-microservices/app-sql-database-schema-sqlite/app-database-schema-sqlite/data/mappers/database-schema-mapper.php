@@ -69,10 +69,18 @@ class DatabaseSchemaMapper {
     public static function toModel($schema): DatabaseSchemaModel {
         // Database array or object data to model or domain data
         $model = new DatabaseSchemaModel();
-        $dataVarList = self::getDataVarList($schema);
-        $domainVarList = self::getDomainVarList($model);
-        for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$domainVarList[$i]} = $schema->{$dataVarList[$i]};
+        if(is_array($schema)) {
+            $dataVarList = self::getDataVarList(new DatabaseSchema());
+            $domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $schema[$dataVarList[$i]];
+            }
+        } else if(is_object($schema)) {
+            $dataVarList = self::getDataVarList(new DatabaseSchema());
+            $domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $schema->{$dataVarList[$i]};
+            }
         }
         return $model;
     }

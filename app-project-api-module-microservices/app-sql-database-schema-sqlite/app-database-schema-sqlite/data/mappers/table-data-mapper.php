@@ -72,12 +72,20 @@ class TableDataMapper {
         return $model;
     }
 
-    public function toModel($tableData): TableDataModel {
+    public static function toModel($tableData): TableDataModel {
         $model = new TableDataModel();
-        $dataVarList = self::getDataVarList(new TableData());
-        $domainVarList = self::getDomainVarList($tableData);
-        for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$domainVarList[$i]} = $tableData->{$dataVarList[$i]};
+        if(is_array($tableData)) {
+            $dataVarList = self::getDataVarList(new TableData());
+            $domainVarList = self::getDomainVarList($model);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $tableData[$dataVarList[$i]];
+            }
+        } else if(is_object($tableData)) {
+            $dataVarList = self::getDataVarList($tableData);
+            $domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$domainVarList[$i]} = $tableData->{$dataVarList[$i]};
+            }
         }
         return $model;
     }

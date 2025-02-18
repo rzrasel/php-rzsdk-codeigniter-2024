@@ -174,6 +174,65 @@ class SqliteConnection {
             return false;
         }
     }
+
+    public function isDataExistsMultiple(string $table, array $conditions): bool {
+        if($this->pdo === null) {
+            return false;
+        }
+
+        $whereClauses = [];
+        $params = [];
+        foreach ($conditions as $column => $value) {
+            $whereClauses[] = "$column = :$column";
+            $params[":$column"] = $value;
+        }
+
+        $sqlQuery = "SELECT COUNT(*) as count FROM $table WHERE " . implode(' AND ', $whereClauses);
+
+        try {
+            $stmt = $this->pdo->prepare($sqlQuery);
+            $stmt->execute($params);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            return ($result['count'] > 0);
+        } catch (PDOException $e) {
+            //error_log("SQL Query Error: " . $e->getMessage());
+            DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
+            return false;
+        }
+    }
+
+    public function isDataExistsWithJoin(string $mainTable, array $joins, array $conditions): bool {
+        if($this->pdo === null) {
+            return false;
+        }
+
+        $joinClauses = [];
+        foreach ($joins as $join) {
+            $joinClauses[] = "{$join['type']} JOIN {$join['table']} ON {$join['on']}";
+        }
+
+        $whereClauses = [];
+        $params = [];
+        foreach ($conditions as $column => $value) {
+            $whereClauses[] = "$column = :$column";
+            $params[":$column"] = $value;
+        }
+
+        $sqlQuery = "SELECT COUNT(*) as count FROM $mainTable " . implode(' ', $joinClauses) . " WHERE " . implode(' AND ', $whereClauses);
+
+        try {
+            $stmt = $this->pdo->prepare($sqlQuery);
+            $stmt->execute($params);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            return ($result['count'] > 0);
+        } catch (PDOException $e) {
+            //error_log("SQL Query Error: " . $e->getMessage());
+            DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
+            return false;
+        }
+    }
 }
 ?>
 <?php
@@ -244,4 +303,28 @@ if($db->isDataExists($table, $column, $value)) {
 } else {
     echo "User with email $value does not exist in the database.";
 }*/
+
+/*Multiple Columns and Values
+$conditions = [
+    'column1' => 'value1',
+    'column2' => 'value2',
+];
+
+$exists = $sqliteConnection->isDataExistsMultiple('your_table', $conditions);*/
+
+/*Extending for Multiple Tables (Joins)
+              $joins = [
+                  [
+                      'type' => 'INNER',
+                      'table' => 'other_table',
+                      'on' => 'main_table.id = other_table.main_id',
+                  ],
+              ];
+
+$conditions = [
+    'main_table.column1' => 'value1',
+    'other_table.column2' => 'value2',
+];
+
+$exists = $sqliteConnection->isDataExistsWithJoin('main_table', $joins, $conditions);*/
 ?>
