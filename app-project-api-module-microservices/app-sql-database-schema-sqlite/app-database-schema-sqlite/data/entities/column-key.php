@@ -3,13 +3,12 @@ namespace App\DatabaseSchema\Data\Entities;
 ?>
 <?php
 class ColumnKey {
-    public $column_id;
-    public $id;
-    public $key_type;
-    public $key_name;
-    public $main_table;
-    public $reference_table;
-    public $reference_column;
+    public $id = "id";
+    public $main_column = "main_column";
+    public $key_type = "key_type";
+    public $reference_column = "reference_column";
+    public $key_name = "key_name";
+    public $unique_name = "unique_name";
     public $modified_date;
     public $created_date;
 

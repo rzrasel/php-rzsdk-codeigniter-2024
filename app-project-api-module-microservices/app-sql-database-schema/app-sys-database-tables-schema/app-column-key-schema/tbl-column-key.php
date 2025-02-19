@@ -7,13 +7,15 @@ class TblColumnKey {
     public static $table = "column_key";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
-    public $column_id       = "column_id";
+    //public $column_id       = "column_id";
     public $id              = "id";
+    //public $main_table      = "main_table";
+    public $main_column     = "main_column";
     public $key_type        = "key_type";
-    public $key_name        = "key_name";
-    public $main_table      = "main_table";
-    public $reference_table = "reference_table";
+    //public $reference_table = "reference_table";
     public $reference_column    = "reference_column";
+    public $key_name        = "key_name";
+    public $unique_name     = "unique_name";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";
 

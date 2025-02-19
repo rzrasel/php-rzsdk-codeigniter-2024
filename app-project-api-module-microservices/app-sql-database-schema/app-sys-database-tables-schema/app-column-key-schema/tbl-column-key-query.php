@@ -43,13 +43,15 @@ class TblColumnKeyQuery extends TblColumnKey {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->column_id        => "BIGINT(20) NOT NULL, -- Reference column id",
+            //$this->column_id        => "BIGINT(20) NOT NULL, -- Reference column id",
             $this->id               => "BIGINT(20) NOT NULL",
+            //$this->main_table       => "BIGINT(20) NOT NULL",
+            $this->main_column      => "BIGINT(20) NOT NULL",
             $this->key_type         => "TEXT NOT NULL, -- PRIMARY, FOREIGN, UNIQUE",
-            $this->key_name         => "TEXT NULL",
-            $this->main_table       => "BIGINT(20) NOT NULL, -- Stores main table ID for primary, unique keys",
-            $this->reference_table  => "BIGINT(20) NULL, -- Stores reference table ID for foreign keys",
+            //$this->reference_table  => "BIGINT(20) NULL, -- Stores reference table ID for foreign keys",
             $this->reference_column => "BIGINT(20) NULL, -- Stores reference column ID for foreign keys",
+            $this->key_name         => "TEXT NULL",
+            $this->unique_name      => "TEXT NULL",
             "modified_date"         => "DATETIME NOT NULL",
             "created_date"          => "DATETIME NOT NULL",
         );
@@ -68,12 +70,15 @@ class TblColumnKeyQuery extends TblColumnKey {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->main_table, TblColumnData::table(), TblColumnData::$prefix, $this->id)
+        );*/
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->column_id, TblColumnData::table(), TblColumnData::$prefix, $this->column_id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->main_column, TblColumnData::table(), TblColumnData::$prefix, $this->id)
         );
-        $dbTableProperty->setConstraintProperty(
+        /*$dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->reference_table, TblTableData::table(), TblTableData::$prefix, $this->id)
-        );
+        );*/
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->reference_column, TblColumnData::table(), TblColumnData::$prefix, $this->id)
         );

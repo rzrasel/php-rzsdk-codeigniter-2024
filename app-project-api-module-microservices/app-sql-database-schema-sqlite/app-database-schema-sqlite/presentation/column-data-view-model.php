@@ -24,11 +24,19 @@ class ColumnDataViewModel {
         $uniqueIntId = new UniqueIntId();
         $columnData = new ColumnData();
         $columnDataModel = new ColumnDataModel();
+        //
+        $isNullable = $postData[$columnData->is_nullable];
+        if($isNullable) {
+            $isNullable = false;
+        } else {
+            $isNullable = true;
+        }
+        //
         $columnDataModel->id = $uniqueIntId->getId();
         $columnDataModel->tableId = $postData[$columnData->table_id];
         $columnDataModel->columnName = $postData[$columnData->column_name];
         $columnDataModel->dataType = strtoupper($postData[$columnData->data_type]);
-        $columnDataModel->isNullable = $postData[$columnData->is_nullable];
+        $columnDataModel->isNullable = $isNullable;
         $columnDataModel->defaultValue = $postData[$columnData->default_value];
         $columnDataModel->columnComment = $postData[$columnData->column_comment];
         $columnDataModel->modifiedDate = date('Y-m-d H:i:s');

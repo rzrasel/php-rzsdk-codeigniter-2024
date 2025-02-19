@@ -7,9 +7,11 @@ class TblColumnCompositeKey {
     public static $table = "composite_key";
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
-    public $column_id       = "column_id";
     public $key_id          = "key_id";
     public $id              = "id";
+
+    //primary
+    public $composite_column_id = "composite_column_id";
     public $key_name        = "key_name";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";

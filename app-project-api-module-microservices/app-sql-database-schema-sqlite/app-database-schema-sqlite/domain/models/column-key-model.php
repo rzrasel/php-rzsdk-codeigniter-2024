@@ -3,13 +3,12 @@ namespace App\DatabaseSchema\Domain\Models;
 ?>
 <?php
 class ColumnKeyModel {
-    public $columnId;
     public $id;
+    public $mainColumnId;
     public $keyType;
-    public $keyName;
-    public $mainTable;
-    public $referenceTable;
     public $referenceColumn;
+    public $keyName;
+    public $uniqueName;
     public $modifiedDate;
     public $createdDate;
     public $compositeKeyList = []; // One-to-many relationship with CompositeKey

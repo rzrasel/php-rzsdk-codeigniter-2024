@@ -10,10 +10,11 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 class UsagesCallbackSingleModelData {
-    public function getSchemaSelectDropDown(array $schemaDataList) {
+    public function getSchemaSelectDropDown($fieldName, array $schemaDataList) {
         //DebugLog::log($schemaDataList);
         $callbackSingleModelData = new RecursiveCallbackSingleModelData();
-        $htmlOutput = "<select name=\"schema_id\">";
+        $htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
+        $htmlOutput .= "<option value=\"\" selected=\"selected\">Select Database Schema Name</option>";
         $htmlOutput .= $callbackSingleModelData->onRecursionTraverse($schemaDataList, function ($item, $level) {
             if($item instanceof DatabaseSchemaModel) {
                 return "<option value=\"{$item->id}\">{$item->schemaName}</option>";
@@ -24,10 +25,11 @@ class UsagesCallbackSingleModelData {
         return $htmlOutput;
     }
 
-    public function getTableSelectDropDown(array $schemaDataList) {
+    public function getTableSelectDropDown($fieldName, array $schemaDataList) {
         //DebugLog::log($schemaDataList);
         $callbackSingleModelData = new RecursiveCallbackSingleModelData();
-        $htmlOutput = "<select name=\"table_id\">";
+        $htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
+        $htmlOutput .= "<option value=\"\" selected=\"selected\">Select Table Name</option>";
         $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item) {
             //DebugLog::log($item);
             if($item instanceof DatabaseSchemaModel) {
@@ -41,11 +43,16 @@ class UsagesCallbackSingleModelData {
         return $htmlOutput;
     }
 
-    public function getColumnSelectDropDown(array $schemaDataList) {
+    public function getColumnSelectDropDown($fieldName, array $schemaDataList, $isRequired = true) {
         //DebugLog::log($schemaDataList);
+        $required = "";
+        if($isRequired) {
+            $required = "required=\"required\"";
+        }
         $callbackSingleModelData = new RecursiveCallbackSingleModelData();
-        $htmlOutput = "<select name=\"table_id\">";
-        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item) {
+        $htmlOutput = "<select name=\"$fieldName\" $required>";
+        $htmlOutput .= "<option value=\"\" selected=\"selected\">Select Column Name</option>";
+        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item, $extras = null) {
             //DebugLog::log($item);
             if($item instanceof DatabaseSchemaModel) {
                 return "<optgroup label=\"{$item->schemaName}\">";
@@ -53,7 +60,11 @@ class UsagesCallbackSingleModelData {
                 //return "<option value=\"{$item->id}\">{$item->tableName}</option>";
                 return "<optgroup label=\"{$item->tableName}\">";
             } else if($item instanceof ColumnDataModel) {
-                return "<option value=\"{$item->id}\">{$item->columnName}</option>";
+                $extraValue = "{$item->columnName}";
+                if(!empty($extras)) {
+                    $extraValue = "{$item->columnName} ↦ ($extras)";
+                }
+                return "<option value=\"{$item->id}\">$extraValue</option>";
             }
             return "";
         });

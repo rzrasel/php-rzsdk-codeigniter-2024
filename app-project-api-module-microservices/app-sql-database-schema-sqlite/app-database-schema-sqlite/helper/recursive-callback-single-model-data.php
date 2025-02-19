@@ -34,19 +34,19 @@ class RecursiveCallbackSingleModelData {
                 $result .= $callback($tableData);
 
                 if(!empty($tableData->columnDataList)) {
-                    $result .= $this->traverseColumnData($tableData->columnDataList, $callback);
+                    $result .= $this->traverseColumnData($tableData->columnDataList, $callback, $tableData->tableName);
                 }
             }
         }
         return $result;
     }
     //
-    public function traverseColumnData(array $columnDataList, callable $callback): string {
+    public function traverseColumnData(array $columnDataList, callable $callback, $tableName = null): string {
         $result = "";
         if(!empty($columnDataList)) {
             foreach($columnDataList as $columnData) {
                 //DebugLog::log($tableData);
-                $result .= $callback($columnData);
+                $result .= $callback($columnData, $tableName);
             }
         }
         return $result;

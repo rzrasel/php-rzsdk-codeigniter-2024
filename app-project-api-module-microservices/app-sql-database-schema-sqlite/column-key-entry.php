@@ -22,7 +22,8 @@ $viewModel = new ColumnKeyViewModel($repository);
 $view = new ColumnKeyView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupByTable();
 $callbackSingleModelData = new UsagesCallbackSingleModelData();
-$tableDataSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown($schemaDataList);
+$mainColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("main_column", $schemaDataList);
+$referenceColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("reference_column", $schemaDataList, false);
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -36,56 +37,61 @@ if(!empty($_POST)) {
             $_POST[$key] = NULL;
         }
     }
-    $view->createFromPostData($_POST);
+    //$view->createFromPostData($_POST);
 }
 ?>
-<form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
 <table>
     <tr>
         <td></td>
-        <td width="10px"></td>
-        <td></td>
     </tr>
     <tr>
-        <td>Table Name:</td>
-        <td></td>
-        <td><?= $tableDataSelectDropDown; ?></td>
-    </tr>
-    <tr>
-        <td>Column Name:</td>
-        <td></td>
-        <td><input type="text" name="column_name" id="column_name" required="required" placeholder="Column name" /></td>
-    </tr>
-    <tr>
-        <td>Data Type:</td>
-        <td></td>
-        <td><input type="text" name="data_type" id="data_type" required="required" placeholder="Data type" /></td>
-    </tr>
-    <tr>
-        <td>Is Null:</td>
-        <td></td>
-        <td><input type="hidden" name="is_nullable" id="is_nullable" value="0">
-            <input type="checkbox" name="is_nullable" id="is_nullable" value="1"></td>
-    </tr>
-    <tr>
-        <td>Default Value:</td>
-        <td></td>
-        <td><input type="text" name="default_value" id="default_value" placeholder="Default value" /></td>
-    </tr>
-    <tr>
-        <td>Column Comment:</td>
-        <td></td>
-        <td><input type="text" name="column_comment" id="column_comment" placeholder="Column comment" /></td>
-    </tr>
-    <tr>
-        <td height="20px"></td>
-        <td></td>
-        <td></td>
+        <td>Column Key Entry</td>
     </tr>
     <tr>
         <td></td>
-        <td></td>
-        <td><button type="submit">Submit</button></td>
     </tr>
 </table>
+<form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
+    <table>
+        <tr>
+            <td></td>
+            <td width="10px"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Main Column Name:</td>
+            <td></td>
+            <td><?= $mainColumnSelectDropDown; ?></td>
+        </tr>
+        <tr>
+            <td>Reference Column Name:</td>
+            <td></td>
+            <td><?= $referenceColumnSelectDropDown; ?></td>
+        </tr>
+        <tr>
+            <td>Key Type:</td>
+            <td></td>
+            <td><input type="text" name="key_type" id="key_type" required="required" placeholder="Key type" /></td>
+        </tr>
+        <tr>
+            <td>Key Name:</td>
+            <td></td>
+            <td><input type="text" name="key_name" id="key_name" placeholder="Key name" /></td>
+        </tr>
+        <tr>
+            <td>Unique Name:</td>
+            <td></td>
+            <td><input type="text" name="unique_name" id="unique_name" placeholder="Unique name" /></td>
+        </tr>
+        <tr>
+            <td height="20px"></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td><button type="submit">Submit</button></td>
+        </tr>
+    </table>
 </form>
