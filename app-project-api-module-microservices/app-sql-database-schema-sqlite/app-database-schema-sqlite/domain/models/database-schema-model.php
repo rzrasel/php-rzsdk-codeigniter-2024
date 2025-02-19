@@ -11,7 +11,7 @@ class DatabaseSchemaModel {
     public $databaseComment;
     public $modifiedDate;
     public $createdDate;
-    public array $tableDataList = []; // One-to-many relationship with TableData
+    public array $tableDataList = [];
     public function __construct(
         int $id = 0,
         //string $uniqueName = "",

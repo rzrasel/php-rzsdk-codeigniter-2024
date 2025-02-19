@@ -100,7 +100,7 @@ $schemas = [
 $recursiveCallbackData = new RecursiveCallbackModelData();
 
 // ---- Output as Text List ----
-$listOutput = $recursiveCallbackData->traverseDatabaseSchema($schemas, function ($item) {
+$listOutput = $recursiveCallbackData->traverseDatabaseSchema($schemas, function ($item, $level) {
     if ($item instanceof DatabaseSchemaModel) {
         return "- {$item->schemaName}\n";
     } elseif ($item instanceof TableDataModel) {
@@ -112,9 +112,9 @@ echo "Text List Output:\n$listOutput\n";
 
 // ---- Output as HTML List ----
 $htmlOutput = "<ul>";
-$htmlOutput .= $recursiveCallbackData->traverseDatabaseSchema($schemas, function ($item) {
+$htmlOutput .= $recursiveCallbackData->traverseDatabaseSchema($schemas, function ($item, $level) {
     if ($item instanceof DatabaseSchemaModel) {
-        return "<li>{$item->schemaName}<ul>";
+        return "<li>{$item->schemaName}<li>";
     } elseif ($item instanceof TableDataModel) {
         return "<li>{$item->tableName}</li>";
     }

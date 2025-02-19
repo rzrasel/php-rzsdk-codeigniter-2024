@@ -64,7 +64,7 @@ if(!empty($_POST)) {
     <tr>
         <td>Table Comment:</td>
         <td></td>
-        <td><input type="text" name="table_comment" id="table_comment" placeholder="Database prefix" /></td>
+        <td><input type="text" name="table_comment" id="table_comment" placeholder="Table comment" /></td>
     </tr>
     <tr>
         <td height="20px"></td>

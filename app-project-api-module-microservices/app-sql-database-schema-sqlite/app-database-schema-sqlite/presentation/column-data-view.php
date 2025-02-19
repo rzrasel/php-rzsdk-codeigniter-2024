@@ -23,6 +23,13 @@ class ColumnDataView {
         return $this->viewModel->getAllTableDataGroupBySchema();
     }
 
+    public function createFromPostData($postData): void {
+        /*$tempDatabaseSchema = new TableData();
+        print_r($tempDatabaseSchema->getVarList());*/
+        $this->viewModel->createFromPostData($postData);
+    }
+    //
+
     public function render(array $tableIdList = null, array $columnDataList = null): void {
         //DebugLog::log($tableIdList);
         /*$tableDataList = array();

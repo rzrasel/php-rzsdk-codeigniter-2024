@@ -31,27 +31,42 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         $tempDatabaseSchema = new DatabaseSchema();
         $tempTableData = new TableData();
         $databaseSchemaList = array();
+        $tableDataList = array();
+        $sqlQuery = "SELECT * FROM $schemaTableName INNER JOIN $tableDataTableName ON $schemaTableName.{$tempDatabaseSchema->id} = $tableDataTableName.{$tempTableData->schema_id} ORDER BY {$tempDatabaseSchema->schema_name} ASC, {$tempTableData->table_name} ASC;";
         $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
             $databaseSchema = DatabaseSchemaMapper::toModel($result);
-            $databaseSchemaList[] = $databaseSchema;
+            $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id);
+            if($tableDataList) {
+                $databaseSchema->tableDataList = $tableDataList;
+            }
+            if(is_array($tableDataList) && !empty($tableDataList)) {
+                $databaseSchemaList[] = $databaseSchema;
+            }
         }
         if(!empty($databaseSchemaList)) {
+            //DebugLog::log($databaseSchemaList);
             return $databaseSchemaList;
         }
         return false;
     }
-    //
-
-    public function getById(int $columnDataId): ?ColumnDataModel {
-        // TODO: Implement getById() method.
-        return new ColumnDataModel();
-    }
-
-    public function findBySchemaId(int $columnDataId): ?ColumnDataModel {
-        // TODO: Implement getById() method.
-        return new ColumnDataModel();
+    public function getAllTableDataBySchemaId($schemaId): array|bool {
+        $tableDataTableName = "tbl_table_data";
+        $tempTableData = new TableData();
+        $tableDataList = array();
+        $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_name} ASC;";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            $tableData = TableDataMapper::toModel($result);
+            $tableDataList[] = $tableData;
+        }
+        if(!empty($tableDataList)) {
+            return $tableDataList;
+        }
+        return false;
     }
 
     public function create(ColumnDataModel $columnData): void {
@@ -100,6 +115,17 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         $this->dbConn->execute($sqlQuery, $data);
         $columnData->id = $this->dbConn->getLastInsertId();
         //DebugLog::log($columnData->id);
+    }
+    //
+
+    public function getById(int $columnDataId): ?ColumnDataModel {
+        // TODO: Implement getById() method.
+        return new ColumnDataModel();
+    }
+
+    public function findBySchemaId(int $columnDataId): ?ColumnDataModel {
+        // TODO: Implement getById() method.
+        return new ColumnDataModel();
     }
 
     public function save(ColumnDataModel $columnData, $columnId = -1): void {

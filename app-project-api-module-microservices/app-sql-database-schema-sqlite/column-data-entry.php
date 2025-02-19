@@ -22,7 +22,7 @@ $viewModel = new ColumnDataViewModel($repository);
 $view = new ColumnDataView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupBySchema();
 $callbackSingleModelData = new UsagesCallbackSingleModelData();
-$tableDataSelectDropDown = $callbackSingleModelData->getSchemaSelectDropDown($schemaDataList);
+$tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown($schemaDataList);
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -36,7 +36,7 @@ if(!empty($_POST)) {
             $_POST[$key] = NULL;
         }
     }
-    //$view->runDataEntry($_POST);
+    $view->createFromPostData($_POST);
 }
 ?>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
