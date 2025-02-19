@@ -14,6 +14,11 @@ class ColumnKeyView {
         $this->viewModel = $viewModel;
     }
 
+    public function getAllTableDataGroupByTable(): array|bool {
+        return $this->viewModel->getAllTableDataGroupByTable();
+    }
+    //
+
     public function render(array $schemaId = null, array $tableData = null): void {
         $tableDataList = array();
         if(!empty($schemaId)) {

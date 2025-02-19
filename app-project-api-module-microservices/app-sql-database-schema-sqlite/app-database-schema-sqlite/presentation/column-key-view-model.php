@@ -14,6 +14,11 @@ class ColumnKeyViewModel {
         $this->repository = $repository;
     }
 
+    public function getAllTableDataGroupByTable(): array|bool {
+        return $this->repository->getAllTableDataGroupByTable();
+    }
+    //
+
     public function getTable(int $id): ?ColumnKeyModel {
         return $this->repository->getById($id);
     }

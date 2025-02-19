@@ -32,6 +32,21 @@ class RecursiveCallbackSingleModelData {
             foreach($tableDataList as $tableData) {
                 //DebugLog::log($tableData);
                 $result .= $callback($tableData);
+
+                if(!empty($tableData->columnDataList)) {
+                    $result .= $this->traverseColumnData($tableData->columnDataList, $callback);
+                }
+            }
+        }
+        return $result;
+    }
+    //
+    public function traverseColumnData(array $columnDataList, callable $callback): string {
+        $result = "";
+        if(!empty($columnDataList)) {
+            foreach($columnDataList as $columnData) {
+                //DebugLog::log($tableData);
+                $result .= $callback($columnData);
             }
         }
         return $result;
