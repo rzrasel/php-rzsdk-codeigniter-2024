@@ -4,8 +4,10 @@ namespace App\DatabaseSchema\Data\Repositories;
 <?php
 use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\TableDataRepositoryInterface;
+use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
+use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
@@ -20,6 +22,22 @@ class TableDataRepositoryImpl implements TableDataRepositoryInterface {
         } else {
             $this->dbConn = $dbConn;
         }
+    }
+
+    public function getAllDatabaseSchemaData(): array|bool {
+        $schemaTableName = "tbl_database_schema";
+        $tempDatabaseSchema = new DatabaseSchema();
+        $databaseSchemaList = array();
+        $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            $databaseSchema = DatabaseSchemaMapper::toModel($result);
+            $databaseSchemaList[] = $databaseSchema;
+        }
+        if(!empty($databaseSchemaList)) {
+            return $databaseSchemaList;
+        }
+        return false;
     }
 
     public function getById(int $tableDataId): ?TableDataModel {

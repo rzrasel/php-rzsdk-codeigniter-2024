@@ -4,8 +4,12 @@ namespace App\DatabaseSchema\Data\Repositories;
 <?php
 use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\ColumnDataRepositoryInterface;
+use App\DatabaseSchema\Data\Entities\DatabaseSchema;
+use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Data\Entities\ColumnData;
 use App\DatabaseSchema\Domain\Models\ColumnDataModel;
+use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
+use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
@@ -21,6 +25,24 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
             $this->dbConn = $dbConn;
         }
     }
+    public function getAllTableDataGroupBySchema(): array|bool {
+        $schemaTableName = "tbl_database_schema";
+        $tableDataTableName = "tbl_table_data";
+        $tempDatabaseSchema = new DatabaseSchema();
+        $tempTableData = new TableData();
+        $databaseSchemaList = array();
+        $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            $databaseSchema = DatabaseSchemaMapper::toModel($result);
+            $databaseSchemaList[] = $databaseSchema;
+        }
+        if(!empty($databaseSchemaList)) {
+            return $databaseSchemaList;
+        }
+        return false;
+    }
+    //
 
     public function getById(int $columnDataId): ?ColumnDataModel {
         // TODO: Implement getById() method.

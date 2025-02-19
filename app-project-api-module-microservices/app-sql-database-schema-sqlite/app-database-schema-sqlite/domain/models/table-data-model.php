@@ -5,6 +5,7 @@ namespace App\DatabaseSchema\Domain\Models;
 class TableDataModel {
     public $schemaId;
     public $id;
+    //public $uniqueName;
     public $tableName;
     public $columnPrefix;
     public $tableComment;
@@ -14,6 +15,7 @@ class TableDataModel {
     public function __construct(
         $schemaId = 0,
         $id = 0,
+        //$uniqueName = null,
         ?string $tableName = null,
         ?string $tableComment = null,
         ?string $columnPrefix = null,
@@ -23,6 +25,7 @@ class TableDataModel {
     ) {
         $this->schemaId = $schemaId;
         $this->id = $id;
+        //$this->uniqueName = $uniqueName;
         $this->tableName = $tableName;
         $this->tableComment = $tableComment;
         $this->columnPrefix = $columnPrefix;
@@ -62,6 +65,10 @@ class TableDataModel {
             return $tableData->id;
         }
         return false;
+    }
+
+    public function traverse(callable $callback): string {
+        return $callback($this);
     }
 }
 ?>

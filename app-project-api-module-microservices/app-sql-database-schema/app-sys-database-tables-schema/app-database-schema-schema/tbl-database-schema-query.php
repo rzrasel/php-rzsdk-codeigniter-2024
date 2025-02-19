@@ -44,6 +44,7 @@ class TblDatabaseSchemaQuery extends TblDatabaseSchema {
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
             $this->id               => "BIGINT(20) NOT NULL",
+            //$this->unique_name      => "TEXT NOT NULL",
             $this->schema_name      => "TEXT NOT NULL",
             $this->schema_version   => "TEXT NULL",
             $this->table_prefix     => "TEXT NULL",
@@ -66,6 +67,9 @@ class TblDatabaseSchemaQuery extends TblDatabaseSchema {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->unique_name, "", "", "")
+        );*/
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->schema_name, TblDatabaseSchema::table(), TblDatabaseSchema::$prefix, $this->schema_name)
         );

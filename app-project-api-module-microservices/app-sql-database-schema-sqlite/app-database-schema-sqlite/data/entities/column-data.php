@@ -5,6 +5,7 @@ namespace App\DatabaseSchema\Data\Entities;
 class ColumnData {
     public $table_id;
     public $id;
+    //public $unique_name = "unique_name";
     public $column_name;
     public $data_type;
     public $is_nullable;

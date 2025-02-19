@@ -5,6 +5,7 @@ namespace App\DatabaseSchema\Domain\Models;
 class ColumnDataModel {
     public $tableId;
     public $id;
+    //public $uniqueName;
     public $columnName;
     public $dataType;
     public $isNullable;
@@ -16,6 +17,7 @@ class ColumnDataModel {
 
     public function __construct(
         $tableId = null,
+        //$uniqueName = null,
         $columnName = null,
         $dataType = null,
         $isNullable = null,
@@ -26,6 +28,7 @@ class ColumnDataModel {
         $columnKeyList = null
     ) {
         $this->tableId = $tableId;
+        //$this->uniqueName = $uniqueName;
         $this->columnName = $columnName;
         $this->dataType = $dataType;
         $this->isNullable = $isNullable;
@@ -55,22 +58,22 @@ class ColumnDataModel {
         return array_search($value, $array, true) ?: null;
     }
 
-    public function getIdByName(string $name): int|bool {
-        if ($this->columnName === $name) {
+    public function getIdByName(string $uniqueName): int|bool {
+        if ($this->uniqueName === $uniqueName) {
             return $this->id;
         }
         return false;
     }
 
-    public static function getStaticIdByName(string $name, ColumnDataModel $columnData): int|bool {
-        if ($columnData->columnName === $name) {
+    public static function getStaticIdByName(string $uniqueName, ColumnDataModel $columnData): int|bool {
+        if ($columnData->uniqueName === $uniqueName) {
             return $columnData->id;
         }
         return false;
     }
 
-    public static function getIdByNameFilter(string $name, array $columnDataList): int|bool {
-        $filtered = array_filter($columnDataList, fn($table) => $table->columnName === $name);
+    public static function getIdByNameFilter(string $uniqueName, array $columnDataList): int|bool {
+        $filtered = array_filter($columnDataList, fn($table) => $table->uniqueName === $uniqueName);
         return $filtered ? array_values($filtered)[0]->id : false;
     }
 }

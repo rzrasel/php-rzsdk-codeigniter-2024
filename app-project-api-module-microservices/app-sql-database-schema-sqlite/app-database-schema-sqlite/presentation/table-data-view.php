@@ -20,6 +20,16 @@ class TableDataView {
         $this->viewModel = $viewModel;
     }
 
+    public function getAllSchemaData(): array|bool {
+        return $this->viewModel->getAllDatabaseSchemaData();
+    }
+    public function createFromPostData($postData): void {
+        /*$tempDatabaseSchema = new TableData();
+        print_r($tempDatabaseSchema->getVarList());*/
+        $this->viewModel->createFromPostData($postData);
+    }
+    //
+
     public function render(array $schemaIdList = null, array $tableDataList = null): void {
         $tableList = array();
         $columnDataList = array();
@@ -73,27 +83,29 @@ class TableDataView {
 
     private function populateColumnByTableData(TableDataModel $tableData) {
         if(!empty($tableData)) {
-            $columnId = 0;
+            /*$columnId = 0;
             if(!empty($tableData->columnDataList)) {
                 $columnId = ColumnDataModel::getIdByNameFilter("id", $tableData->columnDataList);
-            }
+            }*/
             //DebugLog::log($columnId);
             //
             $columnDataList = array();
-            if($tableData->tableName == "language_data") {
+            if($tableData->uniqueName == "ukSchemaLanguageTable") {
                 $tableId = $tableData->id;
+                $uniqueName = "ukSchemaLanId";
                 $columnName = "id";
                 $columnId = $this->getIdByColumnName($columnName, $tableData);
                 $columnModel = $this->getColumnDataModel(
-                    $tableId, $columnName,
+                    $tableId, $uniqueName, $columnName,
                     "BIGINT(20)", $columnId, true
                 );
                 $columnDataList[] = $columnModel;
                 //
+                $uniqueName = "ukSchemaLanSchemaName";
                 $columnName = "schema_name";
                 $columnId = $this->getIdByColumnName($columnName, $tableData);
                 $columnModel = $this->getColumnDataModel(
-                    $tableId, $columnName,
+                    $tableId, $uniqueName, $columnName,
                     "Text", $columnId, true
                 );
                 $columnDataList[] = $columnModel;
@@ -119,7 +131,7 @@ class TableDataView {
         return $model;
     }
 
-    private function getColumnDataModel($tableId, $name, $dataType, $id = -1, $isNull = false, $defaultValue = null, $comment = null): ColumnDataModel {
+    private function getColumnDataModel($tableId, $uniqueName, $name, $dataType, $id = -1, $isNull = false, $defaultValue = null, $comment = null): ColumnDataModel {
         $uniqueIntId = new UniqueIntId();
         $columnId = $uniqueIntId->getId();
         if($id > 0) {
@@ -128,6 +140,7 @@ class TableDataView {
         $model = new ColumnDataModel();
         $model->tableId = $tableId;
         $model->id = $columnId;
+        $model->uniqueName = $uniqueName;
         $model->columnName = $name;
         $model->dataType = strtoupper($dataType);
         $model->isNullable = $isNull;
@@ -138,10 +151,10 @@ class TableDataView {
         return $model;
     }
 
-    private function getIdByColumnName(string $columnName, TableDataModel $tableData): int {
+    private function getIdByColumnName(string $uniqueName, TableDataModel $tableData): int {
         if(!empty($tableData)) {
             if(!empty($tableData->columnDataList)) {
-                $columnId = ColumnDataModel::getIdByNameFilter("id", $tableData->columnDataList);
+                $columnId = ColumnDataModel::getIdByNameFilter($uniqueName, $tableData->columnDataList);
                 return $columnId;
             }
         }

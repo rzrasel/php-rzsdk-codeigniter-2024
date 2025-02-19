@@ -6,7 +6,7 @@ use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\ColumnKeyRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\ColumnKey;
 use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
-use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
+use App\DatabaseSchema\Data\Mappers\ColumnKeyMapper;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -33,8 +33,9 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
     }
 
     public function create(ColumnKeyModel $columnKey): void {
+        $columnKeyTableName = "tbl_column_key";
         //DebugLog::log($tableData);
-        $data = CompositeKeyMapper::toDomainParams($columnKey);
+        $data = ColumnKeyMapper::toDomainParams($columnKey);
         //DebugLog::log($data);
         /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
         $stmt->execute($data);*/
@@ -49,25 +50,25 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO tbl_table_data ($columns) VALUES ($values)";
-        //DebugLog::log($sqlQuery);
+        $sqlQuery = "INSERT INTO $columnKeyTableName ($columns) VALUES ($values)";
+        DebugLog::log($sqlQuery);
         $this->dbConn->execute($sqlQuery, $data);
         $columnKey->id = $this->dbConn->getLastInsertId();
-        DebugLog::log($columnKey->id);
+        //DebugLog::log($columnKey->id);
     }
 
     public function save(ColumnKeyModel $columnKey): void {
-        $data = TableDataMapper::toDomain($columnKey);
+        $data = ColumnKeyMapper::toDomain($columnKey);
 
         if($columnKey->id) {
             // Update
-            $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
-            $stmt->execute($data);
+            /*$stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
+            $stmt->execute($data);*/
         } else {
             // Insert
-            $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
+            /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
             $stmt->execute($data);
-            $columnKey->id = $this->db->lastInsertId();
+            $columnKey->id = $this->db->lastInsertId();*/
         }
     }
 

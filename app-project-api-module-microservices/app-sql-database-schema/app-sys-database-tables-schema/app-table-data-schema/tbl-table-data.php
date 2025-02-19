@@ -9,6 +9,7 @@ class TblTableData {
     //
     public $schema_id       = "schema_id";
     public $id              = "id";
+    //public $unique_name     = "unique_name";
     public $table_name      = "table_name";
     public $table_comment   = "table_comment";
     public $column_prefix   = "column_prefix";

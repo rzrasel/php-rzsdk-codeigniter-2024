@@ -107,7 +107,7 @@ class AutoloaderConfig {
 }
 ?>
 <?php
-$directoryList = array(__DIR__);
+$directoryList = array();
 global $autoloaderConfig;
 $autoloaderConfig = AutoloaderConfig::getInstance();
 $autoloaderConfig->setDirectories($directoryList);

@@ -46,7 +46,7 @@ class TblColumnKeyQuery extends TblColumnKey {
             $this->column_id        => "BIGINT(20) NOT NULL, -- Reference column id",
             $this->id               => "BIGINT(20) NOT NULL",
             $this->key_type         => "TEXT NOT NULL, -- PRIMARY, FOREIGN, UNIQUE",
-            $this->key_name         => "TEXT NULL,",
+            $this->key_name         => "TEXT NULL",
             $this->main_table       => "BIGINT(20) NOT NULL, -- Stores main table ID for primary, unique keys",
             $this->reference_table  => "BIGINT(20) NULL, -- Stores reference table ID for foreign keys",
             $this->reference_column => "BIGINT(20) NULL, -- Stores reference column ID for foreign keys",

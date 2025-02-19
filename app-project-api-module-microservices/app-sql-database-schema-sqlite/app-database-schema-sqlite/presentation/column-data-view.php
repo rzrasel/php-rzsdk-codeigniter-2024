@@ -19,6 +19,10 @@ class ColumnDataView {
         $this->viewModel = $viewModel;
     }
 
+    public function getAllTableDataGroupBySchema(): array|bool {
+        return $this->viewModel->getAllTableDataGroupBySchema();
+    }
+
     public function render(array $tableIdList = null, array $columnDataList = null): void {
         //DebugLog::log($tableIdList);
         /*$tableDataList = array();

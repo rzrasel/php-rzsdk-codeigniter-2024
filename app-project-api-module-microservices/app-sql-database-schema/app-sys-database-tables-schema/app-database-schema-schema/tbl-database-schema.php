@@ -8,6 +8,7 @@ class TblDatabaseSchema {
     //public static $foreignTable = TblSubjectInfo::tableWithPrefix();
     //
     public $id              = "id";
+    //public $unique_name     = "unique_name";
     public $schema_name     = "schema_name";
     public $schema_version  = "schema_version";
     public $table_prefix    = "table_prefix";

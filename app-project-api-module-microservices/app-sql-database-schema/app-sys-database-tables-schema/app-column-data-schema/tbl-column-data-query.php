@@ -45,6 +45,7 @@ class TblColumnDataQuery extends TblColumnData {
         $tablePropertyList = array(
             $this->table_id         => "BIGINT(20) NOT NULL",
             $this->id               => "BIGINT(20) NOT NULL",
+            //$this->unique_name      => "TEXT NOT NULL",
             $this->column_name      => "TEXT NOT NULL",
             $this->data_type        => "TEXT NOT NULL",
             $this->is_nullable      => "BOOLEAN NOT NULL DEFAULT FALSE",
@@ -68,6 +69,9 @@ class TblColumnDataQuery extends TblColumnData {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, "{$this->table_id}, {$this->unique_name}", TblColumnData::table(), TblColumnData::$prefix, "")
+        );*/
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, "{$this->table_id}, {$this->column_name}", TblColumnData::table(), TblColumnData::$prefix, "")
         );

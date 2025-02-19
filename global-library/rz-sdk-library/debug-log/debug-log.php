@@ -153,6 +153,7 @@ class DebugLog {
         if($traceIndex >= count($debugBacktrace)) {
             $traceIndex = count($debugBacktrace) - 1;
         }
+        //echo "traceIndex: $traceIndex";
         $file = $debugBacktrace[$traceIndex]['file'] ?? 'Unknown file';
         $fileOnly = basename($file);
         $line = $debugBacktrace[$traceIndex]['line'] ?? 'Unknown line';

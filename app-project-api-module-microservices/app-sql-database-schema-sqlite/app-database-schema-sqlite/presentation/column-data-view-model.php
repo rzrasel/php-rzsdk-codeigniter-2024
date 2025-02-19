@@ -13,6 +13,10 @@ class ColumnDataViewModel {
     public function __construct(ColumnDataRepositoryInterface $repository) {
         $this->repository = $repository;
     }
+    public function getAllTableDataGroupBySchema(): array|bool {
+        return $this->repository->getAllTableDataGroupBySchema();
+    }
+    //
 
     public function getTable(int $id): ?ColumnDataModel {
         return $this->repository->getById($id);

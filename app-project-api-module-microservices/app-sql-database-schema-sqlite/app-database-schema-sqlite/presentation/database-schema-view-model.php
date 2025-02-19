@@ -5,6 +5,7 @@ namespace App\DatabaseSchema\Presentation\ViewModels;
 use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Domain\Repositories\DatabaseSchemaRepositoryInterface;
+use RzSDK\Identification\UniqueIntId;
 ?>
 <?php
 class DatabaseSchemaViewModel {
@@ -13,6 +14,21 @@ class DatabaseSchemaViewModel {
     public function __construct(DatabaseSchemaRepositoryInterface $repository) {
         $this->repository = $repository;
     }
+    //
+    public function createFromPostData($postData): void {
+        $uniqueIntId = new UniqueIntId();
+        $tempDatabaseSchema = new DatabaseSchema();
+        $databaseSchemaModel = new DatabaseSchemaModel();
+        $databaseSchemaModel->id = $uniqueIntId->getId();
+        $databaseSchemaModel->schemaName = $postData[$tempDatabaseSchema->schema_name];
+        $databaseSchemaModel->schemaVersion = $postData[$tempDatabaseSchema->schema_version];
+        $databaseSchemaModel->tablePrefix = $postData[$tempDatabaseSchema->table_prefix];
+        $databaseSchemaModel->databaseComment = $postData[$tempDatabaseSchema->database_comment];
+        $databaseSchemaModel->modifiedDate = date('Y-m-d H:i:s');
+        $databaseSchemaModel->createdDate = date('Y-m-d H:i:s');
+        $this->repository->create($databaseSchemaModel);
+    }
+    //
 
     public function getAllDatabaseSchema(): array|bool {
         return $this->repository->getAllData();

@@ -2,6 +2,7 @@
 namespace App\DatabaseSchema\Presentation\Views;
 ?>
 <?php
+use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Presentation\ViewModels\DatabaseSchemaViewModel;
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
@@ -10,7 +11,6 @@ use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
 use App\DatabaseSchema\Presentation\Views\TableDataView;
 use RzSDK\Identification\UniqueIntId;
 use RzSDK\Log\DebugLog;
-
 ?>
 <?php
 class DatabaseSchemaView {
@@ -20,6 +20,12 @@ class DatabaseSchemaView {
         $this->viewModel = $viewModel;
     }
 
+    public function createFromPostData($postData): void {
+        /*$tempDatabaseSchema = new TableData();
+        print_r($tempDatabaseSchema->getVarList());*/
+        $this->viewModel->createFromPostData($postData);
+    }
+    //
     public function render(): void {
 
         $databaseSchemaList = array();
@@ -32,15 +38,15 @@ class DatabaseSchemaView {
         } else {
 
             // Create a new schema
-            $schemaData = $this->getDatabaseSchemaModel("database-schema-database");
+            $schemaData = $this->getDatabaseSchemaModel("ukDbDatabaseSchema", "database-schema-database");
             $schemaId = $schemaData->id;
-            $tableData = $this->getTableDataModel($schemaId, "language_data");
+            $tableData = $this->getTableDataModel($schemaId, "ukSchemaLanguageTable", "language_data");
             $tableDataList[] = $tableData;
-            $tableData = $this->getTableDataModel($schemaId, "user_data");
+            $tableData = $this->getTableDataModel($schemaId, "ukSchemaUserTable", "user_data");
             $tableDataList[] = $tableData;
             $schemaData->tableDataList = $tableDataList;
             $databaseSchemaList[] = $schemaData;
-            $schemaData = $this->getDatabaseSchemaModel("database-schema-database-test");
+            $schemaData = $this->getDatabaseSchemaModel("ukDbDatabaseSchemaTest", "database-schema-database-test");
             $databaseSchemaList[] = $schemaData;
         }
         //
@@ -73,10 +79,11 @@ class DatabaseSchemaView {
         $view->render($databaseSchemaIdList);*/
     }
 
-    private function getDatabaseSchemaModel($name, $prefix = "tbl_", $comment = null, $version = "1.1.1"): DatabaseSchemaModel {
+    private function getDatabaseSchemaModel($uniqueName, $name, $prefix = "tbl_", $comment = null, $version = "1.1.1"): DatabaseSchemaModel {
         $uniqueIntId = new UniqueIntId();
         $model = new DatabaseSchemaModel();
         $model->id = $uniqueIntId->getId();
+        $model->uniqueName = $uniqueName;
         $model->schemaName = $name;
         $model->schemaVersion = $version;
         $model->tablePrefix = $prefix;
@@ -86,10 +93,11 @@ class DatabaseSchemaView {
         return $model;
     }
 
-    private function getTableDataModel($schemaId, $name, $comment = null, $prefix = null): TableDataModel {
+    private function getTableDataModel($schemaId, $uniqueName, $name, $comment = null, $prefix = null): TableDataModel {
         $uniqueIntId = new UniqueIntId();
         $model = new TableDataModel();
         $model->schemaId = $schemaId;
+        $model->uniqueName = $uniqueName;
         $model->id = $uniqueIntId->getId();
         $model->tableName = $name;
         $model->tableComment = $comment;

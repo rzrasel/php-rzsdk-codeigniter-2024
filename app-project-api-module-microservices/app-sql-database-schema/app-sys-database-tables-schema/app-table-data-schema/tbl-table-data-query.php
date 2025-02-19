@@ -45,6 +45,7 @@ class TblTableDataQuery extends TblTableData {
         $tablePropertyList = array(
             $this->schema_id        => "BIGINT(20) NOT NULL",
             $this->id               => "BIGINT(20) NOT NULL",
+            //$this->unique_name      => "TEXT NOT NULL",
             $this->table_name       => "TEXT NOT NULL",
             $this->table_comment    => "TEXT NULL",
             $this->column_prefix    => "TEXT NULL",
@@ -66,8 +67,11 @@ class TblTableDataQuery extends TblTableData {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
+        /*$dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, "{$this->schema_id}, {$this->unique_name}", "", "", "")
+        );*/
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, $this->table_name, "", "", "")
+            new DbColumnConstraintsProperties(DbColumnConstraintType::UNIQUE, "{$this->schema_id}, {$this->table_name}", "", "", "")
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->schema_id, TblDatabaseSchema::table(), TblDatabaseSchema::$prefix, $this->id)

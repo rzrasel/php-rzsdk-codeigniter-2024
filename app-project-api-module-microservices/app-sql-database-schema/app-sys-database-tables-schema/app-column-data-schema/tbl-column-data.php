@@ -9,6 +9,7 @@ class TblColumnData {
     //
     public $table_id        = "table_id";
     public $id              = "id";
+    //public $unique_name     = "unique_name";
     public $column_name     = "column_name";
     public $data_type       = "data_type";
     public $is_nullable     = "is_nullable";
