@@ -2,10 +2,12 @@
 ?>
 <?php
 enum ColumnDataType: string {
-    case BIGINT    = "bigint";
-    case INDEX      = "index";
-    case TEXT    = "text";
-    case UNIQUE     = "unique";
+    case BIGINT     = "bigint";
+    case BOOLEAN    = "boolean";
+    case DATETIME   = "datetime";
+    case TEXT       = "text";
+    case TIMESTAMP  = "timestamp";
+    case VARCHAR    = "varchar";
 
     public static function getByName($value): ?self {
         foreach(self::cases() as $case) {
