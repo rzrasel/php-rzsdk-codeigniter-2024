@@ -23,10 +23,10 @@ trait ColumnSelectDropDown {
         $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item, $extras = null) {
             //DebugLog::log($item);
             if($item instanceof DatabaseSchemaModel) {
-                return "<optgroup label=\"{$item->schemaName}\">";
+                return "<optgroup label=\"Database ↦ {$item->schemaName}\">";
             } else if($item instanceof TableDataModel) {
                 //return "<option value=\"{$item->id}\">{$item->tableName}</option>";
-                return "<optgroup label=\"{$item->tableName}\">";
+                return "<optgroup label=\"Table ↦ {$item->tableName}\">";
             } else if($item instanceof ColumnDataModel) {
                 $extraValue = "{$item->columnName}";
                 if(!empty($extras)) {

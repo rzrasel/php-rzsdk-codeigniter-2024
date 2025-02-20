@@ -6,6 +6,7 @@ class TableData {
     public $schema_id = "schema_id";
     public $id = "id";
     //public $unique_name = "unique_name";
+    public $table_order = "table_order";
     public $table_name = "table_name";
     public $column_prefix = "column_prefix";
     public $table_comment = "table_comment";

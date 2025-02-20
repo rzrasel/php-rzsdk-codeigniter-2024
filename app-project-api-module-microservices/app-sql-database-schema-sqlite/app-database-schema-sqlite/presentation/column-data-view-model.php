@@ -33,14 +33,16 @@ class ColumnDataViewModel {
         }
         //
         $isNullable = $postData[$columnData->is_nullable];
+        /*$isNullable = false;
         if($isNullable) {
             $isNullable = false;
         } else {
             $isNullable = true;
-        }
+        }*/
         //
         $columnDataModel->id = $uniqueIntId->getId();
         $columnDataModel->tableId = $postData[$columnData->table_id];
+        $columnDataModel->columnOrder = $postData[$columnData->column_order];
         $columnDataModel->columnName = $postData[$columnData->column_name];
         $columnDataModel->dataType = strtoupper($dataType);
         $columnDataModel->isNullable = $isNullable;

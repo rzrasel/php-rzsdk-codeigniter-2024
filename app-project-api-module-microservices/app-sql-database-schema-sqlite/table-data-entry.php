@@ -22,9 +22,19 @@ $repository = new TableDataRepositoryImpl();
 $viewModel = new TableDataViewModel($repository);
 $view = new TableDataView($viewModel);
 $schemaDataList = $view->getAllSchemaData();
+?>
+<?php
+$tableOrder = 1;
+$selectedSchemaId = "";
+if(!empty($_POST)) {
+    $selectedSchemaId = $_POST["schema_id"];
+    $tableOrder = $_POST["table_order"] + 1;
+}
+?>
+<?php
 /*$callbackSingleModelData = new UsagesCallbackSingleModelData();
 $schemaSelectDropDown = $callbackSingleModelData->getSchemaSelectDropDown("schema_id", $schemaDataList);*/
-$schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $schemaDataList);
+$schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $schemaDataList, $selectedSchemaId);
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -68,6 +78,11 @@ if(!empty($_POST)) {
             <td>Table Name:</td>
             <td></td>
             <td><input type="text" name="table_name" id="table_name" required="required" placeholder="Table name" /></td>
+        </tr>
+        <tr>
+            <td>Table Order:</td>
+            <td></td>
+            <td><input type="number" name="table_order" id="table_order" required="required" placeholder="Table order" value="<?= $tableOrder; ?>" min="0" max="5000" /></td>
         </tr>
         <tr>
             <td>Column Prefix:</td>

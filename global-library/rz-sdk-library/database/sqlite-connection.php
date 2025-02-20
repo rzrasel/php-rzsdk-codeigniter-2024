@@ -72,6 +72,8 @@ class SqliteConnection {
     // Secure Query Execution with Parameters
     public function queryExecute($sqlQuery, $params = []) {
         //DebugLog::log("Error executing SQL Query: " . __CLASS__, LogType::ERROR, true, 2);
+        $params = self::bindValues($params);
+        //DebugLog::log($params);
         if ($this->pdo !== null) {
             $query = preg_replace("/escape_string\((.*?)\)/", $this->escapeString("$1"), $sqlQuery);
             try {
@@ -232,6 +234,87 @@ class SqliteConnection {
             DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
             return false;
         }
+    }
+
+    public static function bindValues(array $dataSet) {
+        $itemValue = "";
+        $dataList = array();
+        //DebugLog::log($dataSet);
+        foreach($dataSet as $key => $value) {
+            $itemValue = self::bindValue($value, $key);
+            $dataList[$key] = $itemValue;
+        }
+        return $dataList;
+        /*foreach(array_values($this->tableData) as $item) {
+            if(is_bool($item)) {
+                if($item) {
+                    $values .= "TRUE, ";
+                } else {
+                    $values .= "FALSE, ";
+                }
+            } else if(empty($item)) {
+                if(is_int($item) || is_numeric($item)) {
+                    $values .= "'" . $item . "', ";
+                } else {
+                    $values .= "NULL, ";
+                }
+                //$values .= "NULL, ";
+            } else if(is_int($item) || is_numeric($item)) {
+                if(is_string($item)) {
+                    $values .= "'" . $item . "', ";
+                } else {
+                    $values .= "" . $item . ", ";
+                }
+            } else if(is_bool($item)) {
+                if($item) {
+                    $values .= "TRUE, ";
+                } else {
+                    $values .= "FALSE, ";
+                }
+            } else {
+                $values .= "'" . $item . "', ";
+            }
+        }*/
+        //$values = trim(trim($values), ",");
+        //return $values;
+    }
+
+    public static function bindValue($value, $key = "") {
+        $itemValue = "";
+        if(empty($value)) {
+            $itemValue = '';
+            if(is_null($value)) {
+                $itemValue = NULL;
+            }
+        } else if(self::isBoolean($value)) {
+            $itemValue = 'FALSE';
+            if($value && strtolower("$value") == 'true') {
+                $itemValue = 'TRUE';
+            }
+        } else if(is_int($value) || is_numeric($value)) {
+            if(is_string($value)) {
+                $itemValue = "$value";
+            } else {
+                $itemValue = $value;
+            }
+        } else {
+            $itemValue = "$value";
+            if(self::isBoolean($value)) {
+                $itemValue = 'FALSE';
+                if($value && strtolower("$value") == 'true') {
+                    $itemValue = 'TRUE';
+                }
+            }
+        }
+        /*echo "$key: $value = " . gettype($value);
+        echo "<br />";*/
+        return $itemValue;
+    }
+    public static function isBoolean($value): bool {
+        if(is_bool($value) || strtolower($value) == "true" || strtolower($value) == "false") {
+            return true;
+        }
+        return false;
     }
 }
 ?>

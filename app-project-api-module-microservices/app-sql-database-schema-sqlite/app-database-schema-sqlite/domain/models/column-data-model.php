@@ -6,6 +6,7 @@ class ColumnDataModel {
     public $tableId;
     public $id;
     //public $uniqueName;
+    public $columnOrder;
     public $columnName;
     public $dataType;
     public $isNullable;
@@ -18,6 +19,7 @@ class ColumnDataModel {
     public function __construct(
         $tableId = null,
         //$uniqueName = null,
+        $columnOrder = 1,
         $columnName = null,
         $dataType = null,
         $isNullable = null,
@@ -29,6 +31,7 @@ class ColumnDataModel {
     ) {
         $this->tableId = $tableId;
         //$this->uniqueName = $uniqueName;
+        $this->columnOrder = $columnOrder;
         $this->columnName = $columnName;
         $this->dataType = $dataType;
         $this->isNullable = $isNullable;

@@ -11,6 +11,7 @@ use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -26,7 +27,9 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         }
     }
     public function getAllTableDataGroupBySchema(): array|bool {
-        $schemaTableName = "tbl_database_schema";
+        $dbDatabaseSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData();
+        return $dbDatabaseSchemaData;
+        /*$schemaTableName = "tbl_database_schema";
         $tableDataTableName = "tbl_table_data";
         $tempDatabaseSchema = new DatabaseSchema();
         $tempTableData = new TableData();
@@ -50,7 +53,7 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
             //DebugLog::log($databaseSchemaList);
             return $databaseSchemaList;
         }
-        return false;
+        return false;*/
     }
     public function getAllTableDataBySchemaId($schemaId): array|bool {
         $tableDataTableName = "tbl_table_data";

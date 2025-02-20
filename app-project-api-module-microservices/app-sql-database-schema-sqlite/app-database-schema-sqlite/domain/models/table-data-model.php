@@ -6,6 +6,7 @@ class TableDataModel {
     public $schemaId;
     public $id;
     //public $uniqueName;
+    public $tableOrder;
     public $tableName;
     public $columnPrefix;
     public $tableComment;
@@ -17,6 +18,7 @@ class TableDataModel {
         $schemaId = 0,
         $id = 0,
         //$uniqueName = null,
+        $tableOrder = 1,
         ?string $tableName = null,
         ?string $tableComment = null,
         ?string $columnPrefix = null,
@@ -28,6 +30,7 @@ class TableDataModel {
         $this->schemaId = $schemaId;
         $this->id = $id;
         //$this->uniqueName = $uniqueName;
+        $this->tableOrder = $tableOrder;
         $this->tableName = $tableName;
         $this->tableComment = $tableComment;
         $this->columnPrefix = $columnPrefix;

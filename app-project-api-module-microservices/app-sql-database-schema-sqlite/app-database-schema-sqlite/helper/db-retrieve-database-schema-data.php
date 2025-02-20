@@ -13,6 +13,7 @@ use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnKeyMapper;
 use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
 use RzSDK\Database\SqliteConnection;
+use RzSDK\Log\DebugLog;
 ?>
 <?php
 class DbRetrieveDatabaseSchemaData {
@@ -39,9 +40,10 @@ class DbRetrieveDatabaseSchemaData {
             if($tableDataList) {
                 $databaseSchema->tableDataList = $tableDataList;
             }
-            if(is_array($tableDataList) && !empty($tableDataList)) {
+            /*if(is_array($tableDataList) && !empty($tableDataList)) {
                 $databaseSchemaList[] = $databaseSchema;
-            }
+            }*/
+            $databaseSchemaList[] = $databaseSchema;
         }
         if(!empty($databaseSchemaList)) {
             //DebugLog::log($databaseSchemaList);
@@ -54,7 +56,7 @@ class DbRetrieveDatabaseSchemaData {
         $tableDataTableName = "tbl_table_data";
         $tempTableData = new TableData();
         $tableDataList = array();
-        $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_name} ASC;";
+        $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
@@ -67,9 +69,10 @@ class DbRetrieveDatabaseSchemaData {
             if($columnKeyList) {
                 $tableData->columnKeyList = $columnKeyList;
             }
-            if(is_array($columnDataList) && !empty($columnDataList)) {
+            /*if(is_array($columnDataList) && !empty($columnDataList)) {
                 $tableDataList[] = $tableData;
-            }
+            }*/
+            $tableDataList[] = $tableData;
         }
         if(!empty($tableDataList)) {
             return $tableDataList;
@@ -81,7 +84,7 @@ class DbRetrieveDatabaseSchemaData {
         $columnDataTableName = "tbl_column_data";
         $tempColumnData = new ColumnData();
         $columnDataList = array();
-        $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->table_id} = '$tableId' ORDER BY {$tempColumnData->column_name} ASC;";
+        $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->table_id} = '$tableId' ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {

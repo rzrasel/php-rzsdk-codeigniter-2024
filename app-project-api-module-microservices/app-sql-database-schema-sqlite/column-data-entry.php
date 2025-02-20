@@ -23,9 +23,19 @@ $repository = new ColumnDataRepositoryImpl();
 $viewModel = new ColumnDataViewModel($repository);
 $view = new ColumnDataView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupBySchema();
+?>
+<?php
+$columnOrder = 1;
+$selectedTableId = "";
+if(!empty($_POST)) {
+    $selectedTableId = $_POST["table_id"];
+    $columnOrder = $_POST["column_order"] + 1;
+}
+?>
+<?php
 /*$callbackSingleModelData = new UsagesCallbackSingleModelData();
 $tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
-$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList);
+$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
 $dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type");
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
@@ -40,6 +50,7 @@ if(!empty($_POST)) {
             $_POST[$key] = NULL;
         }
     }
+    //DebugLog::log($_POST);
     $view->createFromPostData($_POST);
 }
 ?>
@@ -72,6 +83,11 @@ if(!empty($_POST)) {
             <td><input type="text" name="column_name" id="column_name" required="required" placeholder="Column name" /></td>
         </tr>
         <tr>
+            <td>Column Order:</td>
+            <td></td>
+            <td><input type="number" name="column_order" id="column_order" required="required" placeholder="Column order" value="<?= $columnOrder; ?>" min="0" max="5000" /></td>
+        </tr>
+        <tr>
             <td>Data Type:</td>
             <td></td>
             <td><?= $dataTypeSelectDropDown; ?></td>
@@ -79,13 +95,13 @@ if(!empty($_POST)) {
         <tr>
             <td>Data Length:</td>
             <td></td>
-            <td><input type="number" name="data_length" id="data_length" required="required" placeholder="Data length"  min="0" max="5000" /></td>
+            <td><input type="number" name="data_length" id="data_length" required="required" placeholder="Data length" value="0" min="0" max="5000" /></td>
         </tr>
         <tr>
             <td>Is Null:</td>
             <td></td>
-            <td><input type="hidden" name="is_nullable" id="is_nullable" value="0">
-                <input type="checkbox" name="is_nullable" id="is_nullable" value="1"></td>
+            <td><input type="hidden" name="is_nullable" id="is_nullable" value="false">
+                <input type="checkbox" name="is_nullable" id="is_nullable" value="true"></td>
         </tr>
         <tr>
             <td>Default Value:</td>

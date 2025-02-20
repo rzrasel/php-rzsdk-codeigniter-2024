@@ -25,6 +25,7 @@ class TableDataViewModel {
         $tableDataModelModel = new TableDataModel();
         $tableDataModelModel->id = $uniqueIntId->getId();
         $tableDataModelModel->schemaId = $postData[$tempTableData->schema_id];
+        $tableDataModelModel->tableOrder = $postData[$tempTableData->table_order];
         $tableDataModelModel->tableName = $postData[$tempTableData->table_name];
         $tableDataModelModel->columnPrefix = $postData[$tempTableData->column_prefix];
         $tableDataModelModel->tableComment = $postData[$tempTableData->table_comment];

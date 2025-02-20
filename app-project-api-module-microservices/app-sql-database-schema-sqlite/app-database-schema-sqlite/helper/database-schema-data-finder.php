@@ -15,8 +15,8 @@ class DatabaseSchemaDataFinder {
     }
 
     public function getSchemaName(string $id): ?array {
-        foreach ($this->databaseSchemas as $schemaIndex => $schema) {
-            if ($schema->id === $id) {
+        foreach($this->databaseSchemas as $schemaIndex => $schema) {
+            if($schema->id === $id) {
                 return [
                     "index" => ["schema" => $schemaIndex],
                     "data" => $schema->schemaName,
@@ -27,9 +27,9 @@ class DatabaseSchemaDataFinder {
     }
 
     public function getTableName(string $id): ?array {
-        foreach ($this->databaseSchemas as $schemaIndex => $schema) {
-            foreach ($schema->tableDataList as $tableIndex => $table) {
-                if ($table->id === $id) {
+        foreach($this->databaseSchemas as $schemaIndex => $schema) {
+            foreach($schema->tableDataList as $tableIndex => $table) {
+                if($table->id === $id) {
                     return [
                         "index" => [
                             "schema" => $schemaIndex,
@@ -44,10 +44,10 @@ class DatabaseSchemaDataFinder {
     }
 
     public function getColumnName(string $id): ?array {
-        foreach ($this->databaseSchemas as $schemaIndex => $schema) {
-            foreach ($schema->tableDataList as $tableIndex => $table) {
-                foreach ($table->columnDataList as $columnIndex => $column) {
-                    if ($column->id === $id) {
+        foreach($this->databaseSchemas as $schemaIndex => $schema) {
+            foreach($schema->tableDataList as $tableIndex => $table) {
+                foreach($table->columnDataList as $columnIndex => $column) {
+                    if($column->id === $id) {
                         return [
                             "index" => [
                                 "schema" => $schemaIndex,
@@ -64,9 +64,9 @@ class DatabaseSchemaDataFinder {
     }
 
     public function getTableDetails(string $id): ?array {
-        foreach ($this->databaseSchemas as $schemaIndex => $schema) {
-            foreach ($schema->tableDataList as $tableIndex => $table) {
-                if ($table->id === $id) {
+        foreach($this->databaseSchemas as $schemaIndex => $schema) {
+            foreach($schema->tableDataList as $tableIndex => $table) {
+                if($table->id === $id) {
                     return [
                         "index" => [
                             "schema" => $schemaIndex,

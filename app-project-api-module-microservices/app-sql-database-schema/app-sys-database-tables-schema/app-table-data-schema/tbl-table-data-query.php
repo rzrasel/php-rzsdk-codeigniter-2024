@@ -46,6 +46,7 @@ class TblTableDataQuery extends TblTableData {
             $this->schema_id        => "BIGINT(20) NOT NULL",
             $this->id               => "BIGINT(20) NOT NULL",
             //$this->unique_name      => "TEXT NOT NULL",
+            $this->table_order      => "INT(6) NOT NULL",
             $this->table_name       => "TEXT NOT NULL",
             $this->table_comment    => "TEXT NULL",
             $this->column_prefix    => "TEXT NULL",
