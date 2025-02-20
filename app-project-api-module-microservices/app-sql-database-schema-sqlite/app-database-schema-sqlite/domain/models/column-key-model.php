@@ -4,6 +4,7 @@ namespace App\DatabaseSchema\Domain\Models;
 <?php
 class ColumnKeyModel {
     public $id;
+    public $workingTable;
     public $mainColumn;
     public $keyType;
     public $referenceColumn;
@@ -14,8 +15,9 @@ class ColumnKeyModel {
     public $compositeKeyList = []; // One-to-many relationship with CompositeKey
 
     public function __construct(
-        int $id = 0,
-        int $mainColumn = 0,
+        int $id = null,
+        int $workingTable = null,
+        int $mainColumn = null,
         string $keyType = null,
         ?string $referenceColumn = null,
         ?string $keyName = null,
@@ -25,6 +27,7 @@ class ColumnKeyModel {
         ?string $compositeKeyList = null
     ) {
         $this->id = $id;
+        $this->workingTable = $workingTable;
         $this->mainColumn = $mainColumn;
         $this->keyType = $keyType;
         $this->referenceColumn = $referenceColumn;

@@ -4,6 +4,7 @@ namespace App\DatabaseSchema\Data\Entities;
 <?php
 class ColumnKey {
     public $id = "id";
+    public $working_table = "working_table";
     public $main_column = "main_column";
     public $key_type = "key_type";
     public $reference_column = "reference_column";

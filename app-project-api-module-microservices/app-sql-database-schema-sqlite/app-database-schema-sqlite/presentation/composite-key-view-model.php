@@ -4,17 +4,17 @@ namespace App\DatabaseSchema\Presentation\ViewModels;
 <?php
 use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
-use App\DatabaseSchema\Domain\Repositories\TableDataRepositoryInterface;
+use App\DatabaseSchema\Domain\Repositories\CompositeKeyRepositoryInterface;
 ?>
 <?php
 class CompositeKeyViewModel {
     private $repository;
 
-    public function __construct(TableDataRepositoryInterface $repository) {
+    public function __construct(CompositeKeyRepositoryInterface $repository) {
         $this->repository = $repository;
     }
 
-    public function getTable(int $id): ?TableDataModel {
+    /*public function getTable(int $id): ?TableDataModel {
         return $this->repository->getById($id);
     }
 
@@ -24,6 +24,6 @@ class CompositeKeyViewModel {
 
     public function createTable(TableDataModel $tableData): void {
         $this->repository->create($tableData);
-    }
+    }*/
 }
 ?>

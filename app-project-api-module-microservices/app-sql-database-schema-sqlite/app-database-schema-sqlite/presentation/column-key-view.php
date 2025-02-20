@@ -18,8 +18,8 @@ class ColumnKeyView {
         return $this->viewModel->getAllTableDataGroupByTable();
     }
 
-    public function createFromPostData($postData): void {
-        $this->viewModel->createFromPostData($postData);
+    public function createFromPostData($postData, ?array $schemaDataList = array()): void {
+        $this->viewModel->createFromPostData($postData, $schemaDataList);
     }
     //
 

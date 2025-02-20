@@ -45,7 +45,7 @@ class TblColumnKeyQuery extends TblColumnKey {
         $tablePropertyList = array(
             //$this->column_id        => "BIGINT(20) NOT NULL, -- Reference column id",
             $this->id               => "BIGINT(20) NOT NULL",
-            //$this->main_table       => "BIGINT(20) NOT NULL",
+            $this->working_table    => "BIGINT(20) NOT NULL",
             $this->main_column      => "BIGINT(20) NOT NULL",
             $this->key_type         => "TEXT NOT NULL",
             //$this->reference_table  => "BIGINT(20) NULL",
@@ -70,9 +70,9 @@ class TblColumnKeyQuery extends TblColumnKey {
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
-        /*$dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->main_table, TblColumnData::table(), TblColumnData::$prefix, $this->id)
-        );*/
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->working_table, TblTableData::table(), TblTableData::$prefix, $this->id)
+        );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->main_column, TblColumnData::table(), TblColumnData::$prefix, $this->id)
         );

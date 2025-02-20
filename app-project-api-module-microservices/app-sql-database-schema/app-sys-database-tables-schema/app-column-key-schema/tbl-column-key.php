@@ -9,7 +9,7 @@ class TblColumnKey {
     //
     //public $column_id       = "column_id";
     public $id              = "id";
-    //public $main_table      = "main_table";
+    public $working_table   = "working_table";
     public $main_column     = "main_column";
     public $key_type        = "key_type";
     //public $reference_table = "reference_table";

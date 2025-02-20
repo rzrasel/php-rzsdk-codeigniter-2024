@@ -15,6 +15,7 @@ use App\DatabaseSchema\Presentation\ViewModels\ColumnKeyViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnKeyView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
+use App\DatabaseSchema\Helper\Data\Finder\DatabaseSchemaDataFinder;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -22,7 +23,8 @@ $repository = new ColumnKeyRepositoryImpl();
 $viewModel = new ColumnKeyViewModel($repository);
 $view = new ColumnKeyView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupByTable();
-$callbackSingleModelData = new UsagesCallbackSingleModelData();
+//DebugLog::log($schemaDataList);
+//$callbackSingleModelData = new UsagesCallbackSingleModelData();
 /*$mainColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("main_column", $schemaDataList);
 $referenceColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("reference_column", $schemaDataList, false);*/
 $mainColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("main_column", $schemaDataList);
@@ -31,6 +33,8 @@ $relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDr
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
+//$dataFinderList = (new DatabaseSchemaDataFinder($schemaDataList))->getColumnDetails("174003003822055028");
+//DebugLog::log($dataFinderList);
 ?>
 <?php
 if(!empty($_POST)) {
@@ -42,7 +46,7 @@ if(!empty($_POST)) {
         }
     }
     //DebugLog::log($_POST);
-    $view->createFromPostData($_POST);
+    $view->createFromPostData($_POST, $schemaDataList);
 }
 ?>
 <table>
