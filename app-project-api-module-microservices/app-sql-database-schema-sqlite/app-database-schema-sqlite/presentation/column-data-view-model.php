@@ -25,6 +25,13 @@ class ColumnDataViewModel {
         $columnData = new ColumnData();
         $columnDataModel = new ColumnDataModel();
         //
+        $postDataType = $postData["data_type"];
+        $postDataLength = $postData["data_length"];
+        $dataType = $postDataType;
+        if($postDataLength > 0) {
+            $dataType .= "($postDataLength)";
+        }
+        //
         $isNullable = $postData[$columnData->is_nullable];
         if($isNullable) {
             $isNullable = false;
@@ -35,7 +42,7 @@ class ColumnDataViewModel {
         $columnDataModel->id = $uniqueIntId->getId();
         $columnDataModel->tableId = $postData[$columnData->table_id];
         $columnDataModel->columnName = $postData[$columnData->column_name];
-        $columnDataModel->dataType = strtoupper($postData[$columnData->data_type]);
+        $columnDataModel->dataType = strtoupper($dataType);
         $columnDataModel->isNullable = $isNullable;
         $columnDataModel->defaultValue = $postData[$columnData->default_value];
         $columnDataModel->columnComment = $postData[$columnData->column_comment];

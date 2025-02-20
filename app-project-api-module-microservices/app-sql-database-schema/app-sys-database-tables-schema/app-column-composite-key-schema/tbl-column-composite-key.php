@@ -11,7 +11,8 @@ class TblColumnCompositeKey {
     public $id              = "id";
 
     //primary
-    public $composite_column_id = "composite_column_id";
+    public $primary_column  = "primary_column";
+    public $composite_column    = "composite_column";
     public $key_name        = "key_name";
     public $modified_date   = "modified_date";
     public $created_date    = "created_date";

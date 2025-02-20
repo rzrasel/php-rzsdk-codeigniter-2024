@@ -13,6 +13,7 @@ require_once("include.php");
 use App\DatabaseSchema\Data\Repositories\ColumnKeyRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnKeyViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnKeyView;
+use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use RzSDK\Log\DebugLog;
 ?>
@@ -22,8 +23,11 @@ $viewModel = new ColumnKeyViewModel($repository);
 $view = new ColumnKeyView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupByTable();
 $callbackSingleModelData = new UsagesCallbackSingleModelData();
-$mainColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("main_column", $schemaDataList);
-$referenceColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("reference_column", $schemaDataList, false);
+/*$mainColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("main_column", $schemaDataList);
+$referenceColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("reference_column", $schemaDataList, false);*/
+$mainColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("main_column", $schemaDataList);
+$referenceColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("reference_column", $schemaDataList, false);
+$relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDropDown("key_type");
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -37,7 +41,8 @@ if(!empty($_POST)) {
             $_POST[$key] = NULL;
         }
     }
-    //$view->createFromPostData($_POST);
+    //DebugLog::log($_POST);
+    $view->createFromPostData($_POST);
 }
 ?>
 <table>
@@ -71,7 +76,7 @@ if(!empty($_POST)) {
         <tr>
             <td>Key Type:</td>
             <td></td>
-            <td><input type="text" name="key_type" id="key_type" required="required" placeholder="Key type" /></td>
+            <td><?= $relationalKeyTypeSelectDropDown; ?></td>
         </tr>
         <tr>
             <td>Key Name:</td>

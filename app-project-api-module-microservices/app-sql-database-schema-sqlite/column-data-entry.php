@@ -13,6 +13,8 @@ require_once("include.php");
 use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnDataView;
+use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
+use App\DatabaseSchema\Html\Select\DropDown\DataTypeSelectDropDown;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use RzSDK\Log\DebugLog;
 ?>
@@ -21,8 +23,10 @@ $repository = new ColumnDataRepositoryImpl();
 $viewModel = new ColumnDataViewModel($repository);
 $view = new ColumnDataView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupBySchema();
-$callbackSingleModelData = new UsagesCallbackSingleModelData();
-$tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);
+/*$callbackSingleModelData = new UsagesCallbackSingleModelData();
+$tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
+$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList);
+$dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type");
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -60,7 +64,7 @@ if(!empty($_POST)) {
         <tr>
             <td>Table Name:</td>
             <td></td>
-            <td><?= $tableDataSelectDropDown; ?></td>
+            <td><?= $tableSelectDropDown; ?></td>
         </tr>
         <tr>
             <td>Column Name:</td>
@@ -70,7 +74,12 @@ if(!empty($_POST)) {
         <tr>
             <td>Data Type:</td>
             <td></td>
-            <td><input type="text" name="data_type" id="data_type" required="required" placeholder="Data type" /></td>
+            <td><?= $dataTypeSelectDropDown; ?></td>
+        </tr>
+        <tr>
+            <td>Data Length:</td>
+            <td></td>
+            <td><input type="number" name="data_length" id="data_length" required="required" placeholder="Data length"  min="0" max="5000" /></td>
         </tr>
         <tr>
             <td>Is Null:</td>

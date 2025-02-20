@@ -43,9 +43,10 @@ class TblColumnCompositeKeyQuery extends TblColumnCompositeKey {
 
     private function getSQLiteColumnProperty() {
         $tablePropertyList = array(
-            $this->key_id           => "BIGINT(20) NOT NULL,  -- Reference to tbl_column_key(id)",
+            $this->key_id           => "BIGINT(20) NOT NULL",
             $this->id               => "BIGINT(20) NOT NULL",
-            $this->composite_column_id  => "BIGINT(20) NOT NULL, -- Reference to tbl_column_data(id)",
+            $this->primary_column   => "BIGINT(20) NOT NULL",
+            $this->composite_column => "BIGINT(20) NOT NULL",
             $this->key_name         => "TEXT NULL",
             "modified_date"         => "DATETIME NOT NULL",
             "created_date"          => "DATETIME NOT NULL",
@@ -66,7 +67,10 @@ class TblColumnCompositeKeyQuery extends TblColumnCompositeKey {
             new DbColumnConstraintsProperties(DbColumnConstraintType::PRIMARY_KEY, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
-            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->composite_column_id, TblColumnData::table(), TblColumnData::$prefix, $this->id)
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->primary_column, TblColumnData::table(), TblColumnData::$prefix, $this->id)
+        );
+        $dbTableProperty->setConstraintProperty(
+            new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->composite_column, TblColumnData::table(), TblColumnData::$prefix, $this->id)
         );
         $dbTableProperty->setConstraintProperty(
             new DbColumnConstraintsProperties(DbColumnConstraintType::FOREIGN_KEY, $this->key_id, TblColumnKey::table(), TblColumnKey::$prefix, $this->id)

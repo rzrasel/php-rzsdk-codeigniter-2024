@@ -1,4 +1,5 @@
 <?php
+namespace App\DatabaseSchema\Helper\Key\Type;
 ?>
 <?php
 enum RelationalKeyType: string {

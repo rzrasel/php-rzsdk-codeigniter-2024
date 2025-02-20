@@ -1,4 +1,5 @@
 <?php
+namespace App\DatabaseSchema\Helper\Data\Type;
 ?>
 <?php
 enum ColumnDataType: string {

@@ -92,6 +92,29 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
         }
         return false;
     }
+
+    public function create(ColumnKeyModel $columnKey): void {
+        $columnKeyTableName = "tbl_column_key";
+        //DebugLog::log($tableData);
+        $params = ColumnKeyMapper::toDomainParams($columnKey);
+        $tempTableData = new ColumnKey();
+        $dataVarList = $tempTableData->getVarList();
+        $columns = "";
+        $values = "";
+        foreach($dataVarList as $var) {
+            $columns .= "$var, ";
+            $values .= ":$var, ";
+        }
+        $columns = trim(trim($columns), ",");
+        $values = trim(trim($values), ",");
+        $sqlQuery = "INSERT INTO $columnKeyTableName ($columns) VALUES ($values)";
+        //DebugLog::log($sqlQuery);
+        //DebugLog::log($values);
+        //DebugLog::log($params);
+        $this->dbConn->execute($sqlQuery, $params);
+        $columnKey->id = $this->dbConn->getLastInsertId();
+        //DebugLog::log($columnKey->id);
+    }
     //
 
     public function getById(int $columnKeyId): ?ColumnKeyModel {
@@ -104,7 +127,22 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
         return new ColumnKeyModel();
     }
 
-    public function create(ColumnKeyModel $columnKey): void {
+    public function save(ColumnKeyModel $columnKey): void {
+        $data = ColumnKeyMapper::toDomain($columnKey);
+
+        if($columnKey->id) {
+            // Update
+            /*$stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
+            $stmt->execute($data);*/
+        } else {
+            // Insert
+            /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
+            $stmt->execute($data);
+            $columnKey->id = $this->db->lastInsertId();*/
+        }
+    }
+
+    public function createOld(ColumnKeyModel $columnKey): void {
         $columnKeyTableName = "tbl_column_key";
         //DebugLog::log($tableData);
         $data = ColumnKeyMapper::toDomainParams($columnKey);
@@ -124,24 +162,10 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
         $values = trim(trim($values), ",");
         $sqlQuery = "INSERT INTO $columnKeyTableName ($columns) VALUES ($values)";
         DebugLog::log($sqlQuery);
+        DebugLog::log($values);
         $this->dbConn->execute($sqlQuery, $data);
         $columnKey->id = $this->dbConn->getLastInsertId();
         //DebugLog::log($columnKey->id);
-    }
-
-    public function save(ColumnKeyModel $columnKey): void {
-        $data = ColumnKeyMapper::toDomain($columnKey);
-
-        if($columnKey->id) {
-            // Update
-            /*$stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
-            $stmt->execute($data);*/
-        } else {
-            // Insert
-            /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
-            $stmt->execute($data);
-            $columnKey->id = $this->db->lastInsertId();*/
-        }
     }
 
     public function delete(int $id): void {

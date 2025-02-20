@@ -17,6 +17,10 @@ class ColumnKeyView {
     public function getAllTableDataGroupByTable(): array|bool {
         return $this->viewModel->getAllTableDataGroupByTable();
     }
+
+    public function createFromPostData($postData): void {
+        $this->viewModel->createFromPostData($postData);
+    }
     //
 
     public function render(array $schemaId = null, array $tableData = null): void {

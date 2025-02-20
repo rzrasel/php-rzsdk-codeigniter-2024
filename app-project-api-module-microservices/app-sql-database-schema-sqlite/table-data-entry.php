@@ -13,6 +13,7 @@ require_once("include.php");
 use App\DatabaseSchema\Data\Repositories\TableDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
 use App\DatabaseSchema\Presentation\Views\TableDataView;
+use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use RzSDK\Log\DebugLog;
 ?>
@@ -21,8 +22,9 @@ $repository = new TableDataRepositoryImpl();
 $viewModel = new TableDataViewModel($repository);
 $view = new TableDataView($viewModel);
 $schemaDataList = $view->getAllSchemaData();
-$callbackSingleModelData = new UsagesCallbackSingleModelData();
-$schemaSelectDropDown = $callbackSingleModelData->getSchemaSelectDropDown("schema_id", $schemaDataList);
+/*$callbackSingleModelData = new UsagesCallbackSingleModelData();
+$schemaSelectDropDown = $callbackSingleModelData->getSchemaSelectDropDown("schema_id", $schemaDataList);*/
+$schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $schemaDataList);
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
