@@ -72,7 +72,7 @@ class ColumnKeyMapper {
         return $model;
     }
 
-    public function toModel($columnKey): ColumnKeyModel {
+    public static function toModel($columnKey): ColumnKeyModel {
         $model = new ColumnKeyModel();
         if(is_array($columnKey)) {
             $dataVarList = self::getDataVarList(new ColumnKey());

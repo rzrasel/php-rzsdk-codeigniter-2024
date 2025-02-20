@@ -22,6 +22,8 @@ use RzSDK\Log\DebugLog;
 $repository = new ColumnKeyRepositoryImpl();
 $viewModel = new ColumnKeyViewModel($repository);
 $view = new ColumnKeyView($viewModel);
+?>
+<?php
 $schemaDataList = $view->getAllTableDataGroupByTable();
 //DebugLog::log($schemaDataList);
 //$callbackSingleModelData = new UsagesCallbackSingleModelData();

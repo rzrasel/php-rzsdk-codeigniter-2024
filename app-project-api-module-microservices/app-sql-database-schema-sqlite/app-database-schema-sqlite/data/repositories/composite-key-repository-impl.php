@@ -7,6 +7,7 @@ use App\DatabaseSchema\Domain\Repositories\CompositeKeyRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\CompositeKey;
 use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
 ?>
@@ -21,6 +22,12 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
             $this->dbConn = $dbConn;
         }
     }
+
+    public function getAllTableDataGroupByTable(): array|bool {
+        $dbDatabaseSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData();
+        return $dbDatabaseSchemaData;
+    }
+    //
 
     public function getById(int $compositeKeyId): ?CompositeKeyModel {
         // TODO: Implement getById() method.

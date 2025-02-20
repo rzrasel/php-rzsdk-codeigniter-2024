@@ -14,6 +14,11 @@ class CompositeKeyViewModel {
         $this->repository = $repository;
     }
 
+    public function getAllTableDataGroupByTable(): array|bool {
+        return $this->repository->getAllTableDataGroupByTable();
+    }
+    //
+
     /*public function getTable(int $id): ?TableDataModel {
         return $this->repository->getById($id);
     }

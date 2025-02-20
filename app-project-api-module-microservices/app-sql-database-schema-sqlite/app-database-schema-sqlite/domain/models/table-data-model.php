@@ -11,7 +11,8 @@ class TableDataModel {
     public $tableComment;
     public $modifiedDate;
     public $createdDate;
-    public array $columnDataList = []; // One-to-many relationship with ColumnData
+    public array $columnDataList = [];
+    public array $columnKeyList = [];
     public function __construct(
         $schemaId = 0,
         $id = 0,
@@ -21,7 +22,8 @@ class TableDataModel {
         ?string $columnPrefix = null,
         ?string $modifiedDate = null,
         ?string $createdDate = null,
-        ?array $columnDataList = []
+        ?array $columnDataList = [],
+        ?array $columnKeyList = []
     ) {
         $this->schemaId = $schemaId;
         $this->id = $id;

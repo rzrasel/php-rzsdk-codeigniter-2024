@@ -12,7 +12,7 @@ class ColumnKeyModel {
     public $uniqueName;
     public $modifiedDate;
     public $createdDate;
-    public $compositeKeyList = []; // One-to-many relationship with CompositeKey
+    public $compositeKeyList = [];
 
     public function __construct(
         int $id = null,

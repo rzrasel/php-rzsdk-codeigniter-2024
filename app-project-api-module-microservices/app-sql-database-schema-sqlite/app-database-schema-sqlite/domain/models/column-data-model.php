@@ -13,7 +13,7 @@ class ColumnDataModel {
     public $columnComment;
     public $modifiedDate;
     public $createdDate;
-    public $columnKeyList = []; // One-to-many relationship with ColumnKey
+    public $columnKeyList = [];
 
     public function __construct(
         $tableId = null,
