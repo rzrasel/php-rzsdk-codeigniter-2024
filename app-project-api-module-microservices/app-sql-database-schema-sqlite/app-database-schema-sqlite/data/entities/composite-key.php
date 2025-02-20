@@ -3,9 +3,10 @@ namespace App\DatabaseSchema\Data\Entities;
 ?>
 <?php
 class CompositeKey {
-    public $column_id;
     public $key_id;
     public $id;
+    public $primary_column;
+    public $composite_column;
     public $key_name;
     public $modified_date;
     public $created_date;

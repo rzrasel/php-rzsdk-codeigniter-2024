@@ -3,24 +3,27 @@ namespace App\DatabaseSchema\Domain\Models;
 ?>
 <?php
 class CompositeKeyModel {
-    public $columnId;
     public $keyId;
     public $id;
+    public $primaryColumn;
+    public $compositeColumn;
     public $keyName;
     public $modifiedDate;
     public $createdDate;
 
     public function __construct(
-        int $columnId = 0,
-        int $keyId = 0,
-        int $id = 0,
+        int $keyId = null,
+        int $id = null,
+        $primaryColumn = null,
+        $compositeColumn = null,
         ?string $keyName = null,
         ?\DateTime $modifiedDate = null,
         ?\DateTime $createdDate = null
     ) {
-        $this->columnId = $columnId;
         $this->keyId = $keyId;
         $this->id = $id;
+        $this->primaryColumn = $primaryColumn;
+        $this->compositeColumn = $compositeColumn;
         $this->keyName = $keyName;
         $this->modifiedDate = $modifiedDate;
         $this->createdDate = $createdDate;
