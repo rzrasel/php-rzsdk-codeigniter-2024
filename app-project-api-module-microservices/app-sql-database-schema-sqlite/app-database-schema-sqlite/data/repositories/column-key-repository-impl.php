@@ -37,6 +37,36 @@ class ColumnKeyRepositoryImpl implements ColumnKeyRepositoryInterface {
 
     public function create(ColumnKeyModel $columnKey): void {
         $columnKeyTableName = "tbl_column_key";
+        //
+        $colIdName = "id";
+        $colIdValue = $columnKey->id;
+        //
+        if($this->dbConn->isDataExists($columnKeyTableName, $colIdName, $colIdValue)) {
+            //$this->save($columnData, $colIdValue);
+            DebugLog::log("Data already exists");
+            return;
+        }
+        //
+        $colWorkingTableName = "working_table";
+        $colMainColumnName = "main_column";
+        $colKeyTypeName = "key_type";
+        $colWorkingTableValue = $columnKey->workingTable;
+        $colMainColumnValue = $columnKey->mainColumn;
+        $colKeyTypeValue = $columnKey->keyType;
+        //
+        $conditions = [
+            $colWorkingTableName => $colWorkingTableValue,
+            $colMainColumnName => $colMainColumnValue,
+            $colKeyTypeName => $colKeyTypeValue,
+        ];
+        //
+        if($this->dbConn->isDataExistsMultiple($columnKeyTableName, $conditions)) {
+            //DebugLog::log("Ddddddddddd");
+            //$this->save($columnData);
+            DebugLog::log("Data already exists");
+            return;
+        }
+        //
         //DebugLog::log($tableData);
         $params = ColumnKeyMapper::toDomainParams($columnKey);
         $tempTableData = new ColumnKey();

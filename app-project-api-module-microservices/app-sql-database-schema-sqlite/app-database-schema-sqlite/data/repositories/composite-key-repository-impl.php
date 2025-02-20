@@ -30,6 +30,27 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
 
     public function create(CompositeKeyModel $compositeKey): void {
         $compositeKeyTableName = "tbl_composite_key";
+        //
+        $colKeyIdName = "key_id";
+        $colPrimaryColumnName = "primary_column";
+        $colCompositeColumnName = "composite_column";
+        $colKeyIdValue = $compositeKey->keyId;
+        $colPrimaryColumnValue = $compositeKey->primaryColumn;
+        $colCompositeColumnValue = $compositeKey->compositeColumn;
+        //
+        $conditions = [
+            $colKeyIdName => $colKeyIdValue,
+            $colPrimaryColumnName => $colPrimaryColumnValue,
+            $colCompositeColumnName => $colCompositeColumnValue,
+        ];
+        //
+        if($this->dbConn->isDataExistsMultiple($compositeKeyTableName, $conditions)) {
+            //DebugLog::log("Ddddddddddd");
+            //$this->save($columnData);
+            DebugLog::log("Data already exists");
+            return;
+        }
+        //
         //DebugLog::log($tableData);
         $params = CompositeKeyMapper::toDomainParams($compositeKey);
         $tempTableData = new CompositeKey();

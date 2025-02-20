@@ -85,12 +85,14 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         ];
         if($this->dbConn->isDataExistsMultiple($columnTableName, $conditions)) {
             //DebugLog::log("Ddddddddddd");
-            $this->save($columnData);
+            //$this->save($columnData);
+            DebugLog::log("Data already exists");
             return;
         }
         //
         if($this->dbConn->isDataExists($columnTableName, $colIdName, $colIdValue)) {
-            $this->save($columnData, $colIdValue);
+            //$this->save($columnData, $colIdValue);
+            DebugLog::log("Data already exists");
             return;
         }
         //
