@@ -43,6 +43,18 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
             $colPrimaryColumnName => $colPrimaryColumnValue,
             $colCompositeColumnName => $colCompositeColumnValue,
         ];
+        if(empty($colPrimaryColumnValue)) {
+            $conditions = [
+                $colKeyIdName => $colKeyIdValue,
+                $colCompositeColumnName => $colCompositeColumnValue,
+            ];
+        }
+        if(empty($colCompositeColumnValue)) {
+            $conditions = [
+                $colKeyIdName => $colKeyIdValue,
+                $colPrimaryColumnName => $colPrimaryColumnValue,
+            ];
+        }
         //
         if($this->dbConn->isDataExistsMultiple($compositeKeyTableName, $conditions)) {
             //DebugLog::log("Ddddddddddd");

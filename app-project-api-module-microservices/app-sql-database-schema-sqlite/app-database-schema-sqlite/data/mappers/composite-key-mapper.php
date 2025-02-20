@@ -72,7 +72,7 @@ class CompositeKeyMapper {
         return $model;
     }
 
-    public function toModel($compositeKey): CompositeKeyModel {
+    public static function toModel($compositeKey): CompositeKeyModel {
         $model = new CompositeKeyModel();
         if(is_array($compositeKey)) {
             $dataVarList = self::getDataVarList(new CompositeKey());

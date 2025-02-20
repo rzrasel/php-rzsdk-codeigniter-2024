@@ -6,10 +6,12 @@ use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Data\Entities\ColumnData;
 use App\DatabaseSchema\Data\Entities\ColumnKey;
+use App\DatabaseSchema\Data\Entities\CompositeKey;
 use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnKeyMapper;
+use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
 use RzSDK\Database\SqliteConnection;
 ?>
 <?php
@@ -101,10 +103,31 @@ class DbRetrieveDatabaseSchemaData {
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
             $columnKey = ColumnKeyMapper::toModel($result);
+            $compositeKeyList = $this->getAllCompositeKeyByColumnKeyId($columnKey->id);
+            if($compositeKeyList) {
+                $columnKey->compositeKeyList = $compositeKeyList;
+            }
             $columnKeyList[] = $columnKey;
         }
         if(!empty($columnKeyList)) {
             return $columnKeyList;
+        }
+        return false;
+    }
+
+    public function getAllCompositeKeyByColumnKeyId($columnKeyId): array|bool {
+        $compositeKeyTableName = "tbl_composite_key";
+        $tempCompositeKey = new CompositeKey();
+        $compositeKeyList = array();
+        $sqlQuery = "SELECT * FROM $compositeKeyTableName WHERE {$tempCompositeKey->key_id} = '$columnKeyId';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        foreach($results as $result) {
+            $compositeKey = CompositeKeyMapper::toModel($result);
+            $compositeKeyList[] = $compositeKey;
+        }
+        if(!empty($compositeKeyList)) {
+            return $compositeKeyList;
         }
         return false;
     }

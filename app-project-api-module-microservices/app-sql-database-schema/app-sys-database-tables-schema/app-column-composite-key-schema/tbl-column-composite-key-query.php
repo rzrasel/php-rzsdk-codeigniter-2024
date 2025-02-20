@@ -45,8 +45,8 @@ class TblColumnCompositeKeyQuery extends TblColumnCompositeKey {
         $tablePropertyList = array(
             $this->key_id           => "BIGINT(20) NOT NULL",
             $this->id               => "BIGINT(20) NOT NULL",
-            $this->primary_column   => "BIGINT(20) NOT NULL",
-            $this->composite_column => "BIGINT(20) NOT NULL",
+            $this->primary_column   => "BIGINT(20) NULL",
+            $this->composite_column => "BIGINT(20) NULL",
             $this->key_name         => "TEXT NULL",
             "modified_date"         => "DATETIME NOT NULL",
             "created_date"          => "DATETIME NOT NULL",
