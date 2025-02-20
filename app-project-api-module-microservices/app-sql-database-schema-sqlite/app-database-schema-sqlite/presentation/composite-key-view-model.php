@@ -2,9 +2,11 @@
 namespace App\DatabaseSchema\Presentation\ViewModels;
 ?>
 <?php
-use App\DatabaseSchema\Data\Entities\TableData;
-use App\DatabaseSchema\Domain\Models\TableDataModel;
+use App\DatabaseSchema\Data\Entities\CompositeKey;
+use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
 use App\DatabaseSchema\Domain\Repositories\CompositeKeyRepositoryInterface;
+use RzSDK\Identification\UniqueIntId;
+use RzSDK\Log\DebugLog;
 ?>
 <?php
 class CompositeKeyViewModel {
@@ -16,6 +18,24 @@ class CompositeKeyViewModel {
 
     public function getAllTableDataGroupByTable(): array|bool {
         return $this->repository->getAllTableDataGroupByTable();
+    }
+
+    public function createFromPostData($postData, ?array $schemaDataList = array()): void {
+        $uniqueIntId = new UniqueIntId();
+        $compositeKey = new CompositeKey();
+        $compositeKeyModel = new CompositeKeyModel();
+        //
+        $compositeKeyModel->id = $uniqueIntId->getId();
+        $compositeKeyModel->keyId = $postData[$compositeKey->key_id];
+        $compositeKeyModel->primaryColumn = $postData[$compositeKey->primary_column];
+        $compositeKeyModel->compositeColumn = $postData[$compositeKey->composite_column];
+        $compositeKeyModel->keyName = $postData[$compositeKey->key_name];
+        $compositeKeyModel->modifiedDate = date('Y-m-d H:i:s');
+        $compositeKeyModel->createdDate = date('Y-m-d H:i:s');
+        //
+        //DebugLog::log($columnKeyModel);
+        //
+        $this->repository->create($compositeKeyModel);
     }
     //
 

@@ -6,7 +6,7 @@ use RzSDK\Database\SqliteConnection;
 use App\DatabaseSchema\Domain\Repositories\CompositeKeyRepositoryInterface;
 use App\DatabaseSchema\Data\Entities\CompositeKey;
 use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
-use App\DatabaseSchema\Data\Mappers\TableDataMapper;
+use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
@@ -27,6 +27,29 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
         $dbDatabaseSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData();
         return $dbDatabaseSchemaData;
     }
+
+    public function create(CompositeKeyModel $compositeKey): void {
+        $compositeKeyTableName = "tbl_composite_key";
+        //DebugLog::log($tableData);
+        $params = CompositeKeyMapper::toDomainParams($compositeKey);
+        $tempTableData = new CompositeKey();
+        $dataVarList = $tempTableData->getVarList();
+        $columns = "";
+        $values = "";
+        foreach($dataVarList as $var) {
+            $columns .= "$var, ";
+            $values .= ":$var, ";
+        }
+        $columns = trim(trim($columns), ",");
+        $values = trim(trim($values), ",");
+        $sqlQuery = "INSERT INTO $compositeKeyTableName ($columns) VALUES ($values)";
+        //DebugLog::log($sqlQuery);
+        //DebugLog::log($values);
+        //DebugLog::log($params);
+        $this->dbConn->execute($sqlQuery, $params);
+        $compositeKey->id = $this->dbConn->getLastInsertId();
+        //DebugLog::log($columnKey->id);
+    }
     //
 
     public function getById(int $compositeKeyId): ?CompositeKeyModel {
@@ -39,9 +62,24 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
         return new CompositeKeyModel();
     }
 
-    public function create(CompositeKeyModel $compositeKey): void {
+    public function save(CompositeKeyModel $compositeKey): void {
+        $data = TableDataMapper::toDomain($compositeKey);
+
+        if($compositeKey->id) {
+            // Update
+            $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
+            $stmt->execute($data);
+        } else {
+            // Insert
+            $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
+            $stmt->execute($data);
+            $compositeKey->id = $this->db->lastInsertId();
+        }
+    }
+
+    public function createOld(CompositeKeyModel $compositeKey): void {
         //DebugLog::log($tableData);
-        $data = TableDataMapper::toDomainParams($compositeKey);
+        $data = CompositeKeyMapper::toDomainParams($compositeKey);
         //DebugLog::log($data);
         /*$stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
         $stmt->execute($data);*/
@@ -61,21 +99,6 @@ class CompositeKeyRepositoryImpl implements CompositeKeyRepositoryInterface {
         $this->dbConn->execute($sqlQuery, $data);
         $compositeKey->id = $this->dbConn->getLastInsertId();
         DebugLog::log($compositeKey->id);
-    }
-
-    public function save(CompositeKeyModel $compositeKey): void {
-        $data = TableDataMapper::toDomain($compositeKey);
-
-        if($compositeKey->id) {
-            // Update
-            $stmt = $this->db->prepare("UPDATE tbl_table_data SET ... WHERE id = :id");
-            $stmt->execute($data);
-        } else {
-            // Insert
-            $stmt = $this->db->prepare("INSERT INTO tbl_table_data (...) VALUES (...)");
-            $stmt->execute($data);
-            $compositeKey->id = $this->db->lastInsertId();
-        }
     }
 
     public function delete(int $id): void {

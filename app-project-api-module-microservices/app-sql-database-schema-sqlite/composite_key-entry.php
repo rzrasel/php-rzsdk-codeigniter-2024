@@ -25,9 +25,23 @@ $view = new CompositeKeyView($viewModel);
 $schemaDataList = $view->getAllTableDataGroupByTable();
 //DebugLog::log($schemaDataList);
 //
-$mainColumnSelectDropDown = HtmlSelectDropDown::columnKeySelectDropDown("main_column", $schemaDataList);
-$referenceColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("reference_column", $schemaDataList, false);
+$columnKeySelectDropDown = HtmlSelectDropDown::columnKeySelectDropDown("key_id", $schemaDataList);
+$primaryColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("primary_column", $schemaDataList, false);
+$compositeColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("composite_column", $schemaDataList, false);
 $relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDropDown("key_type");
+?>
+<?php
+if(!empty($_POST)) {
+    foreach($_POST as $key => $value) {
+        $_POST[$key] = htmlspecialchars($value);
+        $_POST[$key] = trim($value);
+        if(empty($_POST[$key])) {
+            $_POST[$key] = NULL;
+        }
+    }
+    //DebugLog::log($_POST);
+    $view->createFromPostData($_POST, $schemaDataList);
+}
 ?>
 <table>
     <tr>
@@ -48,29 +62,24 @@ $relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDr
             <td></td>
         </tr>
         <tr>
-            <td>Main Column Name:</td>
+            <td>Column Key:</td>
             <td></td>
-            <td><?= $mainColumnSelectDropDown; ?></td>
+            <td><?= $columnKeySelectDropDown; ?></td>
         </tr>
         <tr>
-            <td>Reference Column Name:</td>
+            <td>Primary Column:</td>
             <td></td>
-            <td><?= $referenceColumnSelectDropDown; ?></td>
+            <td><?= $primaryColumnSelectDropDown; ?></td>
         </tr>
         <tr>
-            <td>Key Type:</td>
+            <td>Composite Column:</td>
             <td></td>
-            <td><?= $relationalKeyTypeSelectDropDown; ?></td>
+            <td><?= $compositeColumnSelectDropDown; ?></td>
         </tr>
         <tr>
             <td>Key Name:</td>
             <td></td>
             <td><input type="text" name="key_name" id="key_name" placeholder="Key name" /></td>
-        </tr>
-        <tr>
-            <td>Unique Name:</td>
-            <td></td>
-            <td><input type="text" name="unique_name" id="unique_name" placeholder="Unique name" /></td>
         </tr>
         <tr>
             <td height="20px"></td>
