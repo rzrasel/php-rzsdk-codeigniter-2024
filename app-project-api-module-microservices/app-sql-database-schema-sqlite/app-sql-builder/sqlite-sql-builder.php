@@ -108,7 +108,9 @@ class SqliteSqlBuilder {
         $columnKeyFkList = array();
         $columnKeyPkList = array();
         $columnKeyUkList = array();
+        //echo "<pre>" . print_r($table, true) . "</pre>";
         foreach($table->columnKeyList as $key) {
+            //echo "<pre>" . print_r($key, true) . "</pre>";
             $relationalKeyType = RelationalKeyType::getByName($key->keyType);
             if(!empty($relationalKeyType)) {
                 if($relationalKeyType == RelationalKeyType::PRIMARY) {
@@ -187,6 +189,7 @@ class SqliteSqlBuilder {
         if(empty($key->keyType)) {
             return "";
         }
+        //echo "<pre>" . print_r($key, true) . "</pre>";
         $tablePrefix = trim($schema->tablePrefix, "_");
         if(!empty($tablePrefix)) {
             $tablePrefix .= "_";
@@ -240,6 +243,7 @@ class SqliteSqlBuilder {
             } else if($relationalKeyType == RelationalKeyType::UNIQUE) {
                 $sql .= "CONSTRAINT uk_{$workingTableName}_{$workingColumnKey} UNIQUE($workingColumnName)";
             } else if($relationalKeyType == RelationalKeyType::FOREIGN) {
+                //$rand = rand(1, 100);
                 $sql .= "CONSTRAINT fk_{$workingTableName}_{$workingColumnKey}_{$referenceTableName}_{$referenceColumnKey} FOREIGN KEY($workingColumnName) REFERENCES {$tablePrefix}{$referenceTableName}($referenceColumnName)";
             }
         }
@@ -250,6 +254,8 @@ class SqliteSqlBuilder {
         } elseif($key->keyType === "UNIQUE") {
             $sql .= "UNIQUE KEY `{$key->uniqueName}` (`{$key->mainColumnName}`)";
         }*/
+        /*echo $sql;
+        echo "<br />";*/
         return trim($sql);
     }
 

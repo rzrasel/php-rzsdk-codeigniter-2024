@@ -5,6 +5,7 @@ require_once("include.php");
 use App\Utils\Menu\Builder\BuildHtmlMenu;
 use App\Utils\Menu\Builder\HtmlMenuDataList;
 ?>
+<link rel="stylesheet" type="text/css" href="css/style.css">
 <?php
 $baseUrl = BASE_URL . "/app-sql-database-schema-sqlite/";
 //echo $baseUrl;

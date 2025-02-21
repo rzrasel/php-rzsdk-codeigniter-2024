@@ -1,0 +1,81 @@
+/* Sidebar styling */
+.sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    height: 100vh;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+
+    /*clear: both;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;*/
+}
+
+/* Menu styling */
+.menu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+
+    /*clear: both;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;*/
+}
+
+/* Menu items */
+.menu-item {
+    padding: 10px;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.menu-item a {
+    text-decoration: none;
+    color: #ecf0f1;
+    display: block;
+    transition: 0.3s;
+}
+
+/* Active menu item */
+.menu-item.active a {
+    background-color: #3498db;
+    font-weight: bold;
+    padding-left: 15px;
+}
+
+/* Hover effect */
+.menu-item a:hover {
+    background-color: #34495e;
+    padding-left: 10px;
+}
+
+/* Parent items */
+.parent {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Submenu */
+.submenu {
+    list-style-type: none;
+    padding-left: 15px;
+    display: none;
+}
+
+/* Show open submenus */
+.parent.open > .submenu {
+    display: block;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+}
