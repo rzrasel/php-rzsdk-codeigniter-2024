@@ -7,7 +7,7 @@ require_once("include.php");
 <?php
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
-use App\DatabaseSchema\Sql\Builder\SqlBuilderFromDataList;
+use App\DatabaseSchema\Sql\Builder\SqliteSqlBuilder;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -42,7 +42,7 @@ $dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSche
 //DebugLog::log($dbRetrieveSchemaData);
 /*$databaseSchemaGenerate = new DatabaseSchemaStatementGenerate($dbRetrieveSchemaData);
 $databaseSchemaGenerate->getDatabaseSchema();*/
-$sqlBuilder = new SqlBuilderFromDataList();
+$sqlBuilder = new SqliteSqlBuilder();
 $sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
 
 echo "<pre>"; // For formatted output in HTML

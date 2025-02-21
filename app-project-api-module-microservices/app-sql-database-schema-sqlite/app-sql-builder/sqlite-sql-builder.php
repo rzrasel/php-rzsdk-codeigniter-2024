@@ -11,13 +11,15 @@ use App\DatabaseSchema\Helper\Key\Type\RelationalKeyType;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class SqlBuilderFromDataList {
+class SqliteSqlBuilder {
     private $databaseSchemas;
     private int $maxColumnLength;
     private int $maxPadLength = 0;
+    private array $tableList = array();
     //
     public function buildSql(array $schemas): string {
         $this->databaseSchemas = $schemas;
+        $this->tableList = array();
         $sql = "";
 
         foreach($schemas as $schema) {
@@ -31,15 +33,42 @@ class SqlBuilderFromDataList {
         $databaseSchemaDataFinder = new DatabaseSchemaDataFinder(array($schema));
         $this->maxColumnLength = $databaseSchemaDataFinder->getMaxColumnLength($schema->id);
         $this->maxPadLength = $this->maxColumnLength + 4;
-        $sql = "CREATE DATABASE IF NOT EXISTS `{$schema->schemaName}`;\n"; // Create database if not exists
-        $sql .= "USE `{$schema->schemaName}`;\n"; // Use the specified database
+        $sql = "\n\n\n\n";
+        $sql .= "CREATE DATABASE IF NOT EXISTS `{$schema->schemaName}`;\n";
+        $sql .= "USE `{$schema->schemaName}`;\n";
         $sql .= "\n\n\n\n";
 
+        $tableCreateSql = "";
         foreach($schema->tableDataList as $table) {
-            $sql .= $this->buildTableSql($schema, $table);
+            $this->tableList[] = $table->tableName;
+            $tableCreateSql .= $this->buildTableSql($schema, $table);
         }
+        //DebugLog::log($this->tableList);
+
+        $dropTableSql = $this->dropTableSql();
+
+        $deleteTableSql = $this->deleteTableSql();
+
+        $sql .= "{$dropTableSql}\n\n{$tableCreateSql}\n\n{$deleteTableSql}";
+        $sql .= "\n\n\n\n";
 
         return $sql;
+    }
+
+    private function dropTableSql(): string {
+        $dropTableSql = "";
+        foreach($this->tableList as $table) {
+            $dropTableSql .= "DROP TABLE IF EXISTS `{$table}`;\n";
+        }
+        return $dropTableSql;
+    }
+
+    private function deleteTableSql(): string {
+        $dropTableSql = "";
+        foreach($this->tableList as $table) {
+            $dropTableSql .= "DELETE FROM `{$table}`;\n";
+        }
+        return $dropTableSql;
     }
 
     private function buildTableSql(DatabaseSchemaModel $schema, TableDataModel $table): string {
@@ -165,6 +194,7 @@ class SqlBuilderFromDataList {
         if(!empty($referenceColumnInfo)) {
             $referenceTableName = $referenceColumnInfo["table"];
             $referenceColumnName = $referenceColumnInfo["column"];
+            $this->onRearrangeTable($workingTableName, $referenceTableName);
         }
         //
         $sql = "    ";
@@ -186,6 +216,25 @@ class SqlBuilderFromDataList {
             $sql .= "UNIQUE KEY `{$key->uniqueName}` (`{$key->mainColumnName}`)";
         }*/
         return trim($sql);
+    }
+
+    private function onRearrangeTable($mainTable, $referenceTable) {
+        if(empty($mainTable) || empty($referenceTable)) {
+            return;
+        }
+        $workingIndex = -1;
+        $referenceIndex = -1;
+        //foreach($this->tableList as $table) {}
+        foreach($this->tableList as $key => $value) {
+            if($value === $mainTable) {
+                $workingIndex = $key;
+            }
+            if($value === $referenceTable) {
+                $referenceIndex = $key;
+            }
+        }
+        $this->tableList[$workingIndex] = $referenceTable;
+        $this->tableList[$referenceIndex] = $mainTable;
     }
 }
 ?>
