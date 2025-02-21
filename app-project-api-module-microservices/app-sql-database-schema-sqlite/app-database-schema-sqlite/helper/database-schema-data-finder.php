@@ -127,7 +127,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    private function findColumnIndex(string $schemaIndex, string $tableIndex, string $id): ?int {
+    private function findColumnIndex(?string $schemaIndex, ?string $tableIndex, ?string $id): ?int {
         foreach($this->schemas[$schemaIndex]->tableDataList[$tableIndex]->columnDataList as $index => $column) {
             if("{$column->id}" === "$id") {
                 return $index;
@@ -192,7 +192,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getColumnDetails(string $id): ?array {
+    public function getColumnDetails(?string $id): ?array {
         foreach($this->schemas as $schemaIndex => $schema) {
             foreach($schema->tableDataList as $tableIndex => $table) {
                 $columnIndex = $this->findColumnIndex($schemaIndex, $tableIndex, $id);

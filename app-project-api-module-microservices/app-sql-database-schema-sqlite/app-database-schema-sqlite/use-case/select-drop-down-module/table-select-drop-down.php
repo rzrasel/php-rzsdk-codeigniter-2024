@@ -16,7 +16,7 @@ trait TableSelectDropDown {
         $htmlOutput = "";
         //$htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
         //$htmlOutput .= "<option value=\"\" selected=\"selected\">Select Table Name</option>";
-        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item) use ($selectedTableId) {
+        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function($item) use($selectedTableId) {
             //DebugLog::log($item);
             if($item instanceof DatabaseSchemaModel) {
                 return "<optgroup label=\"Database ↦ {$item->schemaName}\">";

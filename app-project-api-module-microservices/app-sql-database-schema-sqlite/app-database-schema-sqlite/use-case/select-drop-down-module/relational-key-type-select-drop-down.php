@@ -10,7 +10,7 @@ trait RelationalKeyTypeSelectDropDown {
 public static function relationalKeyTypeSelectDropDown($fieldName) {
     $htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
     $htmlOutput .= "<option value=\"\" selected=\"selected\">Select Data Type</option>";
-    $htmlOutput .= RelationalKeyType::onRecursionTraverse(function (RelationalKeyType $key) {
+    $htmlOutput .= RelationalKeyType::onRecursionTraverse(function(RelationalKeyType $key) {
         return "<option value=\"{$key->name}\">{$key->name}</option>";
     });
     $htmlOutput .= "</select>";

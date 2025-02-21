@@ -20,7 +20,7 @@ trait ColumnKeySelectDropDown {
         $callbackSingleModelData = new RecursiveCallbackSingleModelData();
         $htmlOutput = "<select name=\"$fieldName\" $required>";
         $htmlOutput .= "<option value=\"\" selected=\"selected\">Select Column Key</option>";
-        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function ($item, $extras = null) {
+        $htmlOutput .= $callbackSingleModelData->traverseDatabaseSchema($schemaDataList, function($item, $extras = null) {
             //DebugLog::log($item);
             if($item instanceof DatabaseSchemaModel) {
                 return "<optgroup label=\"{$item->schemaName}\">";

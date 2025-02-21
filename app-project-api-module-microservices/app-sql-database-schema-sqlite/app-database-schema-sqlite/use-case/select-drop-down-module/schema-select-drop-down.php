@@ -15,7 +15,7 @@ trait SchemaSelectDropDown {
         $htmlOutput = "";
         //$htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
         //$htmlOutput .= "<option value=\"\" selected=\"selected\">Select Database Schema Name</option>";
-        $htmlOutput .= $callbackSingleModelData->onRecursionTraverse($schemaDataList, function ($item, $level) use ($selectedId) {
+        $htmlOutput .= $callbackSingleModelData->onRecursionTraverse($schemaDataList, function($item, $level) use($selectedId) {
             if($item instanceof DatabaseSchemaModel) {
                 if($selectedId == $item->id) {
                     $isSelected = true;

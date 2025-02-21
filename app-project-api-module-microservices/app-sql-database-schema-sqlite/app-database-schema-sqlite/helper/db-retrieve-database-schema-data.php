@@ -101,7 +101,7 @@ class DbRetrieveDatabaseSchemaData {
         $columnKeyTableName = "tbl_column_key";
         $tempColumnKey = new ColumnKey();
         $columnKeyList = array();
-        $sqlQuery = "SELECT * FROM $columnKeyTableName WHERE {$tempColumnKey->working_table} = '$tableId' ORDER BY {$tempColumnKey->key_type} ASC, {$tempColumnKey->unique_name};";
+        $sqlQuery = "SELECT * FROM $columnKeyTableName WHERE {$tempColumnKey->working_table} = '$tableId' GROUP BY {$tempColumnKey->key_type} ORDER BY {$tempColumnKey->key_type} ASC, {$tempColumnKey->unique_name};";
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
