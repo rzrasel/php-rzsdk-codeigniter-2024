@@ -6,6 +6,7 @@ use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
 use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
+use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
 use App\DatabaseSchema\Helper\Data\Finder\DatabaseSchemaDataFinder;
 use App\DatabaseSchema\Helper\Key\Type\RelationalKeyType;
 use RzSDK\Log\DebugLog;
@@ -41,8 +42,8 @@ class SqliteSqlBuilder {
         $this->maxColumnPadLength = $this->maxColumnLength + 4;
         $this->maxDataTypePadLength = $this->maxDataTypeLength + 4;
         $sql = "\n\n\n\n";
-        $sql .= "CREATE DATABASE IF NOT EXISTS `{$schema->schemaName}`;\n";
-        $sql .= "USE `{$schema->schemaName}`;\n";
+        $sql .= "CREATE DATABASE IF NOT EXISTS {$schema->schemaName};\n";
+        $sql .= "USE {$schema->schemaName};\n";
         $sql .= "\n\n\n\n";
 
         $tableCreateSql = "";
@@ -65,7 +66,7 @@ class SqliteSqlBuilder {
     private function dropTableSql(): string {
         $dropTableSql = "";
         foreach($this->tableList as $table) {
-            $dropTableSql .= "DROP TABLE IF EXISTS `{$table}`;\n";
+            $dropTableSql .= "DROP TABLE IF EXISTS {$table};\n";
         }
         return $dropTableSql;
     }
@@ -73,7 +74,7 @@ class SqliteSqlBuilder {
     private function deleteTableSql(): string {
         $dropTableSql = "";
         foreach($this->tableList as $table) {
-            $dropTableSql .= "DELETE FROM `{$table}`;\n";
+            $dropTableSql .= "DELETE FROM {$table};\n";
         }
         return $dropTableSql;
     }
@@ -145,7 +146,7 @@ class SqliteSqlBuilder {
                     $sqlCommands[$key] = trim($value);
                 }
             }*/
-            $sql = "CREATE TABLE IF NOT EXISTS `$tablePrefix{$table->tableName}` (\n";
+            $sql = "CREATE TABLE IF NOT EXISTS $tablePrefix{$table->tableName} (\n";
             $sql .= implode(",\n", $sqlCommands) . "\n";
             $sql .= ");\n\n";
         }
@@ -159,7 +160,7 @@ class SqliteSqlBuilder {
         if(empty($column->columnName)) {
             return "";
         }
-        $columnName = "`{$column->columnName}`";
+        $columnName = "{$column->columnName}";
         $columnName =  str_pad($columnName, $this->maxColumnPadLength, " ");
         $dataType = "{$column->dataType}";
         $dataType =  str_pad($dataType, $this->maxDataTypePadLength, " ");
@@ -195,14 +196,14 @@ class SqliteSqlBuilder {
         $referenceColumnId = $key->referenceColumn;
         //
         $databaseSchemaDataFinder = new DatabaseSchemaDataFinder($this->databaseSchemas);
-        $workingTableInfo = $databaseSchemaDataFinder->getColumnDetails($workingColumnId);
+        $workingColumnInfo = $databaseSchemaDataFinder->getColumnDetails($workingColumnId);
         $referenceColumnInfo = array();
         if(!empty($referenceColumnId)) {
             $referenceColumnInfo = $databaseSchemaDataFinder->getColumnDetails($referenceColumnId);
         }
         //
-        $workingTableName = $workingTableInfo["table"];
-        $workingColumnName = $workingTableInfo["column"];
+        $workingTableName = $workingColumnInfo["table"];
+        $workingColumnName = $workingColumnInfo["column"];
         $referenceTableName = "";
         $referenceColumnName = "";
         if(!empty($referenceColumnInfo)) {
@@ -211,15 +212,35 @@ class SqliteSqlBuilder {
             $this->onRearrangeDropTableList($workingTableName, $referenceTableName);
         }
         //
+        $workingColumnKey = $workingColumnName;
+        $referenceColumnKey = $referenceColumnName;
+        if(!empty($key->compositeKeyList)) {
+            $compositeColumns = $this->getCompositeKeyList($key->compositeKeyList);
+            //DebugLog::log($compositeColumns);
+            if(!empty($compositeColumns)) {
+                if(!empty($compositeColumns["primary"])) {
+                    $workingColumnName = $workingColumnName . ", ". implode(", ", $compositeColumns["primary"]);
+                    $workingColumnKey = $workingColumnKey . "_". implode("_", $compositeColumns["primary"]);
+                    $workingColumnName = trim($workingColumnName);
+                    $workingColumnKey = trim($workingColumnKey);
+                }
+            }
+            if(!empty($compositeColumns)) {
+                if(!empty($compositeColumns["reference"])) {
+                    $referenceColumnName = $referenceColumnName . ", ". implode(", ", $compositeColumns["reference"]);
+                }
+            }
+        }
+        //
         $sql = "    ";
         $relationalKeyType = RelationalKeyType::getByName($key->keyType);
         if(!empty($relationalKeyType)) {
             if($relationalKeyType == RelationalKeyType::PRIMARY) {
-                $sql .= "CONSTRAINT pk_{$workingTableName}_{$workingColumnName} PRIMARY KEY($workingColumnName)";
+                $sql .= "CONSTRAINT pk_{$workingTableName}_{$workingColumnKey} PRIMARY KEY($workingColumnName)";
             } else if($relationalKeyType == RelationalKeyType::UNIQUE) {
-                $sql .= "CONSTRAINT uk_{$workingTableName}_{$workingColumnName} UNIQUE($workingColumnName)";
+                $sql .= "CONSTRAINT uk_{$workingTableName}_{$workingColumnKey} UNIQUE($workingColumnName)";
             } else if($relationalKeyType == RelationalKeyType::FOREIGN) {
-                $sql .= "CONSTRAINT fk_{$workingTableName}_{$workingColumnName}_{$referenceTableName}_{$referenceColumnName} FOREIGN KEY($workingColumnName) REFERENCES {$tablePrefix}{$referenceTableName}($referenceColumnName)";
+                $sql .= "CONSTRAINT fk_{$workingTableName}_{$workingColumnKey}_{$referenceTableName}_{$referenceColumnKey} FOREIGN KEY($workingColumnName) REFERENCES {$tablePrefix}{$referenceTableName}($referenceColumnName)";
             }
         }
         /*if($key->keyType === "PRIMARY") {
@@ -230,6 +251,32 @@ class SqliteSqlBuilder {
             $sql .= "UNIQUE KEY `{$key->uniqueName}` (`{$key->mainColumnName}`)";
         }*/
         return trim($sql);
+    }
+
+    private function getCompositeKeyList(?array $keyList): array {
+        //DebugLog::log($key);
+        $compositeKeyList = array(
+            "primary" => array(),
+            "reference" => array(),
+        );
+        $databaseSchemaDataFinder = new DatabaseSchemaDataFinder($this->databaseSchemas);
+        foreach($keyList as $key) {
+            $primaryId = $key->primaryColumn;
+            $compositeId = $key->compositeColumn;
+            if(!empty($primaryId)) {
+                $primaryColumnInfo = $databaseSchemaDataFinder->getColumnDetails($primaryId);
+                if(!empty($primaryColumnInfo)) {
+                    $compositeKeyList["primary"][] = $primaryColumnInfo["column"];
+                }
+            }
+            if(!empty($compositeId)) {
+                $compositeColumnInfo = $databaseSchemaDataFinder->getColumnDetails($compositeId);
+                if(!empty($compositeColumnInfo)) {
+                    $compositeKeyList["reference"][] = $compositeColumnInfo["column"];
+                }
+            }
+        }
+        return $compositeKeyList;
     }
 
     private function onRearrangeDropTableList($mainTable, $referenceTable) {

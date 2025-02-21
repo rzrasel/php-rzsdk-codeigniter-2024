@@ -22,6 +22,7 @@ class DatabaseSchemaViewModel {
         //
         $schemaName = trim($postData[$tempDatabaseSchema->schema_name]);
         $schemaName = preg_replace("/\s+/", "_", $schemaName);
+        $schemaName = preg_replace("-", "_", $schemaName);
         //
         $databaseSchemaModel->id = $uniqueIntId->getId();
         $databaseSchemaModel->schemaName = $schemaName;

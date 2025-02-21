@@ -27,6 +27,7 @@ class ColumnDataViewModel {
         //
         $columnName = trim($postData[$columnData->column_name]);
         $columnName = preg_replace("/\s+/", "_", $columnName);
+        $columnName = preg_replace("-", "_", $columnName);
         //
         $postDataType = $postData["data_type"];
         $postDataLength = $postData["data_length"];

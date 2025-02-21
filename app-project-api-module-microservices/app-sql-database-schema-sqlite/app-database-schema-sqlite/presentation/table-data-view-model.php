@@ -27,6 +27,7 @@ class TableDataViewModel {
         //
         $tableName = trim($postData[$tempTableData->table_name]);
         $tableName = preg_replace("/\s+/", "_", $tableName);
+        $tableName = preg_replace("-", "_", $tableName);
         //
         $tableDataModelModel->id = $uniqueIntId->getId();
         $tableDataModelModel->schemaId = $postData[$tempTableData->schema_id];
