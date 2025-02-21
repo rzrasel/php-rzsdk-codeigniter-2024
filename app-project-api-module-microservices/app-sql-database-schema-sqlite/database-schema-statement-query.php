@@ -1,4 +1,5 @@
 <?php
+namespace App\DatabaseSchema\Sql;
 ?>
 <?php
 require_once("include.php");
@@ -6,6 +7,7 @@ require_once("include.php");
 <?php
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
+use App\DatabaseSchema\Sql\Builder\SqlBuilderFromDataList;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -37,6 +39,13 @@ class DatabaseSchemaStatementGenerate {
 ?>
 <?php
 $dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData();
-$databaseSchemaGenerate = new DatabaseSchemaStatementGenerate($dbRetrieveSchemaData);
-$databaseSchemaGenerate->getDatabaseSchema();
+//DebugLog::log($dbRetrieveSchemaData);
+/*$databaseSchemaGenerate = new DatabaseSchemaStatementGenerate($dbRetrieveSchemaData);
+$databaseSchemaGenerate->getDatabaseSchema();*/
+$sqlBuilder = new SqlBuilderFromDataList();
+$sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
+
+echo "<pre>"; // For formatted output in HTML
+echo $sql;
+echo "</pre>";
 ?>
