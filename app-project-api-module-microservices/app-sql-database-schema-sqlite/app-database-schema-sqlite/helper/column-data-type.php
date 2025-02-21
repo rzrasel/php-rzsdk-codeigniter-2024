@@ -6,6 +6,7 @@ enum ColumnDataType: string {
     case BIGINT     = "bigint";
     case BOOLEAN    = "boolean";
     case DATETIME   = "datetime";
+    case INT       = "int";
     case TEXT       = "text";
     case TIMESTAMP  = "timestamp";
     case VARCHAR    = "varchar";

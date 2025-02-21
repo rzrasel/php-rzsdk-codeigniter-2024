@@ -13,11 +13,16 @@ use RzSDK\Log\DebugLog;
 <?php
 class SqliteSqlBuilder {
     private $databaseSchemas;
-    private int $maxColumnLength;
-    private int $maxPadLength = 0;
+    private int $maxColumnLength = 0;
+    private int $maxColumnPadLength = 0;
+    private int $maxDataTypeLength = 0;
+    private int $maxDataTypePadLength = 0;
     private array $tableList = array();
     //
-    public function buildSql(array $schemas): string {
+    public function buildSql(?array $schemas): string {
+        if(empty($schemas)) {
+            return "";
+        }
         $this->databaseSchemas = $schemas;
         $this->tableList = array();
         $sql = "";
@@ -32,7 +37,9 @@ class SqliteSqlBuilder {
     private function buildSchemaSql(DatabaseSchemaModel $schema): string {
         $databaseSchemaDataFinder = new DatabaseSchemaDataFinder(array($schema));
         $this->maxColumnLength = $databaseSchemaDataFinder->getMaxColumnLength($schema->id);
-        $this->maxPadLength = $this->maxColumnLength + 4;
+        $this->maxDataTypeLength = $databaseSchemaDataFinder->getMaxDataTypeLength($schema->id);
+        $this->maxColumnPadLength = $this->maxColumnLength + 4;
+        $this->maxDataTypePadLength = $this->maxDataTypeLength + 4;
         $sql = "\n\n\n\n";
         $sql .= "CREATE DATABASE IF NOT EXISTS `{$schema->schemaName}`;\n";
         $sql .= "USE `{$schema->schemaName}`;\n";
@@ -153,13 +160,20 @@ class SqliteSqlBuilder {
             return "";
         }
         $columnName = "`{$column->columnName}`";
-        $columnName =  str_pad($columnName, $this->maxPadLength, " ");
-        $sql = "    {$columnName} {$column->dataType}";
-        if(!$column->isNullable) {
+        $columnName =  str_pad($columnName, $this->maxColumnPadLength, " ");
+        $dataType = "{$column->dataType}";
+        $dataType =  str_pad($dataType, $this->maxDataTypePadLength, " ");
+        $sql = "    {$columnName} {$dataType}";
+        if($column->isNullable && strtolower($column->isNullable) == "true") {
+            $sql .= " NULL";
+        } else {
             $sql .= " NOT NULL";
         }
-        if($column->defaultValue !== null && $column->defaultValue !== "") { // Check for null or empty string
-            $sql .= " DEFAULT {$column->defaultValue}";
+        if($column->haveDefault && strtolower($column->haveDefault) == "true") {
+            $sql .= " DEFAULT";
+        }
+        if($column->defaultValue !== null && $column->defaultValue !== "") {
+            $sql .= " {$column->defaultValue}";
         }
         if($column->columnComment) {
             $sql .= " COMMENT '{$column->columnComment}'";
@@ -194,7 +208,7 @@ class SqliteSqlBuilder {
         if(!empty($referenceColumnInfo)) {
             $referenceTableName = $referenceColumnInfo["table"];
             $referenceColumnName = $referenceColumnInfo["column"];
-            $this->onRearrangeTable($workingTableName, $referenceTableName);
+            $this->onRearrangeDropTableList($workingTableName, $referenceTableName);
         }
         //
         $sql = "    ";
@@ -218,7 +232,7 @@ class SqliteSqlBuilder {
         return trim($sql);
     }
 
-    private function onRearrangeTable($mainTable, $referenceTable) {
+    private function onRearrangeDropTableList($mainTable, $referenceTable) {
         if(empty($mainTable) || empty($referenceTable)) {
             return;
         }

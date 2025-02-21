@@ -20,13 +20,18 @@ class TableDataViewModel {
         return $this->repository->getAllDatabaseSchemaData();
     }
     public function createFromPostData($postData): void {
+        //
         $uniqueIntId = new UniqueIntId();
         $tempTableData = new TableData();
         $tableDataModelModel = new TableDataModel();
+        //
+        $tableName = trim($postData[$tempTableData->table_name]);
+        $tableName = preg_replace("/\s+/", "_", $tableName);
+        //
         $tableDataModelModel->id = $uniqueIntId->getId();
         $tableDataModelModel->schemaId = $postData[$tempTableData->schema_id];
         $tableDataModelModel->tableOrder = $postData[$tempTableData->table_order];
-        $tableDataModelModel->tableName = $postData[$tempTableData->table_name];
+        $tableDataModelModel->tableName = $tableName;
         $tableDataModelModel->columnPrefix = $postData[$tempTableData->column_prefix];
         $tableDataModelModel->tableComment = $postData[$tempTableData->table_comment];
         $tableDataModelModel->modifiedDate = date('Y-m-d H:i:s');

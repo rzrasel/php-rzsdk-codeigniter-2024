@@ -27,11 +27,14 @@ class DbRetrieveDatabaseSchemaData {
         }
     }
     //
-    public function getAllDatabaseSchemaData(): array|bool {
+    public function getAllDatabaseSchemaData(?string $schemaId = ""): array|bool {
         $schemaTableName = "tbl_database_schema";
         $tempDatabaseSchema = new DatabaseSchema();
         $databaseSchemaList = array();
         $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        if(!empty($schemaId)) {
+            $sqlQuery = "SELECT * FROM $schemaTableName WHERE {$tempDatabaseSchema->id} = $schemaId ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        }
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {

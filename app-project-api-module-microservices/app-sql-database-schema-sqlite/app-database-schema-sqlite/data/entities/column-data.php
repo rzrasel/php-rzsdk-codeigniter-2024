@@ -10,6 +10,7 @@ class ColumnData {
     public $column_name = "column_name";
     public $data_type = "data_type";
     public $is_nullable = "is_nullable";
+    public $have_default = "have_default";
     public $default_value = "default_value";
     public $column_comment = "column_comment";
     public $modified_date = "modified_date";

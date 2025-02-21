@@ -10,6 +10,7 @@ class ColumnDataModel {
     public $columnName;
     public $dataType;
     public $isNullable;
+    public $haveDefault;
     public $defaultValue;
     public $columnComment;
     public $modifiedDate;
@@ -23,6 +24,7 @@ class ColumnDataModel {
         $columnName = null,
         $dataType = null,
         $isNullable = null,
+        $haveDefault = null,
         $defaultValue = null,
         $columnComment = null,
         $modifiedDate = null,
@@ -35,6 +37,7 @@ class ColumnDataModel {
         $this->columnName = $columnName;
         $this->dataType = $dataType;
         $this->isNullable = $isNullable;
+        $this->haveDefault = $haveDefault;
         $this->defaultValue = $defaultValue;
         $this->columnComment = $columnComment;
         $this->modifiedDate = $modifiedDate;

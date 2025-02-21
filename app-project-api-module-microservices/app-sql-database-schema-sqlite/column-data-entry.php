@@ -37,6 +37,8 @@ if(!empty($_POST)) {
 $tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
 $tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
 $dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type");
+$isNullSelectDropDown = HtmlSelectDropDown::isNullSelectDropDown("is_nullable");
+$isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_default");
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -100,8 +102,14 @@ if(!empty($_POST)) {
         <tr>
             <td>Is Null:</td>
             <td></td>
-            <td><input type="hidden" name="is_nullable" id="is_nullable" value="false">
-                <input type="checkbox" name="is_nullable" id="is_nullable" value="true"></td>
+            <td><!--<input type="hidden" name="is_nullable" id="is_nullable" value="false">
+                <input type="checkbox" name="is_nullable" id="is_nullable" value="true">--><?= $isNullSelectDropDown; ?></td>
+        </tr>
+        <tr>
+            <td>Have Default:</td>
+            <td></td>
+            <td><!--<input type="hidden" name="is_default" id="is_default" value="false">
+                <input type="checkbox" name="is_default" id="is_default" value="true">--><?= $isDefaultSelectDropDown; ?></td>
         </tr>
         <tr>
             <td>Default Value:</td>

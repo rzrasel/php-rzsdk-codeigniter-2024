@@ -50,6 +50,7 @@ class TblColumnDataQuery extends TblColumnData {
             $this->column_name      => "TEXT NOT NULL",
             $this->data_type        => "TEXT NOT NULL",
             $this->is_nullable      => "BOOLEAN NOT NULL DEFAULT FALSE",
+            $this->have_default     => "BOOLEAN NOT NULL DEFAULT FALSE",
             $this->default_value    => "TEXT NULL",
             $this->column_comment   => "TEXT NULL",
             "modified_date"         => "DATETIME NOT NULL",

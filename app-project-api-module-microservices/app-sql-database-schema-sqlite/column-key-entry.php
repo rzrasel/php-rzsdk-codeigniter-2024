@@ -70,12 +70,12 @@ if(!empty($_POST)) {
             <td></td>
         </tr>
         <tr>
-            <td>Main Column Name:</td>
+            <td>Working Table Column Name:</td>
             <td></td>
             <td><?= $mainColumnSelectDropDown; ?></td>
         </tr>
         <tr>
-            <td>Reference Column Name:</td>
+            <td>Reference Table Column Name:</td>
             <td></td>
             <td><?= $referenceColumnSelectDropDown; ?></td>
         </tr>

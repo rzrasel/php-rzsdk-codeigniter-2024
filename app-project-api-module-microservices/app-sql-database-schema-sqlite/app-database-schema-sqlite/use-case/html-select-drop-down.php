@@ -8,6 +8,8 @@ use App\DatabaseSchema\Html\Select\DropDown\DataTypeSelectDropDown;
 use App\DatabaseSchema\Html\Select\DropDown\ColumnSelectDropDown;
 use App\DatabaseSchema\Html\Select\DropDown\ColumnKeySelectDropDown;
 use App\DatabaseSchema\Html\Select\DropDown\RelationalKeyTypeSelectDropDown;
+use App\DatabaseSchema\Html\Select\DropDown\IsNullSelectDropDown;
+use App\DatabaseSchema\Html\Select\DropDown\IsDefaultSelectDropDown;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -18,5 +20,7 @@ class HtmlSelectDropDown {
     use ColumnSelectDropDown;
     use ColumnKeySelectDropDown;
     use RelationalKeyTypeSelectDropDown;
+    use IsNullSelectDropDown;
+    use IsDefaultSelectDropDown;
 }
 ?>

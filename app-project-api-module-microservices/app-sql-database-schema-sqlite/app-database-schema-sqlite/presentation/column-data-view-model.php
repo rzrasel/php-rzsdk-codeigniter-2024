@@ -25,6 +25,9 @@ class ColumnDataViewModel {
         $columnData = new ColumnData();
         $columnDataModel = new ColumnDataModel();
         //
+        $columnName = trim($postData[$columnData->column_name]);
+        $columnName = preg_replace("/\s+/", "_", $columnName);
+        //
         $postDataType = $postData["data_type"];
         $postDataLength = $postData["data_length"];
         $dataType = $postDataType;
@@ -33,6 +36,7 @@ class ColumnDataViewModel {
         }
         //
         $isNullable = $postData[$columnData->is_nullable];
+        $haveDefault = $postData[$columnData->have_default];
         /*$isNullable = false;
         if($isNullable) {
             $isNullable = false;
@@ -43,9 +47,10 @@ class ColumnDataViewModel {
         $columnDataModel->id = $uniqueIntId->getId();
         $columnDataModel->tableId = $postData[$columnData->table_id];
         $columnDataModel->columnOrder = $postData[$columnData->column_order];
-        $columnDataModel->columnName = $postData[$columnData->column_name];
+        $columnDataModel->columnName = $columnName;
         $columnDataModel->dataType = strtoupper($dataType);
         $columnDataModel->isNullable = $isNullable;
+        $columnDataModel->haveDefault = $haveDefault;
         $columnDataModel->defaultValue = $postData[$columnData->default_value];
         $columnDataModel->columnComment = $postData[$columnData->column_comment];
         $columnDataModel->modifiedDate = date('Y-m-d H:i:s');

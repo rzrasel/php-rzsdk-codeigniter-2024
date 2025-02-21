@@ -12,6 +12,7 @@ $baseUrl = BASE_URL . "/app-sql-database-schema-sqlite/";
 <?php
 $dataList = array(
     "database-schema-entry.php" => "Database Schema Entry",
+    "table-data-entry.php" => "Table Data Entry",
     "column-data-entry.php" => "Column Data Entry",
     "column-key-entry.php" => "Column Key Entry",
     "composite-key-entry.php" => "Composite Key Entry",

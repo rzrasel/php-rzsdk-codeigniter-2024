@@ -11,39 +11,23 @@ use App\DatabaseSchema\Sql\Builder\SqliteSqlBuilder;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-class DatabaseSchemaStatementGenerate {
-    private $databaseSchemas;
-    //
-
-    public function __construct(array $databaseSchemas) {
-        $this->databaseSchemas = $databaseSchemas;
-        //DebugLog::log($this->databaseSchemas);
-    }
-
-    public function setSchemas(array $databaseSchemas): void {
-        $this->databaseSchemas = $databaseSchemas;
-    }
-
-    public function getDatabaseSchema() {
-        foreach($this->databaseSchemas as $schemaIndex => $schemaItem) {
-            $schemaItem = self::getDatabaseSchemaModel($schemaItem);
-            echo $schemaItem->schemaVersion;
-            foreach($schemaItem->tableDataList as $tableIndex => $tableItem) {}
-        }
-    }
-
-    public static function getDatabaseSchemaModel(DatabaseSchemaModel $databaseSchema): DatabaseSchemaModel {
-        return $databaseSchema;
-    }
-}
 ?>
 <?php
-$dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData();
+//app-sys-database-tables-schema
+$schemaId = "174014882064916708";
+/*//user_management
+$schemaId = "174014882064916708";
+//quiz_manager_database_schema
+$schemaId = "174014407593278352";*/
+$dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaData($schemaId);
 //DebugLog::log($dbRetrieveSchemaData);
 /*$databaseSchemaGenerate = new DatabaseSchemaStatementGenerate($dbRetrieveSchemaData);
 $databaseSchemaGenerate->getDatabaseSchema();*/
-$sqlBuilder = new SqliteSqlBuilder();
-$sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
+$sql = "";
+if($dbRetrieveSchemaData) {
+    $sqlBuilder = new SqliteSqlBuilder();
+    $sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
+}
 
 echo "<pre>"; // For formatted output in HTML
 echo $sql;

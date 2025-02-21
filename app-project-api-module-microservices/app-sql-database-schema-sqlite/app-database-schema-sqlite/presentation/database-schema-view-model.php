@@ -19,8 +19,12 @@ class DatabaseSchemaViewModel {
         $uniqueIntId = new UniqueIntId();
         $tempDatabaseSchema = new DatabaseSchema();
         $databaseSchemaModel = new DatabaseSchemaModel();
+        //
+        $schemaName = trim($postData[$tempDatabaseSchema->schema_name]);
+        $schemaName = preg_replace("/\s+/", "_", $schemaName);
+        //
         $databaseSchemaModel->id = $uniqueIntId->getId();
-        $databaseSchemaModel->schemaName = $postData[$tempDatabaseSchema->schema_name];
+        $databaseSchemaModel->schemaName = $schemaName;
         $databaseSchemaModel->schemaVersion = $postData[$tempDatabaseSchema->schema_version];
         $databaseSchemaModel->tablePrefix = $postData[$tempDatabaseSchema->table_prefix];
         $databaseSchemaModel->databaseComment = $postData[$tempDatabaseSchema->database_comment];

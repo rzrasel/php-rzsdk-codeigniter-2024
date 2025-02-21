@@ -222,5 +222,19 @@ class DatabaseSchemaDataFinder {
         }
         return $maxLength;
     }
+
+    public function getMaxDataTypeLength(string $schemaId): int {
+        $maxLength = 0;
+        foreach($this->schemas as $schema) {
+            if("{$schema->id}" === "$schemaId") {
+                foreach($schema->tableDataList as $table) {
+                    foreach($table->columnDataList as $column) {
+                        $maxLength = max($maxLength, strlen($column->dataType));
+                    }
+                }
+            }
+        }
+        return $maxLength;
+    }
 }
 ?>
