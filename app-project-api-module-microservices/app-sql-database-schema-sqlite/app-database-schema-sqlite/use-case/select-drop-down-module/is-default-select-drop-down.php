@@ -18,7 +18,7 @@ trait IsDefaultSelectDropDown {
         );
         $htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
         foreach($dataList as $key => $value) {
-            if($selectedId == $key) {
+            if(strtolower($selectedId) == $key) {
                 $htmlOutput .= "<option value=\"$key\" selected=\"selected\">$value</option>";
             } else {
                 $htmlOutput .= "<option value=\"$key\">$value</option>";

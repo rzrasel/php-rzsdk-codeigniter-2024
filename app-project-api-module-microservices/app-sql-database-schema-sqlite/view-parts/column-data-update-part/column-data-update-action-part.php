@@ -41,25 +41,68 @@ if(!empty($_REQUEST)){
 }
 ?>
 <?php
-$columnDataList = $dbRetrieveDatabaseSchemaData->getAllColumnDataByTableId($selectedTableId, $columnId);
-DebugLog::log($columnDataList);
+// Function to extract numbers
+function extractNumbers($value) {
+    preg_match_all("/\d+/", $value, $matches);
+    //DebugLog::log($matches);
+    //return implode("", $matches);
+    return !empty($matches[0][0]) ? $matches[0][0] : 0;
+}
 ?>
 <?php
-$columnOrder = 1;
-$selectedTableId = "";
+$dbTableId = "";
+$dbColumnId = "";
+$dbColumnOrder = "";
+$dbColumnName = "";
+$dbDataType = "";
+$dbDataLength = "";
+$dbIsNullable = "";
+$dbHaveDefault = "";
+$dbDefaultValue = "";
+$dbColumnComment = "";
+//
+$columnDataList = $dbRetrieveDatabaseSchemaData->getAllColumnDataByTableId($selectedTableId, $columnId);
+//DebugLog::log($columnDataList);
+if(!empty($columnDataList)){
+    foreach($columnDataList as $columnData){
+        if(!empty($columnData)){
+            //DebugLog::log($columnData);
+            $dbTableId = $columnData->tableId;
+            $dbColumnId = $columnData->id;
+            $dbColumnOrder = $columnData->columnOrder;
+            $dbColumnName = $columnData->columnName;
+            $dbDataType = $columnData->dataType;
+            $dbDataLength = extractNumbers($dbDataType);
+            $tempDataType = explode("(", $dbDataType);
+            $dbDataType = $tempDataType[0];
+            $dbIsNullable = $columnData->isNullable;
+            $dbHaveDefault = $columnData->haveDefault;
+            $dbDefaultValue = $columnData->defaultValue;
+            $dbColumnComment = $columnData->columnComment;
+        }
+    }
+}
+//DebugLog::log($dbDataType);
+?>
+<?php
+$columnOrder = !empty($dbColumnOrder) ? $dbColumnOrder : 1;
+$selectedTableId = $dbTableId;
 if(!empty($_POST)) {
     //DebugLog::log($_POST);
     $selectedTableId = $_POST["table_id"];
-    $columnOrder = $_POST["column_order"] + 1;
+    $columnOrder = $_POST["column_order"];
+    if($columnOrder <= 0) {
+        $columnOrder = 1;
+    }
 }
 ?>
 <?php
 /*$callbackSingleModelData = new UsagesCallbackSingleModelData();
 $tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
 //$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
-$dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type");
-$isNullSelectDropDown = HtmlSelectDropDown::isNullSelectDropDown("is_nullable");
-$isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_default");
+$dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type", $dbDataType);
+$isNullSelectDropDown = HtmlSelectDropDown::isNullSelectDropDown("is_nullable", $dbIsNullable);
+$isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_default", $dbHaveDefault);
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
 //DebugLog::log($schemaDataList);
@@ -94,6 +137,7 @@ if(!empty($_REQUEST)){
         $columnId = $_REQUEST["action_column_id"];
     }
 }
+$columnId = $dbColumnId;
 ?>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
@@ -117,7 +161,7 @@ if(!empty($_REQUEST)){
             <td>
                 <input type="hidden" name="action_column_id" id="action_column_id" value="<?= $actionColumnId; ?>">
                 <input type="hidden" name="id" id="id" value="<?= $columnId; ?>">
-                <input type="text" name="column_name" id="column_name" required="required" placeholder="Column name" />
+                <input type="text" name="column_name" id="column_name" required="required" value="<?= $dbColumnName; ?>" placeholder="Column name" />
             </td>
         </tr>
         <tr>
@@ -133,7 +177,7 @@ if(!empty($_REQUEST)){
         <tr>
             <td>Data Length:</td>
             <td></td>
-            <td><input type="number" name="data_length" id="data_length" required="required" placeholder="Data length" value="0" min="0" max="5000" /></td>
+            <td><input type="number" name="data_length" id="data_length" required="required" placeholder="Data length" value="<?= $dbDataLength ?>" min="0" max="5000" /></td>
         </tr>
         <tr>
             <td>Is Null:</td>
@@ -150,12 +194,12 @@ if(!empty($_REQUEST)){
         <tr>
             <td>Default Value:</td>
             <td></td>
-            <td><input type="text" name="default_value" id="default_value" placeholder="Default value" /></td>
+            <td><input type="text" name="default_value" id="default_value" value="<?= $dbDefaultValue; ?>" placeholder="Default value" /></td>
         </tr>
         <tr>
             <td>Column Comment:</td>
             <td></td>
-            <td><input type="text" name="column_comment" id="column_comment" placeholder="Column comment" /></td>
+            <td><input type="text" name="column_comment" id="column_comment" value="<?= $dbColumnComment; ?>" placeholder="Column comment" /></td>
         </tr>
         <!--<tr>
             <td height="20px"></td>
@@ -165,7 +209,13 @@ if(!empty($_REQUEST)){
         <tr>
             <td></td>
             <td></td>
-            <td class="form-action-button"><button type="submit" name="button_action" value="delete" class="button-action-delete">Delete</button>&nbsp;<button type="submit" name="button_action" value="edit" class="button-action-edit">Edit</button></td>
+            <td class="form-action-button">
+                <button type="submit" name="button_action" value="force_delete" class="button-action-force-delete">Force Delete</button>
+                &nbsp;
+                <button type="submit" name="button_action" value="delete" class="button-action-delete">Delete</button>
+                &nbsp;
+                <button type="submit" name="button_action" value="edit" class="button-action-edit">Edit</button>
+            </td>
         </tr>
     </table>
 </form>
