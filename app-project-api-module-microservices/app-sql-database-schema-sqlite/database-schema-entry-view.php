@@ -26,7 +26,11 @@ $sideBarMenu = $buildHtmlMenu->buildTopbarMenu($dataList, "{$workingBaseUrl}/");
 <table class="main-body-container">
     <tr>
         <td class="main-left-sidebar-container"><?= $sideBarMenu; ?></td>
-        <td class="main-body-content-container">Sql Database Schema SQLite</td>
+        <td class="main-body-content-container">
+            <?php
+            require_once("view-parts/database-schema-entry-part.php");
+            ?>
+        </td>
     </tr>
 </table>
 </body>

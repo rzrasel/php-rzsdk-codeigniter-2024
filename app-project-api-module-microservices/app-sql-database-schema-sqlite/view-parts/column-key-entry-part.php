@@ -1,12 +1,4 @@
 <?php
-/*$workingDir = __DIR__;
-$workingDirName = basename($workingDir);
-defined("CONST_STARTING_PATH") or define("CONST_STARTING_PATH", $workingDir);
-defined("CONST_WORKING_DIR_NAME") or define("CONST_WORKING_DIR_NAME", $workingDirName);*/
-?>
-<?php
-// public/index.php
-//require __DIR__ . '/../vendor/autoload.php';
 require_once("include.php");
 ?>
 <?php
@@ -51,7 +43,7 @@ if(!empty($_POST)) {
     $view->createFromPostData($_POST, $schemaDataList);
 }
 ?>
-<table>
+<table class="form-heading">
     <tr>
         <td></td>
     </tr>
@@ -63,7 +55,7 @@ if(!empty($_POST)) {
     </tr>
 </table>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
-    <table>
+    <table class="data-entry-fields">
         <tr>
             <td></td>
             <td width="10px"></td>
@@ -94,15 +86,15 @@ if(!empty($_POST)) {
             <td></td>
             <td><input type="text" name="unique_name" id="unique_name" placeholder="Unique name" /></td>
         </tr>
-        <tr>
+        <!--<tr>
             <td height="20px"></td>
             <td></td>
             <td></td>
-        </tr>
+        </tr>-->
         <tr>
             <td></td>
             <td></td>
-            <td><button type="submit">Submit</button></td>
+            <td class="form-summit-button"><button type="submit">Submit</button></td>
         </tr>
     </table>
 </form>

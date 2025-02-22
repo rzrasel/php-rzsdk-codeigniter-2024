@@ -78,6 +78,7 @@ require_once(RZ_SDK_BASE_PATH . "/autoloader/autoloader.php");
 use RzSDK\URL\SiteUrl;
 ?>
 <?php
+global $baseUrl;
 $baseUrl = SiteUrl::getBaseUrl();
 defined("JOB_BASE_URL") or define("JOB_BASE_URL", $baseUrl);
 defined("JOB_ROOT_URL") or define("JOB_ROOT_URL", $baseUrl);

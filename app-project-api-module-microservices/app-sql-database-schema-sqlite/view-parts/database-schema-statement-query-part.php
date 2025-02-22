@@ -29,7 +29,16 @@ if($dbRetrieveSchemaData) {
     $sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
 }
 
-echo "<pre>"; // For formatted output in HTML
+/*echo "<pre>"; // For formatted output in HTML
 echo $sql;
-echo "</pre>";
+echo "</pre>";*/
 ?>
+<table class="database-schema-content">
+    <tr>
+        <td>
+            <pre>
+                <?= $sql; ?>
+            </pre>
+        </td>
+    </tr>
+</table>
