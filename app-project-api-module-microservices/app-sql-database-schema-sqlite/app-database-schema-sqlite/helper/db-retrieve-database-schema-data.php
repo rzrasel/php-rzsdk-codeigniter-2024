@@ -55,11 +55,18 @@ class DbRetrieveDatabaseSchemaData {
         return false;
     }
 
-    public function getAllTableDataBySchemaId($schemaId): array|bool {
+    public function getAllTableDataBySchemaId($schemaId = "", $tableId = ""): array|bool {
         $tableDataTableName = "tbl_table_data";
         $tempTableData = new TableData();
         $tableDataList = array();
-        $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        $sqlQuery = "SELECT * FROM $tableDataTableName ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        if(!empty($schemaId) && !empty($tableId)) {
+            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' AND {$tempTableData->id} = '$tableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        } else if(!empty($schemaId)) {
+            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        }  else if(!empty($tableId)) {
+            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->id} = '$tableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        }
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
@@ -83,11 +90,18 @@ class DbRetrieveDatabaseSchemaData {
         return false;
     }
 
-    public function getAllColumnDataByTableId($tableId): array|bool {
+    public function getAllColumnDataByTableId($tableId = "", $columnId = ""): array|bool {
         $columnDataTableName = "tbl_column_data";
         $tempColumnData = new ColumnData();
         $columnDataList = array();
-        $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->table_id} = '$tableId' ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+        $sqlQuery = "SELECT * FROM $columnDataTableName ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+        if(!empty($tableId) && !empty($columnId)) {
+            $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->table_id} = '$tableId' AND {$tempColumnData->id} = '$columnId' ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+        } else if(!empty($tableId)) {
+            $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->table_id} = '$tableId' ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+        } else if(!empty($columnId)) {
+            $sqlQuery = "SELECT * FROM $columnDataTableName WHERE {$tempColumnData->id} = '$columnId' ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+        }
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {

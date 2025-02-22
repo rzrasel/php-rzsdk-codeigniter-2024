@@ -10,12 +10,12 @@ class BuildHtmlMenu {
     public function buildTopbarMenu(array $dataList, string $baseUrl) {
         $menuBuilder = new DataListToMenuBuilder();
         //$htmlOutput = "<ul>";
-        $htmlOutput = "<div class=\"sidebar\">";
-        $htmlOutput .= "<ul class=\"menu\">";
+        $htmlOutput = "<div class=\"sidebar\">\n";
+        $htmlOutput .= "<ul class=\"menu\">\n";
         $htmlOutput .= $menuBuilder->build($dataList, function($key, $item, $path, $isParent) use($baseUrl) {
             if($isParent) {
                 //return "<li>" . ucfirst($key) . "<ul>";  // Parent opens a submenu
-                return "<li class=\"menu-item parent\"><span>" . ucfirst($key) . "</span>";
+                return "<li class=\"menu-item parent\"><span>" . ucfirst($key) . "</span>\n";
             } else if(!$isParent) {
                 if(is_array($item)) {
                     return "";
@@ -31,14 +31,14 @@ class BuildHtmlMenu {
                         $path = $temp;
                     }
                     //DebugLog::log($path);
-                    return "<li class=\"menu-item\"><a href=\"{$baseUrl}{$path}\">" . ucfirst($item) . "</a></li>";
+                    return "<li class=\"menu-item\"><a href=\"{$baseUrl}{$path}\">" . ucfirst($item) . "</a></li>\n";
                     //return "";
                 }
             } else {
-                return "</ul></li>"; // Closing parent submenu
+                return "</ul>\n</li>"; // Closing parent submenu
             }
         });
-        $htmlOutput .= "</ul></div>";
+        $htmlOutput .= "</ul>\n</div>";
         return $htmlOutput;
     }
 }

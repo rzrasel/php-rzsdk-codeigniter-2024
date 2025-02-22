@@ -29,15 +29,19 @@ class HtmlMenuDataList {
     public static function sqlDatabaseDataList() {
         return array(
             "Data Entry" => array(
-                "database-schema-entry-view-01.php" => "Database Schema Entry",
+                "upper-level-01" => "upper-level-01",
                 "database-schema-entry-view.php" => "Database Schema Entry",
                 "table-data-entry-view.php" => "Table Data Entry",
                 "column-data-entry-view.php" => "Column Data Entry",
                 "column-key-entry-view.php" => "Column Key Entry",
                 "composite-key-entry-view.php" => "Composite Key Entry",
             ),
+            "Edit Update" => array(
+                "upper-level-01" => "upper-level-01",
+                "column-data-update-view.php" => "Column Data Update",
+            ),
             "Database Schema Output" => array(
-                "database-schema-statement-query-view-01.php" => "Database Schema Statement Query",
+                "upper-level-01" => "upper-level-01",
                 "database-schema-statement-query-view.php" => "Database Schema Statement Query",
             ),
         );

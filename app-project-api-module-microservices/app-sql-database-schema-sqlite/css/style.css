@@ -26,6 +26,7 @@ table {
 .main-body-container {
     width: 100%;
     border-collapse: collapse;
+    display: flex;
 }
 
 .main-left-sidebar-container {
@@ -195,6 +196,13 @@ table {
     padding: 6px;
 }
 
+form {
+    background: #ecf0f1;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
 input {
     min-width: 500px;
 }
@@ -289,6 +297,11 @@ button:hover {
     text-align: right;
 }
 
+.form-action-button {
+    horiz-align: right;
+    text-align: right;
+}
+
 /* Submit Button */
 .form-summit-button button {
     background-color: #3498db;
@@ -305,6 +318,151 @@ button:hover {
 .form-summit-button button:hover {
     background-color: #2980b9;
 }
+
+.button-action-edit {
+    background-color: #3498db; /* Blue color for edit action */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button-action-edit:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+
+.button-action-delete {
+    background-color: #e74c3c; /* Red color for delete action */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.button-action-delete:hover {
+    background-color: #c0392b; /* Darker red on hover */
+}
+
+/*.button-action-delete {
+    background-color: #dc3545;
+}
+
+.button-action-delete:hover {
+    background-color: #c82333;
+}*/
+
+/* Search Form */
+.table-search-by-fields {
+    width: 100%;
+    background: #ecf0f1;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.table-search-by-fields select {
+    padding: 6px;
+    font-size: 14px;
+}
+
+.button-search button {
+    background-color: #27ae60;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.button-search button:hover {
+    background-color: #219150;
+}
+
+/* Data Search Results */
+.data-search-result-container {
+    margin-top: 20px;
+}
+
+/* Search Results Table */
+.table-data-search-result {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-data-search-result th {
+    background: #2980b9;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.table-data-search-result td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Edit & Delete Buttons */
+.action-edit-button a,
+.action-delete-button a {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Edit Button - Blue */
+.action-edit-button a {
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #2980b9;
+}
+
+.action-edit-button a:hover {
+    background-color: #2980b9;
+}
+
+/* Delete Button - Red */
+.action-delete-button a {
+    background-color: #e74c3c;
+    color: white;
+    border: 1px solid #c0392b;
+}
+
+.action-delete-button a:hover {
+    background-color: #c0392b;
+}
+
+/*.action-delete-button a {
+    color: red;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.action-delete-button a:hover {
+    text-decoration: underline;
+}*/
+
+/*.action-edit-button a {
+    color: blue;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.action-edit-button a:hover {
+    text-decoration: underline;
+}*/
 
 pre {
     /*background: #272822;*/

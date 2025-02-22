@@ -111,20 +111,22 @@ class DebugLog {
     private static function calculateTraceIndex(int $traceIndex, ?string $upClass): int {
         $debugBacktrace = debug_backtrace();
 
-        if (!empty($upClass)) {
+        if(!empty($upClass)) {
             $isExpectedClassFound = false;
             $isUpClassFound = false;
             $upClassIndex = 0;
 
-            foreach ($debugBacktrace as $trace) {
-                if ($upClass == $trace['class']) {
-                    $isExpectedClassFound = true;
-                }
-                if ($isExpectedClassFound && $upClass != $trace['class']) {
-                    $isUpClassFound = true;
-                }
-                if (!$isUpClassFound) {
-                    $upClassIndex++;
+            foreach($debugBacktrace as $trace) {
+                if(!empty($trace['class'])) {
+                    if ($upClass == $trace['class']) {
+                        $isExpectedClassFound = true;
+                    }
+                    if ($isExpectedClassFound && $upClass != $trace['class']) {
+                        $isUpClassFound = true;
+                    }
+                    if (!$isUpClassFound) {
+                        $upClassIndex++;
+                    }
                 }
             }
 

@@ -32,9 +32,9 @@ trait TableSelectDropDown {
         });
         $htmlOutput .= "</optgroup></select>";
         if(!$isSelected) {
-            $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\" selected=\"selected\">Select Database Schema Name</option>$htmlOutput";
+            $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\" selected=\"selected\">Select Database Table Name</option>$htmlOutput";
         } else {
-            $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\">Select Database Schema Name</option>$htmlOutput";
+            $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\">Select Database Table Name</option>$htmlOutput";
         }
         return $htmlOutput;
     }

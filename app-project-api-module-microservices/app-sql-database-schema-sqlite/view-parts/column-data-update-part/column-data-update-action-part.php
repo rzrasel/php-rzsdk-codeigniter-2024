@@ -1,28 +1,54 @@
 <?php
-require_once("include.php");
-?>
-<?php
 use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnDataView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
 use App\DatabaseSchema\Html\Select\DropDown\DataTypeSelectDropDown;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-$repository = new ColumnDataRepositoryImpl();
+/*$repository = new ColumnDataRepositoryImpl();
 $viewModel = new ColumnDataViewModel($repository);
-$view = new ColumnDataView($viewModel);
+$view = new ColumnDataView($viewModel);*/
 ?>
 <?php
 global $schemaDataList;
-$schemaDataList = $view->getAllTableDataGroupBySchema();
+//$schemaDataList = $view->getAllTableDataGroupBySchema();
+?>
+<?php
+$dbRetrieveDatabaseSchemaData = new DbRetrieveDatabaseSchemaData();
+global $schemaDataList;
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData();
+?>
+<?php
+$selectedTableName = "";
+$selectedTableId = "";
+$selectedColumnId = "";
+$columnId = "";
+if(!empty($_REQUEST)){
+    if(!empty($_REQUEST["search_by_table_id"])) {
+        $selectedTableId = $_REQUEST["search_by_table_id"];
+    }
+    if(!empty($_REQUEST["selected_table_name"])) {
+        $selectedTableName = $_REQUEST["selected_table_name"];
+    }
+    if(!empty($_REQUEST["action_column_id"])) {
+        $actionColumnId = $_REQUEST["action_column_id"];
+        $columnId = $_REQUEST["action_column_id"];
+    }
+}
+?>
+<?php
+$columnDataList = $dbRetrieveDatabaseSchemaData->getAllColumnDataByTableId($selectedTableId, $columnId);
+DebugLog::log($columnDataList);
 ?>
 <?php
 $columnOrder = 1;
 $selectedTableId = "";
 if(!empty($_POST)) {
+    //DebugLog::log($_POST);
     $selectedTableId = $_POST["table_id"];
     $columnOrder = $_POST["column_order"] + 1;
 }
@@ -30,7 +56,7 @@ if(!empty($_POST)) {
 <?php
 /*$callbackSingleModelData = new UsagesCallbackSingleModelData();
 $tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
-$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
+//$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
 $dataTypeSelectDropDown = HtmlSelectDropDown::dataTypeSelectDropDown("data_type");
 $isNullSelectDropDown = HtmlSelectDropDown::isNullSelectDropDown("is_nullable");
 $isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_default");
@@ -48,20 +74,27 @@ if(!empty($_POST)) {
         }
     }
     //DebugLog::log($_POST);
-    $view->createFromPostData($_POST);
+    //$view->createFromPostData($_POST);
 }
 ?>
-<table class="form-heading">
-    <tr>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Column Data Entry</td>
-    </tr>
-    <tr>
-        <td></td>
-    </tr>
-</table>
+<?php
+$selectedTableName = "";
+$selectedTableId = "";
+$selectedColumnId = "";
+$columnId = "";
+if(!empty($_REQUEST)){
+    if(!empty($_REQUEST["search_by_table_id"])) {
+        $selectedTableId = $_REQUEST["search_by_table_id"];
+    }
+    if(!empty($_REQUEST["selected_table_name"])) {
+        $selectedTableName = $_REQUEST["selected_table_name"];
+    }
+    if(!empty($_REQUEST["action_column_id"])) {
+        $actionColumnId = $_REQUEST["action_column_id"];
+        $columnId = $_REQUEST["action_column_id"];
+    }
+}
+?>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
         <tr>
@@ -72,12 +105,20 @@ if(!empty($_POST)) {
         <tr>
             <td>Table Name:</td>
             <td></td>
-            <td><?= $tableSelectDropDown; ?></td>
+            <td>
+                <input type="hidden" name="search_by_table_id" id="search_by_table_id" value="<?= $selectedTableId; ?>">
+                <input type="text" name="selected_table_name" id="selected_table_name" required="required" placeholder="Selected Table name" value="<?= $selectedTableName; ?>" readonly="readonly" />
+                <input type="hidden" name="table_id" id="table_id" value="<?= $selectedTableId; ?>">
+            </td>
         </tr>
         <tr>
             <td>Column Name:</td>
             <td></td>
-            <td><input type="text" name="column_name" id="column_name" required="required" placeholder="Column name" /></td>
+            <td>
+                <input type="hidden" name="action_column_id" id="action_column_id" value="<?= $actionColumnId; ?>">
+                <input type="hidden" name="id" id="id" value="<?= $columnId; ?>">
+                <input type="text" name="column_name" id="column_name" required="required" placeholder="Column name" />
+            </td>
         </tr>
         <tr>
             <td>Column Order:</td>
@@ -124,7 +165,7 @@ if(!empty($_POST)) {
         <tr>
             <td></td>
             <td></td>
-            <td class="form-summit-button"><button type="submit">Submit</button></td>
+            <td class="form-action-button"><button type="submit" name="button_action" value="delete" class="button-action-delete">Delete</button>&nbsp;<button type="submit" name="button_action" value="edit" class="button-action-edit">Edit</button></td>
         </tr>
     </table>
 </form>
