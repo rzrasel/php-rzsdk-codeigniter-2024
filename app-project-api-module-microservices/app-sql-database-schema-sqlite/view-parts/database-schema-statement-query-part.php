@@ -37,9 +37,11 @@ if(!empty($selectedSchemaId)) {
 /*$databaseSchemaGenerate = new DatabaseSchemaStatementGenerate($dbRetrieveSchemaData);
 $databaseSchemaGenerate->getDatabaseSchema();*/
 $sql = "";
-if($dbRetrieveSchemaData) {
-    $sqlBuilder = new SqliteSqlBuilder();
-    $sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
+if(!empty($schemaId)) {
+    if ($dbRetrieveSchemaData) {
+        $sqlBuilder = new SqliteSqlBuilder();
+        $sql = $sqlBuilder->buildSql($dbRetrieveSchemaData);
+    }
 }
 
 /*echo "<pre>"; // For formatted output in HTML
