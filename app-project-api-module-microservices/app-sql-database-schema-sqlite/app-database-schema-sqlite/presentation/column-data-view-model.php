@@ -59,6 +59,43 @@ class ColumnDataViewModel {
         //DebugLog::log($columnDataModel);
         $this->repository->create($columnDataModel);
     }
+
+    public function updateFromPostData($postData): void {
+        //DebugLog::log($postData);
+        if(!empty($postData["id"])) {
+            $columnData = new ColumnData();
+            $columnDataModel = new ColumnDataModel();
+            //
+            $columnName = trim($postData[$columnData->column_name]);
+            $columnName = preg_replace("/\s+/", "_", $columnName);
+            $columnName = preg_replace("/-/", "_", $columnName);
+            //
+            $postDataType = $postData["data_type"];
+            $postDataLength = $postData["data_length"];
+            $dataType = $postDataType;
+            if($postDataLength > 0) {
+                $dataType .= "($postDataLength)";
+            }
+            //
+            $isNullable = $postData[$columnData->is_nullable];
+            $haveDefault = $postData[$columnData->have_default];
+            $columnDataModel->id = $postData[$columnData->id];
+            $columnDataModel->tableId = $postData[$columnData->table_id];
+            $columnDataModel->columnOrder = $postData[$columnData->column_order];
+            $columnDataModel->columnName = $columnName;
+            $columnDataModel->dataType = strtoupper($dataType);
+            $columnDataModel->isNullable = $isNullable;
+            $columnDataModel->haveDefault = $haveDefault;
+            $columnDataModel->defaultValue = $postData[$columnData->default_value];
+            $columnDataModel->columnComment = $postData[$columnData->column_comment];
+            $columnDataModel->modifiedDate = date('Y-m-d H:i:s');
+            $columnDataModel->createdDate = date('Y-m-d H:i:s');
+            //DebugLog::log($columnDataModel);
+            $this->repository->update($columnDataModel);
+        } else {
+            DebugLog::log("Data error");
+        }
+    }
     //
 
     public function getTable(int $id): ?ColumnDataModel {

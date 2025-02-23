@@ -65,9 +65,14 @@ if(!empty($_POST)) {
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
         <tr>
-            <td></td>
-            <td width="10px"></td>
-            <td></td>
+            <td colspan="3" class="td-data-entry-message">
+                <!--<div class="data-entry-message">
+                    <div class="success">Success message</div>
+                    <div class="error">Error message</div>
+                     <div class="info">Info message</div>
+                     <div class="default">Default message</div>
+                </div>-->
+            </td>
         </tr>
         <tr>
             <td>Table Name:</td>

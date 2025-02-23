@@ -24,9 +24,11 @@ class ColumnDataView {
     }
 
     public function createFromPostData($postData): void {
-        /*$tempDatabaseSchema = new TableData();
-        print_r($tempDatabaseSchema->getVarList());*/
         $this->viewModel->createFromPostData($postData);
+    }
+
+    public function updateFromPostData($postData): void {
+        $this->viewModel->updateFromPostData($postData);
     }
     //
 

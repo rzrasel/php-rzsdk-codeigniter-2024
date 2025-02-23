@@ -22,6 +22,14 @@ $sideBarMenu = $buildHtmlMenu->buildTopbarMenu($dataList, "{$workingBaseUrl}/");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sql Database Schema SQLite</title>
     <link rel="stylesheet" type="text/css" href="<?= $workingBaseUrl; ?>/css/style.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let messages = document.querySelectorAll(".data-entry-message div");
+            if (messages.length > 0) {
+                messages[0].classList.add("active"); // Show first message
+            }
+        });
+    </script>
 </head>
 <body>
 <table class="main-body-container">

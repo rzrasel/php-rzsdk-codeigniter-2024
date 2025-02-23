@@ -6,6 +6,7 @@ use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
 use App\DatabaseSchema\Html\Select\DropDown\DataTypeSelectDropDown;
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
+use App\DatabaseSchema\Data\Entities\ColumnData;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -97,6 +98,22 @@ if(!empty($_POST)) {
 }
 ?>
 <?php
+if(!empty($_POST)) {
+    $columnData = new ColumnData();
+    $dbColumnName = trim($_POST[$columnData->column_name]);
+    $dbColumnName = preg_replace("/\s+/", "_", $dbColumnName);
+    $dbColumnName = preg_replace("/-/", "_", $dbColumnName);
+    //
+    $dbColumnOrder = $_POST[$columnData->column_order];
+    $dbDataType = $_POST["data_type"];
+    $dbDataLength = $_POST["data_length"];
+    $dbIsNullable = $_POST[$columnData->is_nullable];
+    $dbHaveDefault = $_POST[$columnData->have_default];
+    $dbDefaultValue = $_POST[$columnData->default_value];
+    $dbColumnComment = $_POST[$columnData->column_comment];
+}
+?>
+<?php
 /*$callbackSingleModelData = new UsagesCallbackSingleModelData();
 $tableDataSelectDropDown = $callbackSingleModelData->getTableSelectDropDown("table_id", $schemaDataList);*/
 //$tableSelectDropDown = HtmlSelectDropDown::tableSelectDropDown("table_id", $schemaDataList, $selectedTableId);
@@ -108,7 +125,7 @@ $isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_def
 //DebugLog::log($schemaDataList);
 ?>
 <?php
-if(!empty($_POST)) {
+/*if(!empty($_POST)) {
     foreach($_POST as $key => $value) {
         $_POST[$key] = htmlspecialchars($value);
         $_POST[$key] = trim($value);
@@ -118,7 +135,7 @@ if(!empty($_POST)) {
     }
     //DebugLog::log($_POST);
     //$view->createFromPostData($_POST);
-}
+}*/
 ?>
 <?php
 $selectedTableName = "";

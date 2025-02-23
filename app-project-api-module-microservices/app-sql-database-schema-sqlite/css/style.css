@@ -68,6 +68,109 @@ table {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* td-data-entry-message */
+.td-data-entry-message {
+    /*text-align: center;
+    font-weight: bold;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;*/
+}
+
+/* Data Entry Message */
+/*.data-entry-message {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    animation: fadeMessage 90s ease-in-out forwards;
+}*/
+
+/* Data Entry Message */
+/*.data-entry-message {
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    animation: fadeMessage 90s ease-in-out forwards;
+    opacity: 1;
+    transition: opacity 3s ease-in-out;
+}
+.data-entry-message.success {
+    color: green;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.data-entry-message.error {
+    color: red;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.data-entry-message.info {
+    color: blue;
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+}
+
+.data-entry-message.default {
+    color: black;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+}
+*/
+/* Data Entry Message */
+.data-entry-message {
+    position: relative;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    transition: opacity 5s ease-in-out;
+    animation: fadeMessage 90s ease-in-out forwards;
+}
+
+/* Message Types */
+.success {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    border: 1px solid #c3e6cb;
+}
+
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+}
+
+.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 10px;
+    border: 1px solid #bee5eb;
+}
+
+.default {
+    background-color: #e2e3e5;
+    color: #383d41;
+    padding: 10px;
+    border: 1px solid #d6d8db;
+}
+
+/* Data Entry Message Fade Effect */
+.data-entry-message div {
+    display: none;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.data-entry-message .active {
+    display: block;
+    animation: fadeOut 90s ease-in-out forwards;
+}
+
 /* === Sidebar Styling === */
 /*.sidebar {
     width: 250px;

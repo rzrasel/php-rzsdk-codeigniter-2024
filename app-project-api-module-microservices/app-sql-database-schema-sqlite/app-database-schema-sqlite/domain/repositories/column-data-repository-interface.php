@@ -9,6 +9,7 @@ use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 interface ColumnDataRepositoryInterface {
     public function getAllTableDataGroupBySchema(): array|bool;
     public function create(ColumnDataModel $columnData): void;
+    public function update(ColumnDataModel $columnData): void;
     //
     public function save(ColumnDataModel $columnData): void;
     public function delete(int $id): void;

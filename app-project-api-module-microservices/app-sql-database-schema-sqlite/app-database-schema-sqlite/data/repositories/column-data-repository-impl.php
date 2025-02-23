@@ -121,6 +121,27 @@ class ColumnDataRepositoryImpl implements ColumnDataRepositoryInterface {
         $columnData->id = $this->dbConn->getLastInsertId();
         //DebugLog::log($columnData->id);
     }
+
+    public function update(ColumnDataModel $columnData): void {
+        $columnTableName = "tbl_column_data";
+        $colIdName = "id";
+        $tempTableData = new ColumnData();
+        //
+        $sqlQuery = "UPDATE $columnTableName SET column_order = :column_order, column_name = :column_name, data_type = :data_type, is_nullable = :is_nullable, have_default = :have_default, default_value = :default_value, column_comment = :column_comment, modified_date = :modified_date WHERE table_id = :table_id AND id = :id";
+        $data = array(
+            ":table_id" => $columnData->tableId,
+            ":id" => $columnData->id,
+            ":column_order" => $columnData->columnOrder,
+            ":column_name" => $columnData->columnName,
+            ":data_type" => $columnData->dataType,
+            ":is_nullable" => $columnData->isNullable,
+            ":have_default" => $columnData->haveDefault,
+            ":default_value" => $columnData->defaultValue,
+            ":column_comment" => $columnData->columnComment,
+            ":modified_date" => $columnData->modifiedDate,
+        );
+        $this->dbConn->execute($sqlQuery, $data);
+    }
     //
 
     public function getById(int $columnDataId): ?ColumnDataModel {

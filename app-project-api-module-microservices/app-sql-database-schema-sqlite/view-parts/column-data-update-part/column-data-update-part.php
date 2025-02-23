@@ -1,12 +1,28 @@
 <?php
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
+use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
+use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
+use App\DatabaseSchema\Presentation\Views\ColumnDataView;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-/*$dbRetrieveDatabaseSchemaData = new DbRetrieveDatabaseSchemaData();
-global $schemaDataList;
-$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData();*/
-//DebugLog::log($schemaDataList);
+$repository = new ColumnDataRepositoryImpl();
+$viewModel = new ColumnDataViewModel($repository);
+$view = new ColumnDataView($viewModel);
+?>
+<?php
+if(!empty($_POST)) {
+    //DebugLog::log($_POST);
+    foreach($_POST as $key => $value) {
+        $_POST[$key] = htmlspecialchars($value);
+        $_POST[$key] = trim($value);
+        if(empty($_POST[$key])) {
+            $_POST[$key] = NULL;
+        }
+    }
+    //DebugLog::log($_POST);
+    $view->updateFromPostData($_POST);
+}
 ?>
 <table class="form-heading">
     <tr>
