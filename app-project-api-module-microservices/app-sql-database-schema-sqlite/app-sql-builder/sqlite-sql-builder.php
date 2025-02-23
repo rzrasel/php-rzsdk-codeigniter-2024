@@ -170,6 +170,7 @@ class SqliteSqlBuilder {
         if(empty($column->columnName)) {
             return "";
         }
+        $haveDefault = false;
         $columnName = "{$column->columnName}";
         $columnName =  str_pad($columnName, $this->maxColumnPadLength, " ");
         $dataType = "{$column->dataType}";
@@ -181,10 +182,21 @@ class SqliteSqlBuilder {
             $sql .= " NOT NULL";
         }
         if($column->haveDefault && strtolower($column->haveDefault) == "true") {
+            $haveDefault = true;
             $sql .= " DEFAULT";
         }
         if($column->defaultValue !== null && $column->defaultValue !== "") {
             $sql .= " {$column->defaultValue}";
+        } else {
+            if($haveDefault) {
+                if(empty($column->defaultValue)) {
+                    if(strtolower(substr($dataType, 0, 2)) == "in") {
+                        $sql .= " 0";
+                    } else if(strtolower(substr($dataType, 0, 2)) == "bo") {
+                        $sql .= " FALSE";
+                    }
+                }
+            }
         }
         if($column->columnComment) {
             $sql .= " COMMENT '{$column->columnComment}'";

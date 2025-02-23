@@ -279,6 +279,76 @@ class SqliteConnection {
         //return $values;
     }
 
+    public static function bindValueV3($value, $key = "") {
+        DebugLog::log("$key - $value");
+        if(!isset($value)) {
+            //DebugLog::log("$key - isset");
+        }
+        if($value == 0 || $value == "0" || $value === 0 || $value === "0") {
+            return "0";
+        }
+        if(is_bool($value)) {
+            return $value ? 'TRUE' : 'FALSE';
+        }
+
+        if(is_int($value) || is_numeric($value)) {
+            return $value;
+        }
+        // Handle NULL explicitly
+        if(is_null($value)) {
+            return NULL;
+        }
+
+        // Handle booleans
+        if(is_bool($value)) {
+            return $value ? 'TRUE' : 'FALSE';
+        }
+
+        // Handle numeric values (integers and floats)
+        if(is_numeric($value)) {
+            return (string) $value;
+        }
+
+        // Handle boolean-like string values
+        $lowerValue = strtolower((string)$value);
+        if(in_array($lowerValue, ['true', 'false'], true)) {
+            return $lowerValue === 'true' ? 'TRUE' : 'FALSE';
+        }
+
+        return addslashes($value);
+
+        // Escape and return strings
+        //return "'" . addslashes($value) . "'";
+    }
+
+    public static function isBooleanV3($value): bool {
+        return is_bool($value) || in_array(strtolower((string)$value), ['true', 'false'], true);
+    }
+
+    public static function bindValueV2($value, $key = "") {
+        if(is_bool($value)) {
+            return $value ? 'TRUE' : 'FALSE';
+        }
+
+        if(is_int($value) || is_numeric($value)) {
+            return (string)$value;
+        }
+
+        if(is_null($value)) {
+            return NULL;
+        }
+
+        if(self::isBoolean($value)) {
+            return strtolower($value) == 'true' ? 'TRUE' : 'FALSE';
+        }
+
+        return (string)$value;
+    }
+
+    public static function isBooleanV2($value): bool {
+        return is_bool($value) || in_array(strtolower($value), ['true', 'false']);
+    }
+
     public static function bindValue($value, $key = "") {
         $itemValue = "";
         if(empty($value)) {
