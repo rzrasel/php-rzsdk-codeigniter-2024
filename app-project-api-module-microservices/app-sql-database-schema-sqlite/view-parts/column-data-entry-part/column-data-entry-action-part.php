@@ -6,9 +6,13 @@ use App\DatabaseSchema\Data\Repositories\ColumnDataRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnDataViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnDataView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use App\DatabaseSchema\Html\Select\DropDown\DataTypeSelectDropDown;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use RzSDK\Log\DebugLog;
+?>
+<?php
+$dbRetrieveDatabaseSchemaData = new DbRetrieveDatabaseSchemaData();
 ?>
 <?php
 $repository = new ColumnDataRepositoryImpl();
@@ -16,12 +20,27 @@ $viewModel = new ColumnDataViewModel($repository);
 $view = new ColumnDataView($viewModel);
 ?>
 <?php
-global $schemaDataList;
-$schemaDataList = $view->getAllTableDataGroupBySchema();
+$selectedSchemaId = "";
+$selectedTableId = "";
+$columnOrder = 1;
 ?>
 <?php
-$columnOrder = 1;
-$selectedTableId = "";
+if(!empty($_REQUEST)) {
+    //DebugLog::log($_REQUEST);
+    $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+}
+if (!empty($_REQUEST)) {
+    if (!empty($_REQUEST["search_by_table_id"])) {
+        $selectedTableId = $_REQUEST["search_by_table_id"];
+    }
+}
+?>
+<?php
+global $schemaDataList;
+//$schemaDataList = $view->getAllTableDataGroupBySchema();
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData($selectedSchemaId);
+?>
+<?php
 if(!empty($_POST)) {
     $selectedTableId = $_POST["table_id"];
     $columnOrder = $_POST["column_order"] + 1;
@@ -51,17 +70,6 @@ if(!empty($_POST)) {
     $view->createFromPostData($_POST);
 }
 ?>
-<table class="form-heading">
-    <tr>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Column Data Entry</td>
-    </tr>
-    <tr>
-        <td></td>
-    </tr>
-</table>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
         <tr>
@@ -72,6 +80,8 @@ if(!empty($_POST)) {
                      <div class="info">Info message</div>
                      <div class="default">Default message</div>
                 </div>-->
+                <input type="hidden" name="search_by_schema_id" id="search_by_schema_id" value="<?= $selectedSchemaId; ?>">
+                <input type="hidden" name="search_by_table_id" id="search_by_table_id" value="<?= $selectedTableId; ?>">
             </td>
         </tr>
         <tr>

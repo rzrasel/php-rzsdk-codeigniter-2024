@@ -153,7 +153,7 @@ class DbRetrieveDatabaseSchemaData {
         return false;
     }
 
-    public function getAllDatabaseSchemaDataOly(?string $schemaId = ""): array|bool {
+    public function getAllDatabaseSchemaDataOnly(?string $schemaId = ""): array|bool {
         $schemaTableName = "tbl_database_schema";
         $tempDatabaseSchema = new DatabaseSchema();
         $databaseSchemaList = array();

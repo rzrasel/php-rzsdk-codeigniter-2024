@@ -8,9 +8,38 @@ use RzSDK\Log\DebugLog;
 ?>
 <?php
 trait SchemaSelectDropDown {
-    public static function schemaSelectDropDown($fieldName, array $schemaDataList, $selectedId = "") {
+    public static function schemaSelectDropDown($fieldName, array $schemaDataList, $selectedId = "", $isRequired = true) {
+        $isSelected = false;
+        $requiredHtml = $isRequired ? 'required="required"' : '';
+
+        $callbackSingleModelData = new RecursiveCallbackSingleModelData();
+        $htmlOptions = "";
+
+        // Traverse the schema list and generate options
+        $htmlOptions .= $callbackSingleModelData->onRecursionTraverse($schemaDataList, function($item, $level) use($selectedId, &$isSelected) {
+            if ($item instanceof DatabaseSchemaModel) {
+                $selected = ($selectedId == $item->id) ? 'selected="selected"' : '';
+                if ($selected) $isSelected = true; // Mark that a schema is selected
+                return "<option value=\"{$item->id}\" {$selected}>{$item->schemaName}</option>";
+            }
+            return "";
+        });
+
+        // Default "Select" option handling
+        $defaultOption = !$isSelected
+            ? '<option value="" selected="selected">Select Database Schema Name</option>'
+            : '<option value="">Select Database Schema Name</option>';
+
+        // Final select dropdown construction
+        return "<select name=\"$fieldName\" {$requiredHtml}>{$defaultOption}{$htmlOptions}</select>";
+    }
+    public static function schemaSelectDropDownV1($fieldName, array $schemaDataList, $selectedId = "", $isRequired = true) {
         //DebugLog::log($schemaDataList);
         $isSelected = false;
+        $requiredHtml = "";
+        if($isRequired) {
+            $requiredHtml = "required=\"required\"";
+        }
         $callbackSingleModelData = new RecursiveCallbackSingleModelData();
         $htmlOutput = "";
         //$htmlOutput = "<select name=\"$fieldName\" required=\"required\">";
@@ -28,7 +57,7 @@ trait SchemaSelectDropDown {
         });
         $htmlOutput .= "</select>";
         if(!$isSelected) {
-            $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\" selected=\"selected\">Select Database Schema Name</option>$htmlOutput";
+            $htmlOutput = "<select name=\"$fieldName\" {$requiredHtml}><option value=\"\" selected=\"selected\">Select Database Schema Name</option>$htmlOutput";
         } else {
             $htmlOutput = "<select name=\"$fieldName\" required=\"required\"><option value=\"\">Select Database Schema Name</option>$htmlOutput";
         }

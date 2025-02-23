@@ -147,11 +147,15 @@ $isDefaultSelectDropDown = HtmlSelectDropDown::isDefaultSelectDropDown("have_def
 }*/
 ?>
 <?php
+$selectedSchemaId = "";
 $selectedTableName = "";
 $selectedTableId = "";
 $selectedColumnId = "";
 $columnId = "";
 if(!empty($_REQUEST)){
+    if(!empty($_REQUEST["search_by_schema_id"])) {
+        $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    }
     if(!empty($_REQUEST["search_by_table_id"])) {
         $selectedTableId = $_REQUEST["search_by_table_id"];
     }
@@ -176,6 +180,7 @@ $columnId = $dbColumnId;
             <td>Table Name:</td>
             <td></td>
             <td>
+                <input type="hidden" name="search_by_schema_id" id="search_by_schema_id" value="<?= $selectedSchemaId; ?>">
                 <input type="hidden" name="search_by_table_id" id="search_by_table_id" value="<?= $selectedTableId; ?>">
                 <input type="text" name="selected_table_name" id="selected_table_name" required="required" placeholder="Selected Table name" value="<?= $selectedTableName; ?>" readonly="readonly" />
                 <input type="hidden" name="table_id" id="table_id" value="<?= $selectedTableId; ?>">

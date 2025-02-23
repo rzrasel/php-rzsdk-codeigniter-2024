@@ -1,7 +1,4 @@
 <?php
-require_once("include.php");
-?>
-<?php
 use App\DatabaseSchema\Data\Repositories\ColumnKeyRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnKeyViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnKeyView;

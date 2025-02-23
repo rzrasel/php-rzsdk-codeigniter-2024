@@ -37,7 +37,7 @@ $sideBarMenu = $buildHtmlMenu->buildTopbarMenu($dataList, "{$workingBaseUrl}/");
         <td class="main-left-sidebar-container"><?= $sideBarMenu; ?></td>
         <td class="main-body-content-container">
             <?php
-            require_once("view-parts/column-data-entry-part.php");
+            require_once("view-parts/column-data-entry-part/column-data-entry-part.php");
             ?>
         </td>
     </tr>

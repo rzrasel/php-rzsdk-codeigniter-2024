@@ -12,7 +12,7 @@ use App\DatabaseSchema\Sql\Builder\SqliteSqlBuilder;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
-$dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaDataOly();
+$dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSchemaDataOnly();
 //DebugLog::log($dbRetrieveSchemaData);
 ?>
 <?php
@@ -20,11 +20,11 @@ $selectedSchemaId = "";
 $schemaId = "";
 if(!empty($_REQUEST)) {
     //DebugLog::log($_REQUEST);
-    $selectedSchemaId = $_REQUEST["schema_id"];
-    $schemaId = $_REQUEST["schema_id"];
+    $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    $schemaId = $_REQUEST["search_by_schema_id"];
 }
 if(!empty($dbRetrieveSchemaData)) {
-    $schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $dbRetrieveSchemaData, $selectedSchemaId);
+    $schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("search_by_schema_id", $dbRetrieveSchemaData, $selectedSchemaId);
 }
 ?>
 <?php

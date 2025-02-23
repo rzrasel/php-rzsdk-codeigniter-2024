@@ -44,7 +44,6 @@ if(!empty($_POST)) {
                     require_once("column-data-update-action-part.php");
                 }
             }
-            //require_once("column-data-update-search-result-part.php");
             ?>
         </td>
     </tr>
@@ -69,7 +68,6 @@ if(!empty($_POST)) {
                     require_once("column-data-update-search-result-part.php");
                 }
             }
-            //require_once("column-data-update-search-result-part.php");
             ?>
         </td>
     </tr>

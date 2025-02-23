@@ -6,12 +6,16 @@ use RzSDK\Log\DebugLog;
 <?php
 global $workingBaseUrl;
 global $schemaDataList, $selectedTableId;
+$selectedSchemaId = "";
 $selectedTableId = "";
 $fullUrlOnly = SiteUrl::getUrlOnly();
 //echo $fullUrlOnly;
 ?>
 <?php
 if(!empty($_REQUEST)){
+    if(!empty($_REQUEST["search_by_schema_id"])) {
+        $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    }
     if(!empty($_REQUEST["search_by_table_id"])) {
         $selectedTableId = $_REQUEST["search_by_table_id"];
     }
@@ -56,7 +60,7 @@ if(!empty($dbTableDataList)) {
             $htmlOutput .= "<th>Edit</th>\n";
             $htmlOutput .= "<tr>\n";
             foreach($dbTableData->columnDataList as $dbColumnData) {
-                $actionUrl = "{$fullUrlOnly}?search_by_table_id=$selectedTableId&action_column_id=$dbColumnData->id&selected_table_name={$dbTableData->tableName}";
+                $actionUrl = "{$fullUrlOnly}?search_by_schema_id=$selectedSchemaId&search_by_table_id=$selectedTableId&action_column_id=$dbColumnData->id&selected_table_name={$dbTableData->tableName}";
                 $htmlOutput .= "<tr>\n";
                 $htmlOutput .= "<td>{$dbColumnData->columnOrder}</td>\n";
                 $htmlOutput .= "<td>{$dbColumnData->columnName}</td>\n";
