@@ -6,6 +6,7 @@ use App\DatabaseSchema\Data\Repositories\CompositeKeyRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\CompositeKeyViewModel;
 use App\DatabaseSchema\Presentation\Views\CompositeKeyView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -14,11 +15,30 @@ $viewModel = new CompositeKeyViewModel($repository);
 $view = new CompositeKeyView($viewModel);
 ?>
 <?php
-$schemaDataList = $view->getAllTableDataGroupByTable();
+$dbRetrieveDatabaseSchemaData = new DbRetrieveDatabaseSchemaData();
+?>
+<?php
+$selectedSchemaId = "";
+$selectedTableId = "";
+?>
+<?php
+if (!empty($_REQUEST)) {
+    if (!empty($_REQUEST["search_by_schema_id"])) {
+        $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    }
+    if (!empty($_REQUEST["search_by_table_id"])) {
+        $selectedTableId = $_REQUEST["search_by_table_id"];
+    }
+}
+?>
+<?php
+//$schemaDataList = $view->getAllTableDataGroupByTable();
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData($selectedSchemaId, $selectedTableId);
 //DebugLog::log($schemaDataList);
 //
 $columnKeySelectDropDown = HtmlSelectDropDown::columnKeySelectDropDown("key_id", $schemaDataList);
 $primaryColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("primary_column", $schemaDataList, false);
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData($selectedSchemaId, "", "");
 $compositeColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("composite_column", $schemaDataList, false);
 $relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDropDown("key_type");
 ?>
@@ -35,22 +55,14 @@ if(!empty($_POST)) {
     $view->createFromPostData($_POST, $schemaDataList);
 }
 ?>
-<table class="form-heading">
-    <tr>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Composite Key Entry</td>
-    </tr>
-    <tr>
-        <td></td>
-    </tr>
-</table>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
         <tr>
             <td></td>
-            <td width="10px"></td>
+            <td width="10px">
+                <input type="hidden" name="search_by_schema_id" id="search_by_schema_id" value="<?= $selectedSchemaId; ?>">
+                <input type="hidden" name="search_by_table_id" id="search_by_table_id" value="<?= $selectedTableId; ?>">
+            </td>
             <td></td>
         </tr>
         <tr>
@@ -73,11 +85,11 @@ if(!empty($_POST)) {
             <td></td>
             <td><input type="text" name="key_name" id="key_name" placeholder="Key name" /></td>
         </tr>
-        <tr>
+        <!--<tr>
             <td height="20px"></td>
             <td></td>
             <td></td>
-        </tr>
+        </tr>-->
         <tr>
             <td></td>
             <td></td>

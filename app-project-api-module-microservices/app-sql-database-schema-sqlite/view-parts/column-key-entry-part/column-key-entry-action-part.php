@@ -3,6 +3,7 @@ use App\DatabaseSchema\Data\Repositories\ColumnKeyRepositoryImpl;
 use App\DatabaseSchema\Presentation\ViewModels\ColumnKeyViewModel;
 use App\DatabaseSchema\Presentation\Views\ColumnKeyView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
+use App\DatabaseSchema\Helper\Database\Data\Retrieve\DbRetrieveDatabaseSchemaData;
 use App\DatabaseSchema\Usages\Recursion\Callback\UsagesCallbackSingleModelData;
 use App\DatabaseSchema\Helper\Data\Finder\DatabaseSchemaDataFinder;
 use RzSDK\Log\DebugLog;
@@ -13,13 +14,32 @@ $viewModel = new ColumnKeyViewModel($repository);
 $view = new ColumnKeyView($viewModel);
 ?>
 <?php
-$schemaDataList = $view->getAllTableDataGroupByTable();
+$dbRetrieveDatabaseSchemaData = new DbRetrieveDatabaseSchemaData();
+?>
+<?php
+$selectedSchemaId = "";
+$selectedTableId = "";
+?>
+<?php
+if (!empty($_REQUEST)) {
+    if (!empty($_REQUEST["search_by_schema_id"])) {
+        $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    }
+    if (!empty($_REQUEST["search_by_table_id"])) {
+        $selectedTableId = $_REQUEST["search_by_table_id"];
+    }
+}
+?>
+<?php
+//$schemaDataList = $view->getAllTableDataGroupByTable();
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData($selectedSchemaId, $selectedTableId);
 //DebugLog::log($schemaDataList);
 //$callbackSingleModelData = new UsagesCallbackSingleModelData();
 /*$mainColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("main_column", $schemaDataList);
 $referenceColumnSelectDropDown = $callbackSingleModelData->getColumnSelectDropDown("reference_column", $schemaDataList, false);*/
 $mainColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("main_column", $schemaDataList);
-$referenceColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("reference_column", $schemaDataList, false);
+$schemaDataList = $dbRetrieveDatabaseSchemaData->getAllDatabaseSchemaData($selectedSchemaId, "", "");
+$referenceColumnSelectDropDown = HtmlSelectDropDown::columnSelectDropDown("reference_column", $schemaDataList);
 $relationalKeyTypeSelectDropDown = HtmlSelectDropDown::relationalKeyTypeSelectDropDown("key_type");
 //$jsonData = json_encode($schemaDataList);
 //$schemaDataList = json_decode($jsonData, true);
@@ -40,22 +60,14 @@ if(!empty($_POST)) {
     $view->createFromPostData($_POST, $schemaDataList);
 }
 ?>
-<table class="form-heading">
-    <tr>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Column Key Entry</td>
-    </tr>
-    <tr>
-        <td></td>
-    </tr>
-</table>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
     <table class="data-entry-fields">
         <tr>
             <td></td>
-            <td width="10px"></td>
+            <td width="10px">
+                <input type="hidden" name="search_by_schema_id" id="search_by_schema_id" value="<?= $selectedSchemaId; ?>">
+                <input type="hidden" name="search_by_table_id" id="search_by_table_id" value="<?= $selectedTableId; ?>">
+            </td>
             <td></td>
         </tr>
         <tr>

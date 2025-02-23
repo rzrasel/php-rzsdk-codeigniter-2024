@@ -25,11 +25,10 @@ $selectedTableId = "";
 $columnOrder = 1;
 ?>
 <?php
-if(!empty($_REQUEST)) {
-    //DebugLog::log($_REQUEST);
-    $selectedSchemaId = $_REQUEST["search_by_schema_id"];
-}
 if (!empty($_REQUEST)) {
+    if (!empty($_REQUEST["search_by_schema_id"])) {
+        $selectedSchemaId = $_REQUEST["search_by_schema_id"];
+    }
     if (!empty($_REQUEST["search_by_table_id"])) {
         $selectedTableId = $_REQUEST["search_by_table_id"];
     }

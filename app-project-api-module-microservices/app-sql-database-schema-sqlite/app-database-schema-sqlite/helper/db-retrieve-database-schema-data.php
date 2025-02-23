@@ -16,6 +16,144 @@ use RzSDK\Database\SqliteConnection;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
+class DbRetrieveDatabaseSchemaDataNextUpdate {
+    private SqliteConnection $dbConn;
+
+    public function __construct(SqliteConnection $dbConn = null) {
+        $this->dbConn = $dbConn ?? SqliteConnection::getInstance(DB_FULL_PATH);
+    }
+
+    public function getAllDatabaseSchemaData(?string $schemaId = "", ?string $tableId = "", ?string $notTableId = ""): array {
+        $schemaTableName = "tbl_database_schema";
+        $tempDatabaseSchema = new DatabaseSchema();
+        $databaseSchemaList = [];
+
+        $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        if (!empty($schemaId)) {
+            $safeSchemaId = $this->dbConn->quote($schemaId);
+            $sqlQuery = "SELECT * FROM $schemaTableName WHERE {$tempDatabaseSchema->id} = $safeSchemaId ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        }
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $databaseSchema = DatabaseSchemaMapper::toModel($result);
+            $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
+            if (!empty($tableDataList)) {
+                $databaseSchema->tableDataList = $tableDataList;
+            }
+            $databaseSchemaList[] = $databaseSchema;
+        }
+
+        return $databaseSchemaList;
+    }
+
+    public function getAllTableDataBySchemaId(?string $schemaId = "", ?string $tableId = "", ?string $notTableId = ""): array {
+        $tableDataTableName = "tbl_table_data";
+        $tempTableData = new TableData();
+        $tableDataList = [];
+
+        $whereClauses = [];
+        if (!empty($schemaId)) {
+            $whereClauses[] = "{$tempTableData->schema_id} = " . $this->dbConn->quote($schemaId);
+        }
+        if (!empty($tableId)) {
+            $whereClauses[] = "{$tempTableData->id} = " . $this->dbConn->quote($tableId);
+        }
+        if (!empty($notTableId)) {
+            $whereClauses[] = "{$tempTableData->id} <> " . $this->dbConn->quote($notTableId);
+        }
+
+        $whereSql = $whereClauses ? "WHERE " . implode(" AND ", $whereClauses) : "";
+        $sqlQuery = "SELECT * FROM $tableDataTableName $whereSql ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $tableData = TableDataMapper::toModel($result);
+            $tableData->columnDataList = $this->getAllColumnDataByTableId($tableData->id);
+            $tableData->columnKeyList = $this->getAllColumnKeyByTableId($tableData->id);
+            $tableDataList[] = $tableData;
+        }
+
+        return $tableDataList;
+    }
+
+    public function getAllColumnDataByTableId(?string $tableId = "", ?string $columnId = ""): array {
+        $columnDataTableName = "tbl_column_data";
+        $tempColumnData = new ColumnData();
+        $columnDataList = [];
+
+        $whereClauses = [];
+        if (!empty($tableId)) {
+            $whereClauses[] = "{$tempColumnData->table_id} = " . $this->dbConn->quote($tableId);
+        }
+        if (!empty($columnId)) {
+            $whereClauses[] = "{$tempColumnData->id} = " . $this->dbConn->quote($columnId);
+        }
+
+        $whereSql = $whereClauses ? "WHERE " . implode(" AND ", $whereClauses) : "";
+        $sqlQuery = "SELECT * FROM $columnDataTableName $whereSql ORDER BY {$tempColumnData->column_order} ASC, {$tempColumnData->column_name} ASC;";
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $columnDataList[] = ColumnDataMapper::toModel($result);
+        }
+
+        return $columnDataList;
+    }
+
+    public function getAllColumnKeyByTableId(string $tableId): array {
+        $columnKeyTableName = "tbl_column_key";
+        $tempColumnKey = new ColumnKey();
+        $columnKeyList = [];
+
+        $sqlQuery = "SELECT * FROM $columnKeyTableName WHERE {$tempColumnKey->working_table} = " . $this->dbConn->quote($tableId) . " ORDER BY {$tempColumnKey->key_type} ASC, {$tempColumnKey->unique_name};";
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $columnKey = ColumnKeyMapper::toModel($result);
+            $columnKey->compositeKeyList = $this->getAllCompositeKeyByColumnKeyId($columnKey->id);
+            $columnKeyList[] = $columnKey;
+        }
+
+        return $columnKeyList;
+    }
+
+    public function getAllCompositeKeyByColumnKeyId(string $columnKeyId): array {
+        $compositeKeyTableName = "tbl_composite_key";
+        $tempCompositeKey = new CompositeKey();
+        $compositeKeyList = [];
+
+        $sqlQuery = "SELECT * FROM $compositeKeyTableName WHERE {$tempCompositeKey->key_id} = " . $this->dbConn->quote($columnKeyId) . ";";
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $compositeKeyList[] = CompositeKeyMapper::toModel($result);
+        }
+
+        return $compositeKeyList;
+    }
+
+    public function getAllDatabaseSchemaDataOnly(?string $schemaId = ""): array {
+        $schemaTableName = "tbl_database_schema";
+        $tempDatabaseSchema = new DatabaseSchema();
+        $databaseSchemaList = [];
+
+        $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        if (!empty($schemaId)) {
+            $safeSchemaId = $this->dbConn->quote($schemaId);
+            $sqlQuery = "SELECT * FROM $schemaTableName WHERE {$tempDatabaseSchema->id} = $safeSchemaId ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+        }
+
+        $results = $this->dbConn->query($sqlQuery);
+        foreach ($results as $result) {
+            $databaseSchemaList[] = DatabaseSchemaMapper::toModel($result);
+        }
+
+        return $databaseSchemaList;
+    }
+}
+?>
+<?php
 class DbRetrieveDatabaseSchemaData {
     private SqliteConnection $dbConn;
     //
@@ -27,7 +165,7 @@ class DbRetrieveDatabaseSchemaData {
         }
     }
     //
-    public function getAllDatabaseSchemaData(?string $schemaId = ""): array|bool {
+    public function getAllDatabaseSchemaData(?string $schemaId = "", ?string $tableId = "", ?string $notTableId = ""): array|bool {
         $schemaTableName = "tbl_database_schema";
         $tempDatabaseSchema = new DatabaseSchema();
         $databaseSchemaList = array();
@@ -39,7 +177,11 @@ class DbRetrieveDatabaseSchemaData {
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
             $databaseSchema = DatabaseSchemaMapper::toModel($result);
-            $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id);
+            if(!empty($tableId)) {
+                $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
+            } else {
+                $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
+            }
             if($tableDataList) {
                 $databaseSchema->tableDataList = $tableDataList;
             }
@@ -55,17 +197,30 @@ class DbRetrieveDatabaseSchemaData {
         return false;
     }
 
-    public function getAllTableDataBySchemaId($schemaId = "", $tableId = ""): array|bool {
+    public function getAllTableDataBySchemaId($schemaId = "", $tableId = "", $notTableId = ""): array|bool {
         $tableDataTableName = "tbl_table_data";
         $tempTableData = new TableData();
         $tableDataList = array();
         $sqlQuery = "SELECT * FROM $tableDataTableName ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        if(!empty($notTableId)) {
+            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->id} <> '$notTableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+        }
+        //DebugLog::log($sqlQuery);
         if(!empty($schemaId) && !empty($tableId)) {
             $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' AND {$tempTableData->id} = '$tableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
-        } else if(!empty($schemaId)) {
-            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            if(!empty($notTableId)) {
+                $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' AND {$tempTableData->id} = '$tableId' AND {$tempTableData->id} <> '$notTableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            }
         }  else if(!empty($tableId)) {
             $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->id} = '$tableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            if(!empty($notTableId)) {
+                $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->id} = '$tableId' AND {$tempTableData->id} <> '$notTableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            }
+        } else if(!empty($schemaId)) {
+            $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            if(!empty($notTableId)) {
+                $sqlQuery = "SELECT * FROM $tableDataTableName WHERE {$tempTableData->schema_id} = '$schemaId' AND {$tempTableData->id} <> '$notTableId' ORDER BY {$tempTableData->table_order} ASC, {$tempTableData->table_name} ASC;";
+            }
         }
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
