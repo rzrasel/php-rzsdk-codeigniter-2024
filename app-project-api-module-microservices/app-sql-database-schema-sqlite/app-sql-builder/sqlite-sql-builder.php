@@ -53,9 +53,9 @@ class SqliteSqlBuilder {
         }
         //DebugLog::log($this->tableList);
 
-        $dropTableSql = $this->dropTableSql();
+        $dropTableSql = $this->dropTableSql($schema);
 
-        $deleteTableSql = $this->deleteTableSql();
+        $deleteTableSql = $this->deleteTableSql($schema);
 
         $sql .= "{$dropTableSql}\n\n{$tableCreateSql}\n\n{$deleteTableSql}";
         $sql .= "\n\n\n\n";
@@ -63,18 +63,26 @@ class SqliteSqlBuilder {
         return $sql;
     }
 
-    private function dropTableSql(): string {
+    private function dropTableSql(DatabaseSchemaModel $schema): string {
         $dropTableSql = "";
+        $tablePrefix = trim($schema->tablePrefix, "_");
+        if(!empty($tablePrefix)) {
+            $tablePrefix .= "_";
+        }
         foreach($this->tableList as $table) {
-            $dropTableSql .= "DROP TABLE IF EXISTS {$table};\n";
+            $dropTableSql .= "DROP TABLE IF EXISTS {$tablePrefix}{$table};\n";
         }
         return $dropTableSql;
     }
 
-    private function deleteTableSql(): string {
+    private function deleteTableSql(DatabaseSchemaModel $schema): string {
         $dropTableSql = "";
+        $tablePrefix = trim($schema->tablePrefix, "_");
+        if(!empty($tablePrefix)) {
+            $tablePrefix .= "_";
+        }
         foreach($this->tableList as $table) {
-            $dropTableSql .= "DELETE FROM {$table};\n";
+            $dropTableSql .= "DELETE FROM {$tablePrefix}{$table};\n";
         }
         return $dropTableSql;
     }

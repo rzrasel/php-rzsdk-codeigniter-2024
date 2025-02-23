@@ -27,7 +27,7 @@ class ColumnDataViewModel {
         //
         $columnName = trim($postData[$columnData->column_name]);
         $columnName = preg_replace("/\s+/", "_", $columnName);
-        $columnName = preg_replace("-", "_", $columnName);
+        $columnName = preg_replace("/-/", "_", $columnName);
         //
         $postDataType = $postData["data_type"];
         $postDataLength = $postData["data_length"];
@@ -91,7 +91,12 @@ class ColumnDataViewModel {
             $columnDataModel->modifiedDate = date('Y-m-d H:i:s');
             $columnDataModel->createdDate = date('Y-m-d H:i:s');
             //DebugLog::log($columnDataModel);
-            $this->repository->update($columnDataModel);
+            $buttonActionType = $postData["button_action"];
+            if($buttonActionType == "edit") {
+                $this->repository->update($columnDataModel);
+            } else {
+                DebugLog::log("On development stage");
+            }
         } else {
             DebugLog::log("Data error");
         }

@@ -74,6 +74,9 @@ if(!empty($columnDataList)){
             $dbColumnName = $columnData->columnName;
             $dbDataType = $columnData->dataType;
             $dbDataLength = extractNumbers($dbDataType);
+            if(empty($dbDataLength)){
+                $dbDataLength = "0";
+            }
             $tempDataType = explode("(", $dbDataType);
             $dbDataType = $tempDataType[0];
             $dbIsNullable = $columnData->isNullable;
@@ -111,6 +114,12 @@ if(!empty($_POST)) {
     $dbHaveDefault = $_POST[$columnData->have_default];
     $dbDefaultValue = $_POST[$columnData->default_value];
     $dbColumnComment = $_POST[$columnData->column_comment];
+}
+if(empty($dbDataLength)){
+    $dbDataLength = "0";
+}
+if(empty($columnOrder)){
+    $columnOrder = "1";
 }
 ?>
 <?php
