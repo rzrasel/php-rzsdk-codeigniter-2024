@@ -129,12 +129,27 @@ class SqliteSqlBuilder {
 
         $sql .= $column->isNullable && strtolower($column->isNullable) === "true" ? " NULL" : " NOT NULL";
 
-        if($column->haveDefault && strtolower($column->haveDefault) === "true") {
+        /*if($column->haveDefault && strtolower($column->haveDefault) === "true") {
             $sql .= " DEFAULT";
             if($column->defaultValue !== null && $column->defaultValue !== "") {
                 $sql .= " {$column->defaultValue}";
             } else {
                 $sql .= $this->getDefaultValueForDataType($column->dataType);
+            }
+        }*/
+
+        $haveDefault = false;
+        if($column->haveDefault && strtolower($column->haveDefault) == "true") {
+            $haveDefault = true;
+            $sql .= " DEFAULT";
+        }
+        if($column->defaultValue !== null && $column->defaultValue !== "") {
+            $sql .= " {$column->defaultValue}";
+        } else {
+            if($haveDefault) {
+                if(empty($column->defaultValue)) {
+                    $sql .= $this->getDefaultValueForDataType($column->dataType);
+                }
             }
         }
 

@@ -30,8 +30,8 @@ class DbRetrieveDatabaseSchemaDataNextUpdate {
 
         $sqlQuery = "SELECT * FROM $schemaTableName ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
         if (!empty($schemaId)) {
-            $safeSchemaId = $this->dbConn->quote($schemaId);
-            $sqlQuery = "SELECT * FROM $schemaTableName WHERE {$tempDatabaseSchema->id} = $safeSchemaId ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
+            //$safeSchemaId = $this->dbConn->quote($schemaId);
+            $sqlQuery = "SELECT * FROM $schemaTableName WHERE {$tempDatabaseSchema->id} = $schemaId ORDER BY {$tempDatabaseSchema->schema_name} ASC;";
         }
 
         $results = $this->dbConn->query($sqlQuery);
@@ -177,11 +177,12 @@ class DbRetrieveDatabaseSchemaData {
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
             $databaseSchema = DatabaseSchemaMapper::toModel($result);
-            if(!empty($tableId)) {
+            /*if(!empty($tableId)) {
                 $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
             } else {
                 $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
-            }
+            }*/
+            $tableDataList = $this->getAllTableDataBySchemaId($databaseSchema->id, $tableId, $notTableId);
             if($tableDataList) {
                 $databaseSchema->tableDataList = $tableDataList;
             }

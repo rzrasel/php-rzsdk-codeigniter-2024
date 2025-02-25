@@ -180,7 +180,6 @@ class SqliteSqlBuilder {
         if(empty($column->columnName)) {
             return "";
         }
-        $haveDefault = false;
         $columnName = "{$column->columnName}";
         $columnName =  str_pad($columnName, $this->maxColumnPadLength, " ");
         $dataType = "{$column->dataType}";
@@ -191,6 +190,7 @@ class SqliteSqlBuilder {
         } else {
             $sql .= " NOT NULL";
         }
+        $haveDefault = false;
         if($column->haveDefault && strtolower($column->haveDefault) == "true") {
             $haveDefault = true;
             $sql .= " DEFAULT";

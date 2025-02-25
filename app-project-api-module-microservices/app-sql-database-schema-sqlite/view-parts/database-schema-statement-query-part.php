@@ -48,6 +48,17 @@ if(!empty($schemaId)) {
 echo $sql;
 echo "</pre>";*/
 ?>
+<table class="form-heading">
+    <tr>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Database Schema Statement Query</td>
+    </tr>
+    <tr>
+        <td></td>
+    </tr>
+</table>
 <form action="<?= $_SERVER["PHP_SELF"]; ?>" method="GET">
     <table valign="right" width="100%" class="table-search-by-fields">
         <tr>
