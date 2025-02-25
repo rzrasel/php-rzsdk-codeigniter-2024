@@ -21,15 +21,16 @@ class SqliteSqlBuilder {
     private array $dropTableList = [];
 
     public function buildSql(?array $schemas): string {
-        if (empty($schemas)) {
+        if(empty($schemas)) {
             return "";
         }
 
         $this->databaseSchemas = $schemas;
+        $this->createTableList = [];
         $this->dropTableList = [];
         $sql = "";
 
-        foreach ($schemas as $schema) {
+        foreach($schemas as $schema) {
             $sql .= $this->buildSchemaSql($schema);
         }
 
@@ -43,9 +44,9 @@ class SqliteSqlBuilder {
         $this->maxColumnPadLength = $this->maxColumnLength + 4;
         $this->maxDataTypePadLength = $this->maxDataTypeLength + 4;
 
-        foreach ($schema->tableDataList as $table) {
+        foreach($schema->tableDataList as $table) {
             $this->createTableList[$table->tableName] = "";
-            $this->dropTableList[] = $table->tableName;
+            $this->dropTableList[$table->tableName] = $table->tableName;
         }
 
         $sql = "\n\n\n\n";
@@ -54,7 +55,7 @@ class SqliteSqlBuilder {
         $sql .= "\n\n\n\n";
 
         $tableCreateSql = "";
-        foreach ($schema->tableDataList as $table) {
+        foreach($schema->tableDataList as $table) {
             $tableCreateSql = $this->buildTableSql($schema, $table);
             $this->createTableList[$table->tableName] = $tableCreateSql;
         }
@@ -73,7 +74,7 @@ class SqliteSqlBuilder {
         $dropTableSql = "";
         $tablePrefix = $this->getTablePrefix($schema);
 
-        foreach ($this->dropTableList as $table) {
+        foreach($this->dropTableList as $table) {
             $dropTableSql .= "DROP TABLE IF EXISTS {$tablePrefix}{$table};\n";
         }
 
@@ -84,7 +85,7 @@ class SqliteSqlBuilder {
         $deleteTableSql = "";
         $tablePrefix = $this->getTablePrefix($schema);
 
-        foreach ($this->dropTableList as $table) {
+        foreach($this->dropTableList as $table) {
             $deleteTableSql .= "DELETE FROM {$tablePrefix}{$table};\n";
         }
 
@@ -95,19 +96,19 @@ class SqliteSqlBuilder {
         $tablePrefix = $this->getTablePrefix($schema);
         $sqlCommands = [];
 
-        foreach ($table->columnDataList as $column) {
+        foreach($table->columnDataList as $column) {
             $columnSql = $this->buildColumnSql($column);
-            if (!empty($columnSql)) {
+            if(!empty($columnSql)) {
                 $sqlCommands[] = $columnSql;
             }
         }
 
         $keysSql = $this->buildKeysSql($schema, $table);
-        if (!empty($keysSql)) {
+        if(!empty($keysSql)) {
             $sqlCommands = array_merge($sqlCommands, $keysSql);
         }
 
-        if (!empty($sqlCommands)) {
+        if(!empty($sqlCommands)) {
             $sql = "CREATE TABLE IF NOT EXISTS $tablePrefix{$table->tableName} (\n";
             $sql .= implode(",\n", $sqlCommands) . "\n";
             $sql .= ");\n\n";
@@ -118,7 +119,7 @@ class SqliteSqlBuilder {
     }
 
     private function buildColumnSql(ColumnDataModel $column): string {
-        if (empty($column->columnName)) {
+        if(empty($column->columnName)) {
             return "";
         }
 
@@ -128,16 +129,16 @@ class SqliteSqlBuilder {
 
         $sql .= $column->isNullable && strtolower($column->isNullable) === "true" ? " NULL" : " NOT NULL";
 
-        if ($column->haveDefault && strtolower($column->haveDefault) === "true") {
+        if($column->haveDefault && strtolower($column->haveDefault) === "true") {
             $sql .= " DEFAULT";
-            if ($column->defaultValue !== null && $column->defaultValue !== "") {
+            if($column->defaultValue !== null && $column->defaultValue !== "") {
                 $sql .= " {$column->defaultValue}";
             } else {
                 $sql .= $this->getDefaultValueForDataType($column->dataType);
             }
         }
 
-        if ($column->columnComment) {
+        if($column->columnComment) {
             $sql .= " COMMENT '{$column->columnComment}'";
         }
 
@@ -153,9 +154,9 @@ class SqliteSqlBuilder {
         $keysSql = [];
         $columnKeyList = $this->categorizeColumnKeys($table->columnKeyList);
 
-        foreach ($columnKeyList as $key) {
+        foreach($columnKeyList as $key) {
             $keySql = $this->buildKeySql($schema, $table, $key);
-            if (!empty($keySql)) {
+            if(!empty($keySql)) {
                 $keysSql[] = "    {$keySql}";
             }
         }
@@ -170,11 +171,11 @@ class SqliteSqlBuilder {
 
         foreach ($columnKeyList as $key) {
             $relationalKeyType = RelationalKeyType::getByName($key->keyType);
-            if ($relationalKeyType === RelationalKeyType::PRIMARY) {
+            if($relationalKeyType === RelationalKeyType::PRIMARY) {
                 $columnKeyPkList[] = $key;
-            } elseif ($relationalKeyType === RelationalKeyType::FOREIGN) {
+            } elseif($relationalKeyType === RelationalKeyType::FOREIGN) {
                 $columnKeyFkList[] = $key;
-            } elseif ($relationalKeyType === RelationalKeyType::UNIQUE) {
+            } elseif($relationalKeyType === RelationalKeyType::UNIQUE) {
                 $columnKeyUkList[] = $key;
             }
         }
@@ -183,7 +184,7 @@ class SqliteSqlBuilder {
     }
 
     private function buildKeySql(DatabaseSchemaModel $schema, TableDataModel $table, ColumnKeyModel $key): string {
-        if (empty($key->keyType)) {
+        if(empty($key->keyType)) {
             return "";
         }
 
@@ -198,7 +199,7 @@ class SqliteSqlBuilder {
         $referenceTableName = $referenceColumnInfo["table"] ?? "";
         $referenceColumnName = $referenceColumnInfo["column"] ?? "";
 
-        if ($referenceTableName && $referenceColumnName) {
+        if($referenceTableName && $referenceColumnName) {
             $this->rearrangeCreateTableList($workingTableName, $referenceTableName);
             $this->rearrangeDropTableList($workingTableName, $referenceTableName);
         }
@@ -207,11 +208,11 @@ class SqliteSqlBuilder {
         $referenceColumnKey = $this->buildCompositeKey($key, $referenceColumnName, "reference");
 
         $relationalKeyType = RelationalKeyType::getByName($key->keyType);
-        if (!$relationalKeyType) {
+        if(!$relationalKeyType) {
             return "";
         }
 
-        switch ($relationalKeyType) {
+        switch($relationalKeyType) {
             case RelationalKeyType::PRIMARY:
                 return "CONSTRAINT pk_{$workingTableName}_{$workingColumnKey} PRIMARY KEY($workingColumnName)";
             case RelationalKeyType::UNIQUE:
@@ -224,14 +225,14 @@ class SqliteSqlBuilder {
     }
 
     private function buildCompositeKey(ColumnKeyModel $key, string $columnName, string $type): string {
-        if (empty($key->compositeKeyList)) {
+        if(empty($key->compositeKeyList)) {
             return $columnName;
         }
 
         $compositeColumns = $this->getCompositeKeyList($key->compositeKeyList);
         $compositeColumnNames = $compositeColumns[$type] ?? [];
 
-        if (!empty($compositeColumnNames)) {
+        if(!empty($compositeColumnNames)) {
             $columnName .= ", " . implode(", ", $compositeColumnNames);
         }
 
@@ -246,15 +247,15 @@ class SqliteSqlBuilder {
 
         $databaseSchemaDataFinder = new DatabaseSchemaDataFinder($this->databaseSchemas);
         foreach ($keyList as $key) {
-            if ($key->primaryColumn) {
+            if($key->primaryColumn) {
                 $primaryColumnInfo = $databaseSchemaDataFinder->getColumnDetails($key->primaryColumn);
-                if ($primaryColumnInfo) {
+                if($primaryColumnInfo) {
                     $compositeKeyList["primary"][] = $primaryColumnInfo["column"];
                 }
             }
-            if ($key->compositeColumn) {
+            if($key->compositeColumn) {
                 $compositeColumnInfo = $databaseSchemaDataFinder->getColumnDetails($key->compositeColumn);
-                if ($compositeColumnInfo) {
+                if($compositeColumnInfo) {
                     $compositeKeyList["reference"][] = $compositeColumnInfo["column"];
                 }
             }
@@ -271,10 +272,10 @@ class SqliteSqlBuilder {
         $workingIndex = array_search($mainTable, array_keys($this->createTableList));
         $referenceIndex = array_search($referenceTable, array_keys($this->createTableList));
 
-        if ($referenceIndex > $workingIndex) {
+        if($referenceIndex > $workingIndex) {
             $tempTableList = [];
-            foreach ($this->createTableList as $key => $value) {
-                if ($key === $mainTable) {
+            foreach($this->createTableList as $key => $value) {
+                if($key === $mainTable) {
                     $tempTableList[$referenceTable] = $this->createTableList[$referenceTable];
                 }
                 $tempTableList[$key] = $value;
@@ -284,16 +285,24 @@ class SqliteSqlBuilder {
     }
 
     private function rearrangeDropTableList(string $mainTable, string $referenceTable): void {
-        if (empty($mainTable) || empty($referenceTable)) {
+        if(empty($mainTable) || empty($referenceTable)) {
             return;
         }
 
-        $workingIndex = array_search($mainTable, $this->dropTableList);
-        $referenceIndex = array_search($referenceTable, $this->dropTableList);
+        $workingIndex = array_search($mainTable, array_keys($this->dropTableList));
+        $referenceIndex = array_search($referenceTable, array_keys($this->dropTableList));
 
         if ($workingIndex !== false && $referenceIndex !== false) {
-            $this->dropTableList[$workingIndex] = $referenceTable;
-            $this->dropTableList[$referenceIndex] = $mainTable;
+            if($workingIndex > $referenceIndex) {
+                $tempTableList = [];
+                foreach($this->dropTableList as $key => $value) {
+                    if($key === $referenceTable) {
+                        $tempTableList[$mainTable] = $this->dropTableList[$mainTable];
+                    }
+                    $tempTableList[$key] = $value;
+                }
+                $this->dropTableList = $tempTableList;
+            }
         }
     }
 
