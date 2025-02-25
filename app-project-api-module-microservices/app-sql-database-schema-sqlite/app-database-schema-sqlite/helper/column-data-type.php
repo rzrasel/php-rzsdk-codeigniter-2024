@@ -5,12 +5,14 @@ namespace App\DatabaseSchema\Helper\Data\Type;
 enum ColumnDataType: string {
     case BIGINT     = "bigint";
     case BOOLEAN    = "boolean";
+    case DATE       = "date";
     case DATETIME   = "datetime";
     case INT        = "int";
     case INTEGER    = "integer";
     case TEXT       = "text";
     case TIMESTAMP  = "timestamp";
     case VARCHAR    = "varchar";
+    case YEAR       = "year";
 
     public static function getByName($value): ?self {
         foreach(self::cases() as $case) {

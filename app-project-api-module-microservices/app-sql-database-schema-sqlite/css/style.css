@@ -517,7 +517,7 @@ button:hover {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.table-data-search-result th {
+/*.table-data-search-result th {
     background: #2980b9;
     color: white;
     padding: 10px;
@@ -527,6 +527,24 @@ button:hover {
 .table-data-search-result td {
     padding: 8px;
     border-bottom: 1px solid #ddd;
+}*/
+
+.table-data-search-result tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Light gray for odd rows */
+}
+
+.table-data-search-result tr:nth-child(even) {
+    background-color: #ffffff; /* White for even rows */
+}
+
+.table-data-search-result tr:hover {
+    background-color: #ddd; /* Light gray hover effect */
+}
+
+.table-data-search-result td, .table-data-search-result th {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
 }
 
 /* Edit & Delete Buttons */

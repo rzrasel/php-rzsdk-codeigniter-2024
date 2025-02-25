@@ -39,6 +39,12 @@ $dataList = array(
         "slug" => "app-project-api-module-microservices",
         "children" => array(
             array(
+                "id" => "2.1",
+                "name" => "App Sql Database Schema SQLite",
+                "slug" => "app-sql-database-schema-sqlite",
+                "children" => array(),
+            ),
+            array(
                 "id" => "1.4",
                 "name" => "APP Project API Module Microservices",
                 "slug" => "",
