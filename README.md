@@ -26,7 +26,6 @@ git push;
 Git Branches:
 - Git Root Project
 - [Project Ongoing Task 202411-01](https://github.com/rzrasel/project-ongoing-task-202411-01)
-- x[Project Link Repository](https://github.com/rzrasel/project-link-repository)
 - Android Project
 - [Android Rz Apphiveme Bornomala Shikha 2024-12-16](https://github.com/rzrasel/android-rz-apphiveme-bornomalashikha-2024-12)
 - [Android Rz English Word Quiz (Kotlin) 2024-11-24](https://github.com/rzrasel/android-rz-english-word-quiz-2024-11)

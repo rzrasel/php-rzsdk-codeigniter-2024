@@ -109,7 +109,7 @@ class DatabaseSchemaDataFinder {
         $this->schemas = $schemas;
     }
 
-    private function findSchemaIndex(string $id): ?int {
+    private function findSchemaIndex($id) {
         foreach($this->schemas as $index => $schema) {
             if("{$schema->id}" === "$id") {
                 return $index;
@@ -118,7 +118,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    private function findTableIndex(string $schemaIndex, string $id): ?int {
+    private function findTableIndex($schemaIndex, $id) {
         foreach($this->schemas[$schemaIndex]->tableDataList as $index => $table) {
             if("{$table->id}" === "$id") {
                 return $index;
@@ -127,7 +127,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    private function findColumnIndex(?string $schemaIndex, ?string $tableIndex, ?string $id): ?int {
+    private function findColumnIndex($schemaIndex, $tableIndex, $id) {
         foreach($this->schemas[$schemaIndex]->tableDataList[$tableIndex]->columnDataList as $index => $column) {
             if("{$column->id}" === "$id") {
                 return $index;
@@ -136,7 +136,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getSchemaName(string $id): ?array {
+    public function getSchemaName($id): ?array {
         $schemaIndex = $this->findSchemaIndex($id);
         if($schemaIndex === null) return null;
 
@@ -146,7 +146,7 @@ class DatabaseSchemaDataFinder {
         ];
     }
 
-    public function getTableName(string $id): ?array {
+    public function getTableName($id): ?array {
         foreach($this->schemas as $schemaIndex => $schema) {
             $tableIndex = $this->findTableIndex($schemaIndex, $id);
             if($tableIndex !== null) {
@@ -159,7 +159,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getColumnName(string $id): ?array {
+    public function getColumnName($id): ?array {
         foreach($this->schemas as $schemaIndex => $schema) {
             foreach($schema->tableDataList as $tableIndex => $table) {
                 $columnIndex = $this->findColumnIndex($schemaIndex, $tableIndex, $id);
@@ -178,7 +178,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getTableDetails(string $id): ?array {
+    public function getTableDetails($id): ?array {
         foreach($this->schemas as $schemaIndex => $schema) {
             $tableIndex = $this->findTableIndex($schemaIndex, $id);
             if($tableIndex !== null) {
@@ -192,7 +192,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getColumnDetails(?string $id): ?array {
+    public function getColumnDetails($id): ?array {
         foreach($this->schemas as $schemaIndex => $schema) {
             foreach($schema->tableDataList as $tableIndex => $table) {
                 $columnIndex = $this->findColumnIndex($schemaIndex, $tableIndex, $id);
@@ -209,7 +209,7 @@ class DatabaseSchemaDataFinder {
         return null;
     }
 
-    public function getMaxColumnLength(string $schemaId): int {
+    public function getMaxColumnLength($schemaId): int {
         $maxLength = 0;
         foreach($this->schemas as $schema) {
             if("{$schema->id}" === "$schemaId") {
@@ -223,7 +223,7 @@ class DatabaseSchemaDataFinder {
         return $maxLength;
     }
 
-    public function getMaxDataTypeLength(string $schemaId): int {
+    public function getMaxDataTypeLength($schemaId): int {
         $maxLength = 0;
         foreach($this->schemas as $schema) {
             if("{$schema->id}" === "$schemaId") {
