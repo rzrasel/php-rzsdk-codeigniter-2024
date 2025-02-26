@@ -36,6 +36,8 @@ class DatabaseSchemaRawQuery {
         $sqlQuery = !empty($schemaId)
             ? sprintf($sqlString, " WHERE {$tempDatabaseSchema->id} = '{$schemaId}'")
             : sprintf($sqlString, "");
+        //DebugLog::log($sqlQuery);
+        //DebugLog::log($tableId);
 
         $results = $this->dbConn->query($sqlQuery);
         foreach($results as $result) {
@@ -45,6 +47,7 @@ class DatabaseSchemaRawQuery {
             //$tableDataList = [];
 
             if(!empty($tableDataList["table"])) {
+                //DebugLog::log($tableDataList);
                 if(!empty($callback)) {
                     $data .= $callback($databaseSchema, $depth, true); // Open parent
                     $databaseSchema->tableDataList = $tableDataList["table"];
