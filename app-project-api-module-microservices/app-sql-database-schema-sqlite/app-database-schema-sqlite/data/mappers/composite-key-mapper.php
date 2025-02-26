@@ -61,13 +61,13 @@ class CompositeKeyMapper {
         return $params;
     }
 
-    public function toEntity($compositeKey): CompositeKey {
+    public static function toEntity($compositeKey): CompositeKey {
         // Database array or object data to "Data" data
         $model = new CompositeKey();
         $dataVarList = self::getDataVarList($model);
         $domainVarList = self::getDomainVarList($compositeKey);
         for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$dataVarList[$i]} = $compositeKey->{$dataVarList[$i]};
+            $model->{$dataVarList[$i]} = $compositeKey->{$domainVarList[$i]};
         }
         return $model;
     }

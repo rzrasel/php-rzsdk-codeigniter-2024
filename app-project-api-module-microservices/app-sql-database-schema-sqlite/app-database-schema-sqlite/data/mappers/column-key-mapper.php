@@ -61,13 +61,13 @@ class ColumnKeyMapper {
         return $params;
     }
 
-    public function toEntity($columnKey): ColumnKey {
+    public static function toEntity($columnKey): ColumnKey {
         // Database array or object data to "Data" data
         $model = new ColumnKey();
         $dataVarList = self::getDataVarList($model);
         $domainVarList = self::getDomainVarList($columnKey);
         for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$dataVarList[$i]} = $columnKey->{$dataVarList[$i]};
+            $model->{$dataVarList[$i]} = $columnKey->{$domainVarList[$i]};
         }
         return $model;
     }

@@ -61,7 +61,7 @@ class DatabaseSchemaMapper {
         $dataVarList = self::getDataVarList($model);
         $domainVarList = self::getDomainVarList($schema);
         for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$dataVarList[$i]} = $schema->{$dataVarList[$i]};
+            $model->{$dataVarList[$i]} = $schema->{$domainVarList[$i]};
         }
         return $model;
     }
