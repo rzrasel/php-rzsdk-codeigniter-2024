@@ -26,6 +26,7 @@ $schemaDataList = $view->getAllSchemaData();
 <?php
 $tableOrder = 1;
 $selectedSchemaId = "";
+$schemaSelectDropDown = "";
 if(!empty($_POST)) {
     $selectedSchemaId = $_POST["schema_id"];
     $tableOrder = $_POST["table_order"] + 1;

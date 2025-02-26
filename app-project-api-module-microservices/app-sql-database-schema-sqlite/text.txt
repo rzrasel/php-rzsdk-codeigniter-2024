@@ -1,0 +1,72 @@
+class TableData {
+    public $schema_id = "schema_id";
+    public $id = "id";
+    //public $unique_name = "unique_name";
+    public $table_order = "table_order";
+    public $table_name = "table_name";
+    public $column_prefix = "column_prefix";
+    public $table_comment = "table_comment";
+    public $modified_date = "modified_date";
+    public $created_date = "created_date";
+}
+
+class ColumnData {
+    public $table_id = "table_id";
+    public $id = "id";
+    //public $unique_name = "unique_name";
+    public $column_order = "column_order";
+    public $column_name = "column_name";
+    public $data_type = "data_type";
+    public $is_nullable = "is_nullable";
+    public $have_default = "have_default";
+    public $default_value = "default_value";
+    public $column_comment = "column_comment";
+    public $modified_date = "modified_date";
+    public $created_date = "created_date";
+}
+
+class ColumnKey {
+    public $id = "id";
+    public $working_table = "working_table";
+    public $main_column = "main_column";
+    public $key_type = "key_type";
+    public $reference_column = "reference_column";
+    public $key_name = "key_name";
+    public $unique_name = "unique_name";
+    public $modified_date;
+    public $created_date;
+}
+
+
+input:
+input 1:
+$sql = "CREATE TABLE IF NOT EXISTS tbl_publisher_data (
+    id                    BIGINT(20)     NOT NULL,
+    name                  TEXT           NOT NULL,
+    country               TEXT           NULL,
+    established_year      DATE           NULL,
+    CONSTRAINT pk_publisher_data_id PRIMARY KEY(id)
+);";
+
+input 2:
+
+$sql = "CREATE TABLE IF NOT EXISTS tbl_book_content (
+    section_id            BIGINT(20)     NOT NULL,
+    id                    BIGINT(20)     NOT NULL,
+    title                 TEXT           NULL,
+    content_details       TEXT           NULL,
+    order_index           INT(3)         NOT NULL,
+    content_type          TEXT           NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+    reference_book_id     BIGINT(20)     NULL,
+    CONSTRAINT pk_book_content_id PRIMARY KEY(id),
+    CONSTRAINT fk_book_content_reference_book_id_book_data_id FOREIGN KEY(reference_book_id) REFERENCES tbl_book_data(id),
+    CONSTRAINT fk_book_content_section_id_book_sectioning_id FOREIGN KEY(section_id) REFERENCES tbl_book_sectioning(id)
+);";
+
+extract data and fill TableData, ColumnData and ColumnKey in php.
+
+For input 1 output is:
+ColumnKey $working_table = "tbl_publisher_data", main_column = "id", reference_column = array()
+
+For input 2 output is:
+ColumnKey $working_table = "tbl_book_content", main_column = "section_id", reference_column = array("tbl_book_sectioning", "id")

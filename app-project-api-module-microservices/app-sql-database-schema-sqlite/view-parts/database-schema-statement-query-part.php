@@ -18,6 +18,7 @@ $dbRetrieveSchemaData = (new DbRetrieveDatabaseSchemaData())->getAllDatabaseSche
 <?php
 $selectedSchemaId = "";
 $schemaId = "";
+$schemaSelectDropDown = "";
 if(!empty($_REQUEST)) {
     //DebugLog::log($_REQUEST);
     $selectedSchemaId = $_REQUEST["search_by_schema_id"];

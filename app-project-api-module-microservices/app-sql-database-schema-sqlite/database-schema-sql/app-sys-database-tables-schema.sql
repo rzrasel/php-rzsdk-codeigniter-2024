@@ -90,8 +90,89 @@ DELETE FROM tbl_column_data;
 DELETE FROM tbl_table_data;
 DELETE FROM tbl_database_schema;
 
+-- Delete All Schema Data
 
--- SQLite Database DATE CREATED: 2025-02-21, DATE MODIFIED: 2025-02-26 - VERSION: v-1.1.1
+DELETE FROM tbl_database_schema
+WHERE id <> '174030631877720513';
+
+-- Delete All Table Data
+
+DELETE FROM tbl_table_data
+WHERE schema_id IN (
+    SELECT id FROM tbl_database_schema
+    WHERE id <> '174030631877720513'
+);
+
+-- Delete All Column Data
+
+DELETE FROM tbl_column_data
+WHERE table_id IN (
+    SELECT td.id FROM tbl_table_data td
+                          JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+-- Delete All Column Key
+
+DELETE FROM tbl_column_key
+WHERE id IN (
+    SELECT ck.id
+    FROM tbl_column_key ck
+             JOIN tbl_table_data td ON ck.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+SELECT * FROM tbl_column_key
+WHERE id IN (
+    SELECT ck.id
+    FROM tbl_column_key ck
+             JOIN tbl_table_data td ON ck.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+DELETE FROM tbl_column_key
+WHERE id IN (
+    SELECT ck.id
+    FROM tbl_column_key ck
+             JOIN tbl_table_data td ON ck.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+-- Delete All Composite Key
+
+DELETE FROM tbl_composite_key
+WHERE key_id IN (
+    SELECT ck.id
+    FROM tbl_column_key ck
+             JOIN tbl_table_data td ON ck.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+SELECT * FROM tbl_composite_key
+WHERE key_id IN (
+    SELECT ck.id
+    FROM tbl_composite_key ck
+             JOIN tbl_column_key ck_key ON ck.key_id = ck_key.id
+             JOIN tbl_table_data td ON ck_key.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+DELETE FROM tbl_composite_key
+WHERE key_id IN (
+    SELECT ck.id
+    FROM tbl_composite_key ck
+             JOIN tbl_column_key ck_key ON ck.key_id = ck_key.id
+             JOIN tbl_table_data td ON ck_key.working_table = td.id
+             JOIN tbl_database_schema ds ON td.schema_id = ds.id
+    WHERE ds.id <> '174030631877720513'
+);
+
+
 
 -- Database Schema: Database Schema
 INSERT INTO tbl_database_schema (id, schema_name, schema_version, table_prefix, database_comment, modified_date, created_date) VALUES (174014882064916708, 'app_sys_database_tables_schema', '1.1.1', 'tbl_', NULL, '2025-02-21 15:40:20', '2025-02-21 15:40:20');
@@ -177,3 +258,4 @@ INSERT INTO tbl_column_key (id, working_table, main_column, key_type, reference_
 -- Database Schema: Composite Key Schema
 INSERT INTO tbl_composite_key (key_id, id, primary_column, composite_column, key_name, modified_date, created_date) VALUES (174015199366285681, 174015212926532680, 174014987802497294, NULL, NULL, '2025-02-21 16:35:29', '2025-02-21 16:35:29');
 INSERT INTO tbl_composite_key (key_id, id, primary_column, composite_column, key_name, modified_date, created_date) VALUES (174015536490839656, 174015549468946593, 174015013482471373, NULL, NULL, '2025-02-21 17:31:34', '2025-02-21 17:31:34');
+

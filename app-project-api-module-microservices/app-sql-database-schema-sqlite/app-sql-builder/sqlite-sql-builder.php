@@ -30,7 +30,15 @@ class SqliteSqlBuilder {
         $this->dropTableList = [];
         $sql = "";
 
+        $sql .= "\n";
+        $sql .= "-- SQLite Database";
         foreach($schemas as $schema) {
+            $sql .= "";
+            $sql .= " DATE CREATED: " . date("Y-m-d", strtotime($schema->createdDate));
+            $sql .= ", DATE MODIFIED: " . date("Y-m-d", );
+            $sql .= " - VERSION: v-{$schema->schemaVersion}";
+            $sql .= "\n";
+            $sql .= "-- DATABASE NAME: " . ucwords(str_replace("_", " ", $schema->schemaName));
             $sql .= $this->buildSchemaSql($schema);
         }
 
@@ -49,6 +57,7 @@ class SqliteSqlBuilder {
             $this->dropTableList[$table->tableName] = $table->tableName;
         }
 
+        //$sql = "\n\n";
         $sql = "\n\n\n\n";
         $sql .= "CREATE DATABASE IF NOT EXISTS {$schema->schemaName};\n";
         $sql .= "USE {$schema->schemaName};\n";

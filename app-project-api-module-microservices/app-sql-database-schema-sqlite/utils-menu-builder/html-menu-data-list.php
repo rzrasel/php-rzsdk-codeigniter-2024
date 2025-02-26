@@ -43,11 +43,11 @@ class HtmlMenuDataList {
             "Database Schema Output" => array(
                 "upper-level-01" => "upper-level-01",
                 "database-schema-statement-query-view.php" => "Database Schema Statement Query",
+                "database-schema-raw-query-view.php" => "Database Schema Raw Query Statement",
             ),
-
             "Database Schema Raw Query" => array(
                 "upper-level-01" => "upper-level-01",
-                "database-schema-raw-query-view.php" => "Database Schema Raw Query Statement",
+                "extract-table-column-data.php" => "Extract Table Column Data",
             ),
         );
     }

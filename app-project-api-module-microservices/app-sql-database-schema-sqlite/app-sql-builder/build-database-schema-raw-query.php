@@ -43,6 +43,8 @@ class BuildDatabaseSchemaRawQuery {
                 $tempOutputData .= " DATE CREATED: " . date("Y-m-d", strtotime($schemaItem->createdDate));
                 $tempOutputData .= ", DATE MODIFIED: " . date("Y-m-d", );
                 $tempOutputData .= " - VERSION: v-{$schemaItem->schemaVersion}";
+                $tempOutputData .= "\n";
+                $tempOutputData .= "-- DATABASE NAME: " . ucwords(str_replace("_", " ", $schemaItem->schemaName));
                 //DebugLog::log($rawQuery);
                 //DebugLog::log($rawQuery->id);
                 //$databaseSchema = DatabaseSchemaMapper::toEntity($rawQuery);
@@ -187,13 +189,21 @@ class BuildDatabaseSchemaRawQuery {
         foreach($arrayData as $key => $value) {
             $tempValue = $value;
             if(is_bool($value)) {
-                $tempValue = $value ? TRUE : FALSE;
+                $tempValue = $value ? "'TRUE'" : "'FALSE'";
             } else if(is_numeric($value) || is_int($value) || is_integer($value)) {
                 $tempValue = $value ? $value : 0;
             } else if(empty($value)) {
                 $tempValue = "NULL";
             } else {
-                $tempValue = "'{$value}'";
+                if(strtolower($value) == "false") {
+                    $tempValue = "'FALSE'";
+                } else if(strtolower($value) == "true") {
+                    $tempValue = "'TRUE'";
+                } else {
+                    //$tempValue = "'" . addslashes($value) . "'";
+                    $tempValue = "'" . str_replace("'", "''", $value) . "'";
+                    //$tempValue = "'{$value}'";
+                }
             }
             $tableDataList[$key] = $tempValue;
         }
