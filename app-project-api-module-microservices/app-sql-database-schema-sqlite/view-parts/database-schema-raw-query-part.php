@@ -1,9 +1,15 @@
 <?php
 use App\DatabaseSchema\Helper\Database\Data\Retrieve\DatabaseSchemaRawQuery;
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
-use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
+use App\DatabaseSchema\Domain\Models\ColumnDataModel;
+use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
+use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
+use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Data\Entities\TableData;
+use App\DatabaseSchema\Data\Entities\ColumnData;
+use App\DatabaseSchema\Data\Entities\ColumnKey;
+use App\DatabaseSchema\Data\Entities\CompositeKey;
 use RzSDK\Log\DebugLog;
 ?>
 <?php
@@ -61,6 +67,21 @@ $databaseSchemaList = $databaseSchemaRawQuery->getDatabaseSchema("", "", "", fun
             . "({$tempTableData->schema_id}, {$tempTableData->id}, {$tempTableData->table_order}, {$tempTableData->table_name}, {$tempTableData->table_comment}, {$tempTableData->column_prefix}, {$tempTableData->modified_date}, {$tempTableData->created_date})"
             . " VALUES"
             . "('{$item->schemaId}', '{$item->id}', '{$item->tableOrder}', '{$item->tableName}', '{$item->tableComment}', '{$item->columnPrefix}', '{$item->modifiedDate}', '{$item->createdDate}');";
+    } else if ($item instanceof ColumnDataModel) {
+        $data .= "INSERT INTO tbl_column_data"
+            . "()"
+            . " VALUES"
+            . "();";
+    } else if ($item instanceof ColumnKeyModel) {
+        $data .= "INSERT INTO tbl_column_key"
+            . "()"
+            . " VALUES"
+            . "();";
+    } else if ($item instanceof CompositeKeyModel) {
+        $data .= "INSERT INTO tbl_composite_key"
+            . "()"
+            . " VALUES"
+            . "();";
     }
     return $data . "\n";
 });
