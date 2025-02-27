@@ -70,3 +70,414 @@ ColumnKey $working_table = "tbl_publisher_data", main_column = "id", reference_c
 
 For input 2 output is:
 ColumnKey $working_table = "tbl_book_content", main_column = "section_id", reference_column = array("tbl_book_sectioning", "id")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+class ExtractSqlStatementToDataEntity {
+    private $sqlToDataEntityList = array();
+
+    public function toDataEntity(string $sqlStatement): array {
+        $tableName = $this->getTable($sqlStatement);
+        $columnList = $this->getColumns($sqlStatement);
+        $constraintList = $this->getConstraints($tableName, $sqlStatement);
+        $this->sqlToDataEntityList["table"] = $tableName;
+        $this->sqlToDataEntityList["column"] = $columnList;
+        $this->sqlToDataEntityList["constraint"] = $constraintList;
+        return $this->sqlToDataEntityList;
+    }
+
+    private function getTable(string $sqlStatement): ?string {
+        // Extract table name
+        preg_match("/CREATE TABLE IF NOT EXISTS\s+(\w+)\s*\(/", $sqlStatement, $tableMatches);
+        if (!empty($tableMatches[1])) {
+            return $tableMatches[1];
+        }
+        return null;
+    }
+
+    private function getColumns(string $sqlStatement): array {
+        $columnDataList = array();
+        preg_match('/\((.*)\);/s', $sqlStatement, $columnMatches);
+        if (!empty($columnMatches[1])) {
+            $columnDefinitions = explode(",", trim($columnMatches[1]));
+
+            foreach ($columnDefinitions as $index => $columnDefinition) {
+                $columnDefinition = trim($columnDefinition);
+                if (preg_match('/^CONSTRAINT/', $columnDefinition)) {
+                    continue;
+                }
+
+                if (preg_match('/^(\w+)\s+([\w\(\)]+)\s*(.*)/', $columnDefinition, $columnMatches)) {
+                    $columnData = array();
+                    $columnData["column_name"] = $columnMatches[1];
+                    $columnData["data_type"] = $columnMatches[2];
+                    $columnData["column_order"] = $index + 1;
+
+                    //$constraints = strtoupper($columnMatches[3] ?? '');
+                    $constraints = $columnMatches[3] ?? '';
+                    $columnData["is_nullable"] = (strpos($constraints, 'NOT NULL') === false) ? "true" : "false";
+                    $columnData["have_default"] = (strpos($constraints, 'DEFAULT') !== false) ? "true" : "false";
+
+                    if ($columnData["have_default"] === "true") {
+                        preg_match('/DEFAULT\s+([^.*,]+)/i', $constraints, $defaultMatches);
+                        $columnData["default_value"] = $defaultMatches[1] ?? null;
+                    } else {
+                        preg_match('/(NULL|NOT NULL|DEFAULT)\s+([^.*,]+)/i', $constraints, $defaultMatches);
+                        $columnData["default_value"] = $defaultMatches[2] ?? null;
+                    }
+
+                    $columnDataList[] = $columnData;
+                }
+            }
+        }
+        return $columnDataList;
+    }
+
+    private function getConstraints(string $tableName, string $sqlStatement): array {
+        $constraintDataList = array();
+        // Extract constraints
+        preg_match('/\((.*)\);/s', $sqlStatement, $columnMatches);
+        if (!empty($columnMatches[1])) {
+            $columnDefinitions = explode(",", trim($columnMatches[1]));
+
+            foreach ($columnDefinitions as $index => $columnDefinition) {
+                $columnDefinition = trim($columnDefinition);
+
+                // Handle PRIMARY KEY constraints
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+PRIMARY KEY\s*\(([^)]+)\)/', $columnDefinition, $pkMatches)) {
+                    $constraintData = array();
+                    $constraintData["key_name"] = $pkMatches[1];
+                    $constraintData["key_type"] = "primary key";
+                    $constraintData["working_table"] = $tableName;
+                    $constraintData["main_column"] = trim($pkMatches[2]);
+                    $constraintData["reference_column"] = []; // PRIMARY KEY has no reference column
+                    $constraintDataList[] = $constraintData;
+                }
+
+                // Handle FOREIGN KEY constraints
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+FOREIGN KEY\s*\(([^)]+)\)\s+REFERENCES\s+(\w+)\s*\(([^)]+)\)/', $columnDefinition, $fkMatches)) {
+                    $constraintData = array();
+                    $constraintData["key_name"] = $fkMatches[1];
+                    $constraintData["key_type"] = "foreign key";
+                    $constraintData["working_table"] = $tableName;
+                    $constraintData["main_column"] = trim($fkMatches[2]);
+                    $constraintData["reference_column"] = [trim($fkMatches[3]), trim($fkMatches[4])]; // [referenced_table, referenced_column]
+                    $constraintDataList[] = $constraintData;
+                }
+            }
+        }
+        return $constraintDataList;
+    }
+}
+?>
+
+// Test Inputs
+$input1 = "CREATE TABLE IF NOT EXISTS tbl_publisher_data (
+    id BIGINT(20) NOT NULL DEFAULT 1,
+    name TEXT NOT NULL,
+    country TEXT NULL,
+    established_year DATE NULL,
+    CONSTRAINT pk_publisher_data_id PRIMARY KEY(id)
+);";
+
+$input2 = "CREATE TABLE IF NOT EXISTS tbl_book_content (
+    section_id BIGINT(20) NOT NULL,
+    id BIGINT(20) NOT NULL,
+    title TEXT NULL DEFAULT 'Untitled',
+    content_details TEXT NULL,
+    order_index INT(3) NOT NULL DEFAULT 0,
+    content_type TEXT NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+    reference_book_id BIGINT(20) NULL,
+    CONSTRAINT pk_book_content_id PRIMARY KEY(id),
+    CONSTRAINT fk_book_content_reference_book_id_book_data_id FOREIGN KEY(reference_book_id) REFERENCES tbl_book_data(id),
+    CONSTRAINT fk_book_content_section_id_book_sectioning_id FOREIGN KEY(section_id) REFERENCES tbl_book_sectioning(id)
+);";
+
+$input3 = "CREATE TABLE IF NOT EXISTS tbl_book_content (
+   section_id BIGINT(20) NOT NULL,
+   id BIGINT(20) NOT NULL,
+   title TEXT NULL DEFAULT 'Untitled',
+   content_details TEXT NULL DEFAULT 'text' CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+   order_index INT(3) NOT NULL DEFAULT 0,
+   content_type TEXT NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+   reference_book_id BIGINT(20) NULL,
+   CONSTRAINT pk_book_content_id PRIMARY KEY(id),
+   CONSTRAINT fk_book_content_reference_book_id_book_data_id FOREIGN KEY(reference_book_id) REFERENCES tbl_book_data(id),
+   CONSTRAINT fk_book_content_section_id_book_sectioning_id FOREIGN KEY(section_id) REFERENCES tbl_book_sectioning(id)
+);";
+
+extract data and fill Table Data, Column Data and Constraint Key in php.
+
+For input 1 output is:
+ColumnKey $working_table = "tbl_publisher_data", main_column = "id", reference_column = array()
+
+For input 2 output is:
+ColumnKey $working_table = "tbl_book_content", main_column = "section_id", reference_column = array("tbl_book_sectioning", "id")
+* Default value can be after DEFAULT, NOT NULL or NULL key
+* Default value CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')) is missing
+* Default value is until line last comma, every thing before the last comma of the line
+* error result default value
+* For $input3 expected output is:
+Array
+(
+    [table] => tbl_book_content
+    [column] => Array
+        (
+            [0] => Array
+                (
+                    [column_name] => section_id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 1
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+            [1] => Array
+                (
+                    [column_name] => id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 2
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+            [2] => Array
+                (
+                    [column_name] => title
+                    [data_type] => TEXT
+                    [column_order] => 3
+                    [is_nullable] => true
+                    [have_default] => true
+                    [default_value] => 'Untitled'
+                )
+
+            [3] => Array
+                (
+                    [column_name] => content_details
+                    [data_type] => TEXT
+                    [column_order] => 4
+                    [is_nullable] => true
+                    [have_default] => true
+                    [default_value] => 'text' CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference'))
+                )
+
+            [4] => Array
+                (
+                    [column_name] => order_index
+                    [data_type] => INT(3)
+                    [column_order] => 9
+                    [is_nullable] => false
+                    [have_default] => true
+                    [default_value] => 0
+                )
+
+            [5] => Array
+                (
+                    [column_name] => content_type
+                    [data_type] => TEXT
+                    [column_order] => 10
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] => CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference'))
+                )
+
+            [6] => Array
+                (
+                    [column_name] => reference_book_id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 15
+                    [is_nullable] => true
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+        )
+
+    [constraint] => Array
+        (
+            [0] => Array
+                (
+                    [key_name] => pk_book_content_id
+                    [key_type] => primary key
+                    [working_table] => tbl_book_content
+                    [main_column] => id
+                    [reference_column] => Array
+                        (
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [key_name] => fk_book_content_reference_book_id_book_data_id
+                    [key_type] => foreign key
+                    [working_table] => tbl_book_content
+                    [main_column] => reference_book_id
+                    [reference_column] => Array
+                        (
+                            [0] => tbl_book_data
+                            [1] => id
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [key_name] => fk_book_content_section_id_book_sectioning_id
+                    [key_type] => foreign key
+                    [working_table] => tbl_book_content
+                    [main_column] => section_id
+                    [reference_column] => Array
+                        (
+                            [0] => tbl_book_sectioning
+                            [1] => id
+                        )
+
+                )
+
+        )
+
+)
+
+But output found:
+Array
+(
+    [table] => tbl_book_content
+    [column] => Array
+        (
+            [0] => Array
+                (
+                    [column_name] => section_id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 1
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+            [1] => Array
+                (
+                    [column_name] => id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 2
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+            [2] => Array
+                (
+                    [column_name] => title
+                    [data_type] => TEXT
+                    [column_order] => 3
+                    [is_nullable] => true
+                    [have_default] => true
+                    [default_value] => 'Untitled'
+                )
+
+            [3] => Array
+                (
+                    [column_name] => content_details
+                    [data_type] => TEXT
+                    [column_order] => 4
+                    [is_nullable] => true
+                    [have_default] => true
+                    [default_value] => 'text' CHECK(content_type IN ('text'
+                )
+
+            [4] => Array
+                (
+                    [column_name] => order_index
+                    [data_type] => INT(3)
+                    [column_order] => 9
+                    [is_nullable] => false
+                    [have_default] => true
+                    [default_value] => 0
+                )
+
+            [5] => Array
+                (
+                    [column_name] => content_type
+                    [data_type] => TEXT
+                    [column_order] => 10
+                    [is_nullable] => false
+                    [have_default] => false
+                    [default_value] => CHECK(content_type IN ('text'
+                )
+
+            [6] => Array
+                (
+                    [column_name] => reference_book_id
+                    [data_type] => BIGINT(20)
+                    [column_order] => 15
+                    [is_nullable] => true
+                    [have_default] => false
+                    [default_value] =>
+                )
+
+        )
+
+    [constraint] => Array
+        (
+            [0] => Array
+                (
+                    [key_name] => pk_book_content_id
+                    [key_type] => primary key
+                    [working_table] => tbl_book_content
+                    [main_column] => id
+                    [reference_column] => Array
+                        (
+                        )
+
+                )
+
+            [1] => Array
+                (
+                    [key_name] => fk_book_content_reference_book_id_book_data_id
+                    [key_type] => foreign key
+                    [working_table] => tbl_book_content
+                    [main_column] => reference_book_id
+                    [reference_column] => Array
+                        (
+                            [0] => tbl_book_data
+                            [1] => id
+                        )
+
+                )
+
+            [2] => Array
+                (
+                    [key_name] => fk_book_content_section_id_book_sectioning_id
+                    [key_type] => foreign key
+                    [working_table] => tbl_book_content
+                    [main_column] => section_id
+                    [reference_column] => Array
+                        (
+                            [0] => tbl_book_sectioning
+                            [1] => id
+                        )
+
+                )
+
+        )
+
+)

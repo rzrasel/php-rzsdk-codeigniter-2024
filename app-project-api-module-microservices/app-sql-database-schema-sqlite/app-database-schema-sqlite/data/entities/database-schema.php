@@ -12,7 +12,15 @@ class DatabaseSchema {
     public $modified_date = "modified_date";
     public $created_date = "created_date";
 
-    public function __construct() {}
+    public function __construct($setDefault = false) {
+        if(!$setDefault) {
+            return;
+        }
+        $varList = $this->getVarList();
+        foreach($varList as $var) {
+            $this->{$var} = $var;
+        }
+    }
 
     public function getVarList() {
         $result = array_intersect_key(

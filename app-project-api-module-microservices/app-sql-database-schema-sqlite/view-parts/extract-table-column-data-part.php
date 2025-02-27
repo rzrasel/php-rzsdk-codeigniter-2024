@@ -1,24 +1,31 @@
 <?php
-use App\DatabaseSchema\Data\Repositories\TableDataRepositoryImpl;
-use App\DatabaseSchema\Presentation\ViewModels\TableDataViewModel;
-use App\DatabaseSchema\Presentation\Views\TableDataView;
+use App\DatabaseSchema\Data\Repositories\ExtractDatabaseSchemaImpl;
+use App\DatabaseSchema\Presentation\ViewModels\ExtractDatabaseSchemaViewModel;
+use App\DatabaseSchema\Presentation\Views\ExtractDatabaseSchemaView;
 use App\DatabaseSchema\Html\Select\DropDown\HtmlSelectDropDown;
+use App\DatabaseSchema\Schema\Build\Entity\ExtractSqlStatementToDataEntity;
+use RzSDK\Log\DebugLog;
 ?>
 <?php
-$repository = new TableDataRepositoryImpl();
-$viewModel = new TableDataViewModel($repository);
-$view = new TableDataView($viewModel);
+?>
+<?php
+$repository = new ExtractDatabaseSchemaImpl();
+$viewModel = new ExtractDatabaseSchemaViewModel($repository);
+$view = new ExtractDatabaseSchemaView($viewModel);
 $schemaDataList = $view->getAllSchemaData();
 ?>
 <?php
-$tableOrder = 1;
 $selectedSchemaId = "";
 $schemaSelectDropDown = "";
 $sqlStatement = "";
+$sqlToDataEntity = array();
 if(!empty($_POST)) {
     $selectedSchemaId = $_POST["schema_id"];
     $sqlStatement = $_POST["sql_statement"];
+    $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
+    $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlStatement);
 }
+DebugLog::log($sqlToDataEntity);
 ?>
 <?php
 $schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $schemaDataList, $selectedSchemaId);
