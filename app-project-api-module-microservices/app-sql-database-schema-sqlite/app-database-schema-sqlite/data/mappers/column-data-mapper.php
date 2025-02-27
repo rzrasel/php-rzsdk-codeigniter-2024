@@ -6,7 +6,8 @@ use App\DatabaseSchema\Data\Entities\ColumnData;
 use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
-
+?>
+<?php
 class ColumnDataMapper {
 
     public static function getDataVarList(ColumnData $modelData) {
@@ -61,13 +62,26 @@ class ColumnDataMapper {
         return $params;
     }
 
-    public static function toEntity($columnData): ColumnData {
+    public static function toEntity($dbSchema): ColumnData {
         // Database array or object data to "Data" data
         $model = new ColumnData();
-        $dataVarList = self::getDataVarList($model);
-        $domainVarList = self::getDomainVarList($columnData);
+        /*$dataVarList = self::getDataVarList($model);
+        $domainVarList = self::getDomainVarList($dbSchema);
         for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$dataVarList[$i]} = $columnData->{$domainVarList[$i]};
+            $model->{$dataVarList[$i]} = $dbSchema->{$domainVarList[$i]};
+        }*/
+        if(is_array($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($model);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$dataVarList[$i]} = $dbSchema[$dataVarList[$i]];
+            }
+        } else if(is_object($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$dataVarList[$i]} = $dbSchema->{$dataVarList[$i]};
+            }
         }
         return $model;
     }

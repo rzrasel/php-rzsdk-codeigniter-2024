@@ -6,7 +6,8 @@ use App\DatabaseSchema\Data\Entities\CompositeKey;
 use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
-
+?>
+<?php
 class CompositeKeyMapper {
 
     public static function getDataVarList(CompositeKey $modelData) {

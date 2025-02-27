@@ -5,9 +5,9 @@ namespace RzSDK\Database;
 use PDO;
 use PDOException;
 use PDOStatement;
+use RzSDK\Database\SqliteFetchType;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
-
 ?>
 <?php
 class SqliteConnection {
@@ -54,11 +54,18 @@ class SqliteConnection {
     }
 
     //|-----------------------|SQL QUERY|------------------------|
-    public function query($sqlQuery) {
+    public function query($sqlQuery, SqliteFetchType $fetchMode = SqliteFetchType::NONE) {
+        //$fetchMode->valueDebugLog::log($fetchMode->value);
         if ($this->pdo !== null) {
             $query = preg_replace("/escape_string\((.*?)\)/", $this->escapeString("$1"), $sqlQuery);
             try {
-                return $this->pdo->query($query);
+                if($fetchMode == SqliteFetchType::NONE) {
+                    return $this->pdo->query($query);
+                } else {
+                    $statement = $this->pdo->query($query);
+                    return $statement->fetch($fetchMode->value);
+                }
+                //return $this->pdo->query($query);
             } catch (PDOException $e) {
                 //error_log("SQL Query Error: " . $e->getMessage());
                 DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
@@ -66,6 +73,10 @@ class SqliteConnection {
             }
         }
         return false;
+    }
+
+    public function fetch($result, SqliteFetchType $fetchMode = SqliteFetchType::FETCH_DEFAULT) {
+        return $result->fetch($fetchMode);
     }
 
     //|-------------------|QUERY EXECUTE SQL QUERY|--------------------|

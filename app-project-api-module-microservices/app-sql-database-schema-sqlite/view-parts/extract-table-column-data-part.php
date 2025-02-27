@@ -18,14 +18,13 @@ $schemaDataList = $view->getAllSchemaData();
 $selectedSchemaId = "";
 $schemaSelectDropDown = "";
 $sqlStatement = "";
-$sqlToDataEntity = array();
+//$sqlToDataEntity = array();
 if(!empty($_POST)) {
     $selectedSchemaId = $_POST["schema_id"];
     $sqlStatement = $_POST["sql_statement"];
-    $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
-    $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlStatement);
+    $view->onExtractSchema($_POST);
 }
-DebugLog::log($sqlToDataEntity);
+//DebugLog::log($sqlToDataEntity);
 ?>
 <?php
 $schemaSelectDropDown = HtmlSelectDropDown::schemaSelectDropDown("schema_id", $schemaDataList, $selectedSchemaId);

@@ -6,7 +6,8 @@ use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
-
+?>
+<?php
 class TableDataMapper {
 
     public static function getDataVarList(TableData $modelData) {
@@ -61,14 +62,25 @@ class TableDataMapper {
         return $params;
     }
 
-    public static function toEntity($tableData): TableData {
+    public static function toEntity($dbSchema): TableData {
         // Database array or object data to "Data" data
+        //DebugLog::log($dbSchema);
         $model = new TableData();
-        $dataVarList = self::getDataVarList($model);
-        $domainVarList = self::getDomainVarList($tableData);
-        for($i = 0; $i < count($dataVarList); $i++) {
-            $model->{$dataVarList[$i]} = $tableData->{$domainVarList[$i]};
+        if(is_array($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($tableData);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$dataVarList[$i]} = $dbSchema[$dataVarList[$i]];
+            }
+        } else if(is_object($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($tableData);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                //$model->{$dataVarList[$i]} = $dbSchema->{$dataVarList[$i]};
+                $model->{$dataVarList[$i]} = $dbSchema->{$dataVarList[$i]};
+            }
         }
+        //DebugLog::log($model);
         return $model;
     }
 

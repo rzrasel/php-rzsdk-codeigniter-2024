@@ -16,16 +16,6 @@ class ColumnData {
     public $modified_date = "modified_date";
     public $created_date = "created_date";
 
-    public function __construct($setDefault = false) {
-        if(!$setDefault) {
-            return;
-        }
-        $varList = $this->getVarList();
-        foreach($varList as $var) {
-            $this->{$var} = $var;
-        }
-    }
-
     public function getVarList() {
         $result = array_intersect_key(
             get_object_vars($this),
@@ -39,6 +29,13 @@ class ColumnData {
             get_object_vars($this),
             get_mangled_object_vars($this)
         );
+    }
+
+    public function setVars() {
+        $varList = $this->getVarList();
+        foreach($varList as $var) {
+            $this->{$var} = $var;
+        }
     }
 }
 ?>

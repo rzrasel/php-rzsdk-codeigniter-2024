@@ -11,5 +11,13 @@ class ExtractDatabaseSchemaView {
     public function __construct(ExtractDatabaseSchemaViewModel $viewModel) {
         $this->viewModel = $viewModel;
     }
+
+    public function getAllSchemaData(): array|bool {
+        return $this->viewModel->getAllDatabaseSchemaData();
+    }
+
+    public function onExtractSchema($schemaData) {
+        $this->viewModel->onExtractSchema($schemaData);
+    }
 }
 ?>

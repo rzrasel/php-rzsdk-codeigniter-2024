@@ -4,7 +4,8 @@ namespace App\DatabaseSchema\Data\Mappers;
 <?php
 use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Domain\Models\DatabaseSchemaModel;
-
+?>
+<?php
 class DatabaseSchemaMapper {
 
     public static function getDataVarList(DatabaseSchema $modelData) {

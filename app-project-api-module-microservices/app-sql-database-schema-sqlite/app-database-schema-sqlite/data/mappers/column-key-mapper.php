@@ -6,7 +6,8 @@ use App\DatabaseSchema\Data\Entities\ColumnKey;
 use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
 use RzSDK\Log\DebugLog;
 use RzSDK\Log\LogType;
-
+?>
+<?php
 class ColumnKeyMapper {
 
     public static function getDataVarList(ColumnKey $modelData) {
