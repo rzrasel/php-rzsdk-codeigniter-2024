@@ -213,6 +213,7 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
             $refColumn = $columnKeyModel->referenceColumn;
             $dbColumnDataRefTable = $this->getColumnIdByTableName($schemaId, $refColumn[0], $refColumn[1]);
             //$this->getColumnIdByTableName($schemaId, "book_content", "id");
+            //DebugLog::log($dbColumnDataRefTable);
             if(!empty($dbColumnDataRefTable)) {
                 $columnKeyModel->referenceColumn = $dbColumnDataRefTable->id;
             } else {
@@ -277,7 +278,7 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         $tempTableData->setVars();
         $tempColumnData = new ColumnData();
         $tempColumnData->setVars();
-        $sqlQuery = "SELECT * FROM {$dbColumnDataTableName} INNER JOIN {$dbTableDataTableName} ON {$dbTableDataTableName}.{$tempTableData->id} = {$dbColumnDataTableName}.{$tempColumnData->table_id} WHERE {$dbTableDataTableName}.{$tempTableData->schema_id} = '{$schemaId}' AND {$dbTableDataTableName}.{$tempTableData->table_name} = '{$tableName}' AND {$dbColumnDataTableName}.{$tempColumnData->column_name} = '{$columnName}';";
+        $sqlQuery = "SELECT *, {$dbColumnDataTableName}.{$tempColumnData->id} AS column_id FROM {$dbColumnDataTableName} INNER JOIN {$dbTableDataTableName} ON {$dbTableDataTableName}.{$tempTableData->id} = {$dbColumnDataTableName}.{$tempColumnData->table_id} WHERE {$dbTableDataTableName}.{$tempTableData->schema_id} = '{$schemaId}' AND {$dbTableDataTableName}.{$tempTableData->table_name} = '{$tableName}' AND {$dbColumnDataTableName}.{$tempColumnData->column_name} = '{$columnName}';";
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         $schemaColumnData = new ColumnData();
@@ -286,12 +287,14 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
             //DebugLog::log($result);
             $counter++;
             $schemaColumnData = ColumnDataMapper::toEntity($result);
+            $schemaColumnData->table_id = $result[$tempColumnData->table_id];
+            $schemaColumnData->id = $result["column_id"];
         }
         //DebugLog::log($counter);
         if($counter <= 0) {
             return null;
         }
-        DebugLog::log($schemaColumnData);
+        //DebugLog::log($schemaColumnData);
         return $schemaColumnData;
     }
 
