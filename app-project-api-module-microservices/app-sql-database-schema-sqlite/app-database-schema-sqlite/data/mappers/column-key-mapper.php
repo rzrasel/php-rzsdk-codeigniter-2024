@@ -62,13 +62,26 @@ class ColumnKeyMapper {
         return $params;
     }
 
-    public static function toEntity($columnKey): ColumnKey {
+    public static function toEntity($dbSchema): ColumnKey {
         // Database array or object data to "Data" data
         $model = new ColumnKey();
-        $dataVarList = self::getDataVarList($model);
+        /*$dataVarList = self::getDataVarList($model);
         $domainVarList = self::getDomainVarList($columnKey);
         for($i = 0; $i < count($dataVarList); $i++) {
             $model->{$dataVarList[$i]} = $columnKey->{$domainVarList[$i]};
+        }*/
+        if(is_array($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($model);
+            for($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$dataVarList[$i]} = $dbSchema[$dataVarList[$i]];
+            }
+        } else if(is_object($dbSchema)) {
+            $dataVarList = self::getDataVarList($model);
+            //$domainVarList = self::getDomainVarList($model);
+            for ($i = 0; $i < count($dataVarList); $i++) {
+                $model->{$dataVarList[$i]} = $dbSchema->{$dataVarList[$i]};
+            }
         }
         return $model;
     }

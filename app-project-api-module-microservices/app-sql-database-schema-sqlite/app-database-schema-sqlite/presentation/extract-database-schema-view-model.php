@@ -46,6 +46,7 @@ class ExtractDatabaseSchemaViewModel {
         //DebugLog::log($tableDataModel);
         $this->onInsertColumnData($tableDataModel, $sqlToDataEntity);
         $this->onInsertColumnKeyData($schemaId, $tableDataModel, $sqlToDataEntity);
+        DebugLog::log("Work Done");
     }
 
     private function onInsertTableData($schemaId, $sqlToDataEntity) {
