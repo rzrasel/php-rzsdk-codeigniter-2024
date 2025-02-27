@@ -120,6 +120,49 @@ class ExtractSqlStatementToDataEntity {
 
     private function getConstraints(string $tableName, string $sqlStatement): array {
         $constraintDataList = array();
+        preg_match('/\((.*)\);/s', $sqlStatement, $columnMatches);
+        if (!empty($columnMatches[1])) {
+            $columnDefinitions = explode(",", trim($columnMatches[1]));
+
+            foreach ($columnDefinitions as $columnDefinition) {
+                $columnDefinition = trim($columnDefinition);
+
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+PRIMARY KEY\s*\(([^)]+)\)/', $columnDefinition, $pkMatches)) {
+                    $constraintDataList[] = [
+                        "key_name" => $pkMatches[1],
+                        "key_type" => "primary key",
+                        "working_table" => $tableName,
+                        "main_column" => trim($pkMatches[2]),
+                        "reference_column" => []
+                    ];
+                }
+
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+FOREIGN KEY\s*\(([^)]+)\)\s+REFERENCES\s+(\w+)\s*\(([^)]+)\)/', $columnDefinition, $fkMatches)) {
+                    $constraintDataList[] = [
+                        "key_name" => $fkMatches[1],
+                        "key_type" => "foreign key",
+                        "working_table" => $tableName,
+                        "main_column" => trim($fkMatches[2]),
+                        "reference_column" => [trim($fkMatches[3]), trim($fkMatches[4])]
+                    ];
+                }
+
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+UNIQUE\s*\(([^)]+)\)/', $columnDefinition, $ukMatches)) {
+                    $constraintDataList[] = [
+                        "key_name" => $ukMatches[1],
+                        "key_type" => "unique key",
+                        "working_table" => $tableName,
+                        "main_column" => trim($ukMatches[2]),
+                        "reference_column" => []
+                    ];
+                }
+            }
+        }
+        return $constraintDataList;
+    }
+
+    private function getConstraintsV1(string $tableName, string $sqlStatement): array {
+        $constraintDataList = array();
 
         // Extract everything inside parentheses
         if (preg_match('/\((.*)\);/s', $sqlStatement, $tableMatch)) {

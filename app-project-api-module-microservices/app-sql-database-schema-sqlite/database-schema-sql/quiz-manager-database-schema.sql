@@ -32,6 +32,12 @@ CREATE TABLE IF NOT EXISTS tbl_subject_data (
     CONSTRAINT uk_subject_data_subject_name UNIQUE(subject_name)
 );
 
+CREATE TABLE IF NOT EXISTS tbl_subject_data (
+    id                       BIGINT(20)     NOT NULL,
+    subject_name             TEXT           NOT NULL,
+    CONSTRAINT pk_subject_data_id PRIMARY KEY(id)
+);
+
 CREATE TABLE IF NOT EXISTS tbl_chapter_data (
     subject_id               BIGINT(20)     NOT NULL,
     id                       BIGINT(20)     NOT NULL,

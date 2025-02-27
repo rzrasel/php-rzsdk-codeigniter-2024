@@ -38,6 +38,7 @@ class ExtractDatabaseSchemaViewModel {
         $sqlStatement = $schemaData["sql_statement"];
         $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
         $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlStatement);
+        //DebugLog::log($sqlToDataEntity);
         //DebugLog::log(ExtractSchemaTableMapper::toEntity($sqlToDataEntity));
         //DebugLog::log(ExtractSchemaColumnMapper::toEntity($sqlToDataEntity));
         //DebugLog::log(ExtractSchemaColumnKeyMapper::toEntity($sqlToDataEntity));

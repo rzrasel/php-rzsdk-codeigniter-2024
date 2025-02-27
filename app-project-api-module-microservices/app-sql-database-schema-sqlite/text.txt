@@ -223,11 +223,19 @@ $input3 = "CREATE TABLE IF NOT EXISTS tbl_book_content (
    CONSTRAINT fk_book_content_section_id_book_sectioning_id FOREIGN KEY(section_id) REFERENCES tbl_book_sectioning(id)
 );";
 
+$input4 = "CREATE TABLE IF NOT EXISTS tbl_subject_data (
+   id                       BIGINT(20)     NOT NULL,
+   subject_name             TEXT           NOT NULL,
+   CONSTRAINT pk_subject_data_id PRIMARY KEY(id),
+   CONSTRAINT uk_subject_data_subject_name UNIQUE(subject_name)
+);";
+
 extract data and fill Table Data, Column Data and Constraint Key in php.
 
 For input 1 output is:
 ColumnKey $working_table = "tbl_publisher_data", main_column = "id", reference_column = array()
 
+* Want to extract UNIQUE key
 For input 2 output is:
 ColumnKey $working_table = "tbl_book_content", main_column = "section_id", reference_column = array("tbl_book_sectioning", "id")
 * Default value can be after DEFAULT, NOT NULL or NULL key

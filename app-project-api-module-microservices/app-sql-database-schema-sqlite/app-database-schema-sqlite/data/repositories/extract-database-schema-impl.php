@@ -197,13 +197,17 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
     public function onInsertColumnKey($schemaId, ColumnKeyModel $columnKeyModel): ColumnKeyModel {
         //DebugLog::log($columnKeyModel);
         $tableName = "tbl_column_key";
+        //
+        $dbColumnDataMainTable = $this->getColumnIdByTableId($columnKeyModel->workingTable, $columnKeyModel->mainColumn);
+        //
+        $columnKeyModel->mainColumn = $dbColumnDataMainTable->id;
         $dbColumnKey = $this->getIsColumnKeyExistsByName($schemaId, $columnKeyModel);
         //DebugLog::log($dbColumnKey);
         if(!empty($dbColumnKey)) {
             return ColumnKeyMapper::toModel($dbColumnKey);
         }
         //DebugLog::log($columnKeyModel);
-        $dbColumnDataMainTable = $this->getColumnIdByTableId($columnKeyModel->workingTable, $columnKeyModel->mainColumn);
+        //$dbColumnDataMainTable = $this->getColumnIdByTableId($columnKeyModel->workingTable, $columnKeyModel->mainColumn);
         //
         if(!empty($columnKeyModel->referenceColumn)) {
             $refColumn = $columnKeyModel->referenceColumn;
@@ -245,7 +249,7 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         $tempColumnKey = new ColumnKey();
         $tempColumnKey->setVars();
         $schemaColumnKey = new ColumnKey();
-        $sqlQuery = "SELECT * FROM {$dbTableName} WHERE {$tempColumnKey->working_table} = {$columnKeyModel->workingTable} AND {$tempColumnKey->main_column} = '{$columnKeyModel->mainColumn}' AND {$tempColumnKey->key_type} = '{$columnKeyModel->keyType}';";
+        $sqlQuery = "SELECT * FROM {$dbTableName} WHERE {$tempColumnKey->working_table} = '{$columnKeyModel->workingTable}' AND {$tempColumnKey->main_column} = '{$columnKeyModel->mainColumn}' AND {$tempColumnKey->key_type} = '{$columnKeyModel->keyType}';";
         //DebugLog::log($sqlQuery);
         $results = $this->dbConn->query($sqlQuery);
         $counter = 0;
