@@ -491,6 +491,65 @@ button:hover {
     transform: scale(1.02);
 }
 
+.form-summit-action-button {
+    horiz-align: left;
+    text-align: left;
+}
+
+.form-summit-action-button button {
+    width: 100%; /* Makes all buttons the same width */
+    min-width: max-content; /* Ensures buttons fit their text */
+    padding: 10px 15px; /* Adjust padding for uniform size */
+    font-size: 16px; /* Consistent font size */
+    text-align: center; /* Center text */
+    white-space: nowrap; /* Prevents text wrapping */
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    /*background-color: #f8f9fa;*/
+    cursor: pointer;
+}
+
+/*.form-summit-action-button button:hover {
+    background-color: #e9ecef;
+}*/
+
+/* Ensure all buttons match the longest one */
+.form-summit-action-button {
+    display: flex;
+    justify-content: flex-start; /* Align buttons uniformly */
+}
+
+.form-summit-action-button button {
+    flex-grow: 1;
+}
+
+/* Different Button Styles */
+.button-action-delete-composite-key {
+    background-color: #e74c3c; /* Red */
+}
+
+.button-action-delete-column-key {
+    background-color: #c0392b; /* Darker Red */
+}
+
+.button-action-delete-column-data {
+    background-color: #f39c12; /* Orange */
+}
+
+.button-action-delete-table-data {
+    background-color: #d35400; /* Dark Orange */
+}
+
+.button-action-delete-database-schema-data {
+    background-color: #8e44ad; /* Purple */
+}
+
+/* Hover Effects */
+.form-summit-action-button button:hover {
+    opacity: 0.8;
+}
+
 /*.button-action-delete {
     background-color: #dc3545;
 }

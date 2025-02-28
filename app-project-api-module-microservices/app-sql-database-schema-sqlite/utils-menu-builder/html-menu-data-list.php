@@ -48,6 +48,7 @@ class HtmlMenuDataList {
             "Database Schema Raw Query" => array(
                 "upper-level-01" => "upper-level-01",
                 "extract-table-column-data.php" => "Extract Table Column Data",
+                "delete-database-schema-query-view.php" => "Delete Schema Data",
             ),
         );
     }
