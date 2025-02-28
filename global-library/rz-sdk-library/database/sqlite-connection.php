@@ -75,8 +75,8 @@ class SqliteConnection {
         return false;
     }
 
-    public function fetch($result, SqliteFetchType $fetchMode = SqliteFetchType::FETCH_DEFAULT) {
-        return $result->fetch($fetchMode);
+    public function fetch($results, SqliteFetchType $fetchMode = SqliteFetchType::FETCH_DEFAULT) {
+        return $results->fetch($fetchMode);
     }
 
     //|-------------------|QUERY EXECUTE SQL QUERY|--------------------|

@@ -44,27 +44,27 @@ if(!empty($_POST)) {
         <tr>
             <td>Delete Composite Key:</td>
             <td><input type="hidden" value="button-action-delete-post"/></td>
-            <td class="form-summit-action-button"><button type="submit" name="delete_composite_key" value="delete_composite_key" class="button-action-delete-composite-key">Delete Composite Key</button></td>
+            <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_composite_key" class="button-action-delete-composite-key">Delete Composite Key</button></td>
         </tr>
         <tr>
             <td>Delete Column Key:</td>
             <td></td>
-            <td class="form-summit-action-button"><button type="submit" name="delete_column_key" value="delete_column_key" class="button-action-delete-column-key">Delete Column Key</button></td>
+            <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_column_key" class="button-action-delete-column-key">Delete Column Key</button></td>
         </tr>
         <tr>
             <td>Delete Column Data:</td>
             <td></td>
-            <td class="form-summit-action-button"><button type="submit" name="delete_column_data" value="delete_column_data" class="button-action-delete-column-data">Delete Column Data</button></td>
+            <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_column_data" class="button-action-delete-column-data">Delete Column Data</button></td>
         </tr>
         <tr>
             <td>Delete Table Data:</td>
             <td></td>
-            <td class="form-summit-action-button"><button type="submit" name="delete_table_data" value="delete_table_data" class="button-action-delete-table-data">Delete Table Data</button></td>
+            <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_table_data" class="button-action-delete-table-data">Delete Table Data</button></td>
         </tr>
         <tr>
             <td>Delete Database Schema Data:</td>
             <td></td>
-            <td class="form-summit-action-button"><button type="submit" name="delete_database_schema_data" value="delete_database_schema_data" class="button-action-delete-database-schema-data">Delete Database Schema Data</button></td>
+            <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_database_schema_data" class="button-action-delete-database-schema-data">Delete Database Schema Data</button></td>
         </tr>
         <tr>
             <td></td>
