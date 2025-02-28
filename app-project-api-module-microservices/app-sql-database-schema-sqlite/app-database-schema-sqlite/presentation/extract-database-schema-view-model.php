@@ -29,6 +29,44 @@ class ExtractDatabaseSchemaViewModel {
     }
 
     public function onExtractSchema($schemaData) {
+        if(empty($schemaData)) {
+            DebugLog::log("Empty Data");
+            return;
+        }
+        //DebugLog::log($schemaData);
+        $schemaId = $schemaData["schema_id"];
+        $sqlStatement = $schemaData["sql_statement"];
+        /*// Split SQL statements and reattach semicolons
+        $statements = array_filter(array_map('trim', explode(";", $sqlStatement)));
+
+        $sqlQueries = array_map(function ($stmt) {
+            return $stmt . ";"; // Reattach semicolon
+        }, $statements);*/
+        // Step 1: Remove extra new lines and spaces
+        $input = preg_replace("/\s+/", " ", $sqlStatement); // Replace multiple spaces/new lines with a single space
+
+        // Step 2: Split SQL statements properly
+        $statements = array_filter(array_map('trim', explode(";", $input)));
+
+        // Step 3: Ensure each statement ends with a semicolon
+        //$queries = array_map(fn($stmt) => $stmt . ";", $statements);
+        $sqlQueries = array_map(function ($stmt) {
+            return $stmt . ";"; // Reattach semicolon
+        }, $statements);
+        //
+        //DebugLog::log($sqlQueries);
+        foreach($sqlQueries as $sqlQuery) {
+            $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
+            $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlQuery);
+            //
+            $tableDataModel = $this->onInsertTableData($schemaId, $sqlToDataEntity);
+            //DebugLog::log($tableDataModel);
+            $this->onInsertColumnData($tableDataModel, $sqlToDataEntity);
+            $this->onInsertColumnKeyData($schemaId, $tableDataModel, $sqlToDataEntity);
+        }
+        DebugLog::log("Work Done");
+    }
+    public function onExtractSchemaV1($schemaData) {
         //DebugLog::log($schemaData);
         if(empty($schemaData)) {
             return;
@@ -140,7 +178,7 @@ class ExtractDatabaseSchemaViewModel {
                 $keyType = "PRIMARY";
             } else if($columnKeyItem->key_type == "foreign key") {
                 $keyType = "FOREIGN";
-            } else if($columnKeyItem->key_type == "unique key") {
+            } else if($columnKeyItem->key_type == "unique") {
                 $keyType = "UNIQUE";
             }
             $referenceColumn = $columnKeyItem->reference_column;

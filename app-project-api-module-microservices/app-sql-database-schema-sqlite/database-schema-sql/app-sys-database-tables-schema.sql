@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS tbl_table_data (
     modified_date        DATETIME       NOT NULL,
     created_date         DATETIME       NOT NULL,
     CONSTRAINT pk_table_data_id PRIMARY KEY(id),
-    CONSTRAINT uk_table_data_schema_id, table_name UNIQUE(schema_id),
+    CONSTRAINT uk_table_data_schema_id table_name UNIQUE(schema_id),
     CONSTRAINT fk_table_data_schema_id_database_schema_id FOREIGN KEY(schema_id) REFERENCES tbl_database_schema(id)
 );
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS tbl_column_data (
     modified_date        DATETIME       NOT NULL,
     created_date         DATETIME       NOT NULL,
     CONSTRAINT pk_column_data_id PRIMARY KEY(id),
-    CONSTRAINT uk_column_data_table_id, column_name UNIQUE(table_id),
+    CONSTRAINT uk_column_data_table_id column_name UNIQUE(table_id),
     CONSTRAINT fk_column_data_table_id_column_data_id FOREIGN KEY(table_id) REFERENCES tbl_column_data(id)
 );
 
