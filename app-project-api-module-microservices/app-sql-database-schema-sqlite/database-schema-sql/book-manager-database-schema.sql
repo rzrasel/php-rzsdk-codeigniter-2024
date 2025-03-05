@@ -1,5 +1,5 @@
 
--- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-02-28 - VERSION: v-1.1.1
+-- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-03-04 - VERSION: v-1.1.1
 -- DATABASE NAME: Book Manager Database Schema
 
 
@@ -22,88 +22,88 @@ DROP TABLE IF EXISTS tbl_author_data;
 
 
 CREATE TABLE IF NOT EXISTS tbl_language_data (
-    id                    BIGINT(20)     NOT NULL,
-    name                  TEXT           NOT NULL,
-    iso_code_2            TEXT           NOT NULL,
-    iso_code_3            TEXT           NOT NULL,
+    id                      BIGINT(20)     NOT NULL,
+    iso_code_2              TEXT           NOT NULL,
+    iso_code_3              TEXT           NOT NULL,
+    name                    TEXT           NOT NULL,
     CONSTRAINT pk_language_data_id PRIMARY KEY(id),
     CONSTRAINT uk_language_data_iso_code_2 UNIQUE(iso_code_2),
     CONSTRAINT uk_language_data_iso_code_3 UNIQUE(iso_code_3)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_publisher_data (
-    id                    BIGINT(20)     NOT NULL,
-    name                  TEXT           NOT NULL,
-    country               TEXT           NULL,
-    established_year      DATE           NULL,
+    id                      BIGINT(20)     NOT NULL,
+    name                    TEXT           NOT NULL,
+    country                 TEXT           NULL,
+    established_year        DATE           NULL,
     CONSTRAINT pk_publisher_data_id PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_author_data (
-    id                    BIGINT(20)     NOT NULL,
-    name                  TEXT           NOT NULL,
-    birth_year            DATE           NULL,
-    nationality           TEXT           NULL,
+    id                      BIGINT(20)     NOT NULL,
+    name                    TEXT           NOT NULL,
+    birth_year              DATE           NULL,
+    nationality             TEXT           NULL,
     CONSTRAINT pk_author_data_id PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_book_data (
-    language_id           BIGINT(20)     NOT NULL,
-    id                    BIGINT         NOT NULL,
-    title                 TEXT           NOT NULL,
-    details               TEXT           NOT NULL,
-    original_book_id      BIGINT(20)     NULL,
-    publication_year      DATE           NULL,
+    language_id             BIGINT(20)     NOT NULL,
+    id                      BIGINT         NOT NULL,
+    title                   TEXT           NOT NULL,
+    details                 TEXT           NOT NULL,
+    original_book_id        BIGINT(20)     NULL,
+    publication_year        DATE           NULL,
     CONSTRAINT pk_book_data_id PRIMARY KEY(id),
     CONSTRAINT fk_book_data_language_id_language_data_id FOREIGN KEY(language_id) REFERENCES tbl_language_data(id),
     CONSTRAINT fk_book_data_original_book_id_book_data_id FOREIGN KEY(original_book_id) REFERENCES tbl_book_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_book_author (
-    book_id               BIGINT(20)     NOT NULL,
-    author_id             BIGINT(20)     NOT NULL,
-    is_translator         BOOLEAN        NOT NULL DEFAULT FALSE,
+    book_id                 BIGINT(20)     NOT NULL,
+    author_id               BIGINT(20)     NOT NULL,
+    is_translator           BOOLEAN        NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_book_author_author_id_author_data_id FOREIGN KEY(author_id) REFERENCES tbl_author_data(id),
     CONSTRAINT fk_book_author_book_id_book_data_id FOREIGN KEY(book_id) REFERENCES tbl_book_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_publisher_book (
-    publisher_id          BIGINT(20)     NOT NULL,
-    book_id               BIGINT(20)     NOT NULL,
+    publisher_id            BIGINT(20)     NOT NULL,
+    book_id                 BIGINT(20)     NOT NULL,
     CONSTRAINT fk_publisher_book_book_id_book_data_id FOREIGN KEY(book_id) REFERENCES tbl_book_data(id),
     CONSTRAINT fk_publisher_book_publisher_id_publisher_data_id FOREIGN KEY(publisher_id) REFERENCES tbl_publisher_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_book_sectioning (
-    book_id               BIGINT(20)     NOT NULL,
-    id                    BIGINT(20)     NOT NULL,
-    parent_id             BIGINT(20)     NULL,
-    title                 TEXT           NOT NULL,
-    order_index           INTEGER        NOT NULL CHECK (order_index >= 1),
+    book_id                 BIGINT(20)     NOT NULL,
+    id                      BIGINT(20)     NOT NULL,
+    parent_id               BIGINT(20)     NULL,
+    title                   TEXT           NOT NULL,
+    order_index             INTEGER        NOT NULL CHECK (order_index >= 1),
     CONSTRAINT pk_book_sectioning_id PRIMARY KEY(id),
     CONSTRAINT fk_book_sectioning_book_id_book_data_id FOREIGN KEY(book_id) REFERENCES tbl_book_data(id),
     CONSTRAINT fk_book_sectioning_parent_id_book_sectioning_id FOREIGN KEY(parent_id) REFERENCES tbl_book_sectioning(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_book_content_data (
-    section_id            BIGINT(20)     NOT NULL,
-    id                    BIGINT(20)     NOT NULL,
-    title                 TEXT           NULL,
-    order_index           INTEGER        NOT NULL CHECK (order_index >= 1),
-    page_number           INTEGER        NULL CHECK (page_number >= 1),
-    content_type          TEXT           NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+    section_id              BIGINT(20)     NOT NULL,
+    id                      BIGINT(20)     NOT NULL,
+    title                   TEXT           NULL,
+    order_index             INTEGER        NOT NULL CHECK (order_index >= 1),
+    printed_page_number     INTEGER        NULL CHECK (page_number >= 1),
+    content_type            TEXT           NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
     CONSTRAINT pk_book_content_data_id PRIMARY KEY(id),
     CONSTRAINT fk_book_content_data_section_id_book_sectioning_id FOREIGN KEY(section_id) REFERENCES tbl_book_sectioning(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_book_content (
-    content_data_id       BIGINT(20)     NOT NULL,
-    id                    BIGINT(20)     NOT NULL,
-    title                 TEXT           NULL,
-    content_details       TEXT           NULL,
-    order_index           INTEGER        NOT NULL CHECK (order_index >= 1),
-    content_type          TEXT           NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
-    reference_book_id     BIGINT(20)     NULL,
+    content_data_id         BIGINT(20)     NOT NULL,
+    id                      BIGINT(20)     NOT NULL,
+    title                   TEXT           NULL,
+    content_details         TEXT           NULL,
+    order_index             INTEGER        NOT NULL CHECK (order_index >= 1),
+    content_type            TEXT           NOT NULL CHECK(content_type IN ('text', 'image', 'video', 'link', 'reference')),
+    reference_book_id       BIGINT(20)     NULL,
     CONSTRAINT pk_book_content_id PRIMARY KEY(id),
     CONSTRAINT fk_book_content_content_data_id_book_content_data_id FOREIGN KEY(content_data_id) REFERENCES tbl_book_content_data(id),
     CONSTRAINT fk_book_content_reference_book_id_book_data_id FOREIGN KEY(reference_book_id) REFERENCES tbl_book_data(id)
@@ -175,7 +175,7 @@ INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type,
 INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631036296003, 2, 'id', 'BIGINT(20)', 'FALSE', 'FALSE', NULL, NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
 INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631037113864, 3, 'title', 'TEXT', 'TRUE', 'FALSE', NULL, NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
 INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631037644088, 4, 'order_index', 'INTEGER', 'FALSE', 'FALSE', 'CHECK (order_index >= 1)', NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
-INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631038165485, 5, 'page_number', 'INTEGER', 'TRUE', 'FALSE', 'CHECK (page_number >= 1)', NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
+INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631038165485, 5, 'printed_page_number', 'INTEGER', 'TRUE', 'FALSE', 'CHECK (page_number >= 1)', NULL, '2025-03-04 20:20:37', '2025-02-28 19:11:50');
 INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631031979978, 174076631038854792, 6, 'content_type', 'TEXT', 'FALSE', 'FALSE', 'CHECK(content_type IN (''text'', ''image'', ''video'', ''link'', ''reference''))', NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
 
 INSERT INTO tbl_column_data (table_id, id, column_order, column_name, data_type, is_nullable, have_default, default_value, column_comment, modified_date, created_date) VALUES (174076631040416379, 174076631040919472, 1, 'content_data_id', 'BIGINT(20)', 'FALSE', 'FALSE', NULL, NULL, '2025-02-28 19:11:50', '2025-02-28 19:11:50');
@@ -216,4 +216,3 @@ INSERT INTO tbl_column_key (id, working_table, main_column, key_type, reference_
 INSERT INTO tbl_column_key (id, working_table, main_column, key_type, reference_column, key_name, unique_name, modified_date, created_date) VALUES (174076631045522012, 174076631040416379, 174076631040919472, 'FOREIGN', 174076631036296003, NULL, 'fk>book_content>content_data_id>book_content_data>id', '2025-02-28 19:11:50', '2025-02-28 19:11:50');
 INSERT INTO tbl_column_key (id, working_table, main_column, key_type, reference_column, key_name, unique_name, modified_date, created_date) VALUES (174076631046028720, 174076631040416379, 174076631044214351, 'FOREIGN', 174076626155365603, NULL, 'fk>book_content>reference_book_id>book_data>id', '2025-02-28 19:11:50', '2025-02-28 19:11:50');
 INSERT INTO tbl_column_key (id, working_table, main_column, key_type, reference_column, key_name, unique_name, modified_date, created_date) VALUES (174076631044922962, 174076631040416379, 174076631041547304, 'PRIMARY', NULL, NULL, 'pk>book_content>id', '2025-02-28 19:11:50', '2025-02-28 19:11:50');
-
