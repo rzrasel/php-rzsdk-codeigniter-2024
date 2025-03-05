@@ -2,14 +2,14 @@
 namespace App\Microservice\Presentation\ViewModel\Language;
 ?>
 <?php
-use Domain\Services\LanguageService;
+use App\Microservice\Domain\Repository\Language\LanguageRepository;
 ?>
 <?php
 class LanguageViewModel {
-    private $service;
+    private $repository;
 
-    public function __construct(LanguageService $service) {
-        $this->service = $service;
+    public function __construct(LanguageRepository $repository) {
+        $this->repository = $repository;
     }
 
     public function getLanguageById(int $id): ?LanguageEntity {
