@@ -228,21 +228,44 @@ class SqliteSqlBuilder {
             $this->rearrangeDropTableList($workingTableName, $referenceTableName);
         }
 
-        $workingColumnKey = $this->buildCompositeKey($key, $workingColumnName, "primary");
-        $referenceColumnKey = $this->buildCompositeKey($key, $referenceColumnName, "reference");
+        $workingCompositeKey = $this->buildCompositeKey($key, $workingColumnName, "primary");
+        $referenceCompositeKey = $this->buildCompositeKey($key, $referenceColumnName, "reference");
 
         $relationalKeyType = RelationalKeyType::getByName($key->keyType);
         if(!$relationalKeyType) {
             return "";
         }
 
+        $workingColumnKeyName = "";
+        $referenceColumnKeyName = "";
+
+        $constraintKeyName = "{$workingTableName}_{$workingColumnName}";
+        if(!empty($referenceTableName)) {
+            $constraintKeyName .= "_{$referenceTableName}";
+            if(!empty($referenceColumnName)) {
+                $constraintKeyName .= "_{$referenceColumnName}";
+            }
+        }
+
+        if($workingColumnName != $workingCompositeKey) {
+            $workingColumnName = "{$workingColumnName}, {$workingCompositeKey}";
+        }
+
+        if($referenceColumnName != $referenceCompositeKey) {
+            $referenceColumnName = "{$referenceColumnName}, {$referenceCompositeKey}";
+        }
+
+        $constraintKeyName = trim($constraintKeyName, "_");
+        $workingColumnName = trim(trim($workingColumnName), ",");
+        $referenceColumnName = trim(trim($referenceColumnName), ",");
+
         switch($relationalKeyType) {
             case RelationalKeyType::PRIMARY:
-                return "CONSTRAINT pk_{$workingTableName}_{$workingColumnKey} PRIMARY KEY($workingColumnName)";
+                return "CONSTRAINT pk_{$constraintKeyName} PRIMARY KEY($workingColumnName)";
             case RelationalKeyType::UNIQUE:
-                return "CONSTRAINT uk_{$workingTableName}_{$workingColumnKey} UNIQUE($workingColumnName)";
+                return "CONSTRAINT uk_{$constraintKeyName} UNIQUE($workingColumnName)";
             case RelationalKeyType::FOREIGN:
-                return "CONSTRAINT fk_{$workingTableName}_{$workingColumnKey}_{$referenceTableName}_{$referenceColumnKey} FOREIGN KEY($workingColumnName) REFERENCES {$tablePrefix}{$referenceTableName}($referenceColumnName)";
+                return "CONSTRAINT fk_{$constraintKeyName} FOREIGN KEY($workingColumnName) REFERENCES {$tablePrefix}{$referenceTableName}($referenceColumnName)";
             default:
                 return "";
         }
@@ -253,11 +276,16 @@ class SqliteSqlBuilder {
             return $columnName;
         }
 
+        $columnName = "";
+
+        //DebugLog::log($key);
+
         $compositeColumns = $this->getCompositeKeyList($key->compositeKeyList);
         $compositeColumnNames = $compositeColumns[$type] ?? [];
 
         if(!empty($compositeColumnNames)) {
-            $columnName .= ", " . implode(", ", $compositeColumnNames);
+            //columnName .= ", " . implode(", ", $compositeColumnNames);
+            $columnName .= implode(", ", $compositeColumnNames);
         }
 
         return trim($columnName);

@@ -7,13 +7,17 @@ use App\DatabaseSchema\Data\Entities\DatabaseSchema;
 use App\DatabaseSchema\Data\Entities\TableData;
 use App\DatabaseSchema\Data\Entities\ColumnData;
 use App\DatabaseSchema\Data\Entities\ColumnKey;
+use App\DatabaseSchema\Data\Entities\CompositeKey;
 use App\DatabaseSchema\Domain\Models\TableDataModel;
 use App\DatabaseSchema\Domain\Models\ColumnDataModel;
 use App\DatabaseSchema\Domain\Models\ColumnKeyModel;
+use App\DatabaseSchema\Domain\Models\CompositeKeyModel;
 use App\DatabaseSchema\Data\Mappers\DatabaseSchemaMapper;
 use App\DatabaseSchema\Data\Mappers\TableDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnDataMapper;
 use App\DatabaseSchema\Data\Mappers\ColumnKeyMapper;
+use App\DatabaseSchema\Data\Mappers\CompositeKeyMapper;
+use RzSDK\Identification\UniqueIntId;
 use RzSDK\Database\SqliteConnection;
 use RzSDK\Database\SqliteFetchType;
 use RzSDK\Log\DebugLog;
@@ -195,6 +199,166 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
     }
 
     public function onInsertColumnKey($schemaId, ColumnKeyModel $columnKeyModel): ColumnKeyModel {
+        $dbColumnHelper = new ExtractDbSchemaColumnHelper();
+        //DebugLog::log($columnKeyModel);
+        $tableName = "tbl_column_key";
+        $isColumnKeyExists = new class($schemaId, $columnKeyModel) {
+            private $schemaId;
+            private $columnKeyModel;
+            private $dbColumnDataList = array();
+            public function __construct($schemaId, ColumnKeyModel $columnKeyModel) {
+                $this->schemaId = $schemaId;
+                $this->columnKeyModel = $columnKeyModel;
+            }
+
+            public function getDbColumnData(): array {
+                $dbColumnDataList = array();
+                $workingTable = $this->columnKeyModel->workingTable;
+                $mainColumn = $this->columnKeyModel->mainColumn;
+                $dbSchemaColumnHelper = new ExtractDbSchemaColumnHelper();
+                if(is_array($mainColumn)) {
+                    foreach($mainColumn as $columnItem) {
+                        $dbColumnData = $dbSchemaColumnHelper->getColumnDataByColumnNameTableId($workingTable, $columnItem);
+                        $dbColumnDataList[] = $dbColumnData;
+                    }
+                } else {
+                    $dbColumnData = $dbSchemaColumnHelper->getColumnDataByColumnNameTableId($workingTable, $mainColumn);
+                    $dbColumnDataList[] = $dbColumnData;
+                }
+                $this->dbColumnDataList = $dbColumnDataList;
+                return $dbColumnDataList;
+            }
+
+            public function isDbColumnKeyExists() {
+                $dbColumnDataList = $this->getDbColumnData();
+                if(empty($dbColumnDataList)) {
+                    return false;
+                }
+                //DebugLog::log($dbColumnDataList);
+                $schemaId = $this->schemaId;
+                $workingTable = $this->columnKeyModel->workingTable;
+                $columnKeyType = $this->columnKeyModel->keyType;
+                //DebugLog::log($workingTable);
+                $dbSchemaColumnHelper = new ExtractDbSchemaColumnHelper();
+                foreach($dbColumnDataList as $columnDataItem) {
+                    if(empty($columnDataItem)) {
+                        continue;
+                    }
+                    $dbColumnKey = $dbSchemaColumnHelper->getExistsColumnKeyByColumnIdTableId($schemaId, $workingTable, $columnDataItem->id, $columnKeyType);
+                    if(!empty($dbColumnKey)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public function getColumnDataList() {
+                return $this->dbColumnDataList;
+            }
+        };
+
+        if($isColumnKeyExists->isDbColumnKeyExists()) {
+            return $columnKeyModel;
+        }
+        $dbColumnDataList = $isColumnKeyExists->getColumnDataList();
+        $dbReferenceColumnList = array();
+        //DebugLog::log($dbColumnDataList);
+        if(!empty($columnKeyModel->referenceColumn)) {
+            $dbSchemaColumnHelper = new ExtractDbSchemaColumnHelper();
+            $referenceMetaData = $columnKeyModel->referenceColumn;
+            $referenceTable = $referenceMetaData[0];
+            $referenceColumn = $referenceMetaData[1];
+            if(is_array($referenceColumn)) {
+                foreach($referenceColumn as $columnItem) {
+                    $dbColumnDataRefTable = $dbSchemaColumnHelper->getColumnDataBySchemaIdColumnNameTableName($schemaId, $referenceTable, $columnItem);
+                    $dbReferenceColumnList[] = $dbColumnDataRefTable;
+                }
+            } else {
+                $dbColumnDataRefTable = $dbSchemaColumnHelper->getColumnDataBySchemaIdColumnNameTableName($schemaId, $referenceTable, $referenceColumn);
+                $dbReferenceColumnList[] = $dbColumnDataRefTable;
+            }
+        }
+        //DebugLog::log($columnKeyModel);
+        for($i = 0; $i < count($dbColumnDataList); $i++) {
+            $dbColumnDataItem = $dbColumnDataList[$i];
+            //DebugLog::log($dbColumnDataItem);
+            if(!empty($dbReferenceColumnList)) {
+                $referenceColumn = $dbReferenceColumnList[$i];
+                if(!empty($referenceColumn)) {
+                    $columnKeyModel->referenceColumn = $referenceColumn->id;
+                }
+            }
+            //
+            if($i <= 0) {
+                $columnKeyModel->workingTable = $dbColumnDataItem->table_id;
+                $columnKeyModel->mainColumn = $dbColumnDataItem->id;
+                $this->onInsertColumnKeyHelper($columnKeyModel);
+            } else {
+                $compositeKeyModel = new CompositeKeyModel();
+                $compositeKeyModel->keyId = $columnKeyModel->id;
+                $compositeKeyModel->primaryColumn = $dbColumnDataItem->id;
+                $compositeKeyModel->compositeColumn = $columnKeyModel->referenceColumn;
+                $this->onInsertCompositeKeyHelper($compositeKeyModel);
+            }
+        }
+        return $columnKeyModel;
+    }
+
+    public function onInsertColumnKeyHelper(ColumnKeyModel $columnKeyModel): ColumnKeyModel {
+        $tableName = "tbl_column_key";
+        //DebugLog::log($columnKeyModel);
+        //
+        //DebugLog::log($columnKeyModel);
+        $data = ColumnKeyMapper::toDomainParams($columnKeyModel);
+        //DebugLog::log($data);
+        $tempColumnKey = new ColumnKey();
+        $tempColumnKey->setVars();
+        $dataVarList = $tempColumnKey->getVarList();
+        $columns = "";
+        $values = "";
+        foreach($dataVarList as $var) {
+            $columns .= "$var, ";
+            $values .= ":$var, ";
+        }
+        $columns = trim(trim($columns), ",");
+        $values = trim(trim($values), ",");
+        $sqlQuery = "INSERT INTO $tableName ($columns) VALUES ($values)";
+        //DebugLog::log($sqlQuery);
+        $this->dbConn->execute($sqlQuery, $data);
+        //
+        return $columnKeyModel;
+    }
+
+    public function onInsertCompositeKeyHelper(CompositeKeyModel $compositeKeyModel): CompositeKeyModel {
+        $tableName = "tbl_composite_key";
+        $uniqueIntId = new UniqueIntId();
+        $compositeKeyModel->id = $uniqueIntId->getId();
+        $compositeKeyModel->modifiedDate = date('Y-m-d H:i:s');
+        $compositeKeyModel->createdDate = date('Y-m-d H:i:s');
+        //DebugLog::log($compositeKeyModel);
+        $data = CompositeKeyMapper::toDomainParams($compositeKeyModel);
+        //DebugLog::log($data);
+        $tempCompositeKey = new CompositeKey();
+        $tempCompositeKey->setVars();
+        $dataVarList = $tempCompositeKey->getVarList();
+        $columns = "";
+        $values = "";
+        foreach($dataVarList as $var) {
+            $columns .= "$var, ";
+            $values .= ":$var, ";
+        }
+        $columns = trim(trim($columns), ",");
+        $values = trim(trim($values), ",");
+        $sqlQuery = "INSERT INTO $tableName ($columns) VALUES ($values)";
+        //DebugLog::log($sqlQuery);
+        $this->dbConn->execute($sqlQuery, $data);
+        return $compositeKeyModel;
+    }
+
+    /**
+     * @deprecated since 1.2.0 Use new feature instead.
+     */
+    public function onInsertColumnKeyV1($schemaId, ColumnKeyModel $columnKeyModel): ColumnKeyModel {
         //DebugLog::log($columnKeyModel);
         $tableName = "tbl_column_key";
         //
@@ -245,6 +409,9 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         return $columnKeyModel;
     }
 
+    /**
+     * @deprecated since 1.2.0 Use new feature instead.
+     */
     public function getIsColumnKeyExistsByName($schemaId, ColumnKeyModel $columnKeyModel): ?ColumnKey {
         $dbTableName = "tbl_column_key";
         $tempColumnKey = new ColumnKey();
@@ -271,7 +438,10 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         return null;
     }
 
-    public function getColumnIdByTableName($schemaId, $tableName, $columnName) {
+    /**
+     * @deprecated since 1.2.0 Use new feature instead.
+     */
+    public function getColumnIdByTableName($schemaId, $tableName, $columnName): ?ColumnData {
         $dbTableDataTableName = "tbl_table_data";
         $dbColumnDataTableName = "tbl_column_data";
         $tempTableData = new TableData();
@@ -298,6 +468,10 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         return $schemaColumnData;
     }
 
+    //|Get table schema data by table id and column name|--------|
+    /**
+     * @deprecated since 1.2.0 Use new feature instead.
+     */
     public function getColumnIdByTableId($tableId, $columnName): ?ColumnData {
         $dbColumnDataTableName = "tbl_column_data";
         $tempColumnData = new ColumnData();
@@ -319,6 +493,113 @@ class ExtractDatabaseSchemaImpl implements ExtractDatabaseSchemaInterface {
         }
         //DebugLog::log($schemaColumnData);
         return $schemaColumnData;
+    }
+}
+?>
+<?php
+class ExtractDbSchemaColumnHelper {
+    private SqliteConnection $dbConn;
+    use ExtractDbColumnDataHelper;
+    use ExtractDbColumnKeyHelper;
+    //
+    public function __construct(SqliteConnection $dbConn = null) {
+        if(is_null($dbConn)) {
+            $this->dbConn = SqliteConnection::getInstance(DB_FULL_PATH);
+        } else {
+            $this->dbConn = $dbConn;
+        }
+    }
+
+    //|Get table schema data by table id and column name|--------|
+    public function getColumnDataByColumnNameTableId($tableId, $columnName): ?ColumnData {
+        return $this->getByColumnNameTableId($tableId, $columnName);
+    }
+
+    public function getColumnDataBySchemaIdColumnNameTableName($schemaId, $tableName, $columnName): ?ColumnData {
+        return $this->getBySchemaIdColumnNameTableName($schemaId, $tableName, $columnName);
+    }
+
+    public function getExistsColumnKeyByColumnIdTableId($schemaId, $workingTableId, $mainColumnName, $keyType): ?ColumnKey {
+        return $this->getColumnKeyByColumnIdTableId($schemaId, $workingTableId, $mainColumnName, $keyType);
+    }
+}
+?>
+<?php
+trait ExtractDbColumnDataHelper {
+    //|Get table schema data by table id and column name|--------|
+    private function getByColumnNameTableId($tableId, $columnName): ?ColumnData {
+        $dbColumnDataTableName = "tbl_column_data";
+        $tempColumnData = new ColumnData();
+        $tempColumnData->setVars();
+        $sqlQuery = "SELECT * FROM {$dbColumnDataTableName} WHERE {$tempColumnData->table_id} = '{$tableId}' AND {$tempColumnData->column_name} = '{$columnName}';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        //DebugLog::log($results);
+        $schemaColumnData = new ColumnData();
+        $counter = 0;
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $counter++;
+            $schemaColumnData = ColumnDataMapper::toEntity($result);
+        }
+        //DebugLog::log($counter);
+        if($counter <= 0) {
+            return null;
+        }
+        //DebugLog::log($schemaColumnData);
+        return $schemaColumnData;
+    }
+
+    private function getBySchemaIdColumnNameTableName($schemaId, $tableName, $columnName): ?ColumnData {
+        $dbTableDataTableName = "tbl_table_data";
+        $dbColumnDataTableName = "tbl_column_data";
+        $tempTableData = new TableData();
+        $tempTableData->setVars();
+        $tempColumnData = new ColumnData();
+        $tempColumnData->setVars();
+        $sqlQuery = "SELECT *, {$dbColumnDataTableName}.{$tempColumnData->id} AS column_id FROM {$dbColumnDataTableName} INNER JOIN {$dbTableDataTableName} ON {$dbTableDataTableName}.{$tempTableData->id} = {$dbColumnDataTableName}.{$tempColumnData->table_id} WHERE {$dbTableDataTableName}.{$tempTableData->schema_id} = '{$schemaId}' AND {$dbTableDataTableName}.{$tempTableData->table_name} = '{$tableName}' AND {$dbColumnDataTableName}.{$tempColumnData->column_name} = '{$columnName}';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        $schemaColumnData = new ColumnData();
+        $counter = 0;
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $counter++;
+            $schemaColumnData = ColumnDataMapper::toEntity($result);
+            $schemaColumnData->table_id = $result[$tempColumnData->table_id];
+            $schemaColumnData->id = $result["column_id"];
+        }
+        //DebugLog::log($counter);
+        if($counter <= 0) {
+            return null;
+        }
+        //DebugLog::log($schemaColumnData);
+        return $schemaColumnData;
+    }
+}
+?>
+<?php
+trait ExtractDbColumnKeyHelper {
+    private function getColumnKeyByColumnIdTableId($schemaId, $workingTableId, $mainColumnName, $keyType): ?ColumnKey {
+        $dbTableName = "tbl_column_key";
+        $tempColumnKey = new ColumnKey();
+        $tempColumnKey->setVars();
+        $schemaColumnKey = new ColumnKey();
+        $sqlQuery = "SELECT * FROM {$dbTableName} WHERE {$tempColumnKey->working_table} = '{$workingTableId}' AND {$tempColumnKey->main_column} = '{$mainColumnName}' AND {$tempColumnKey->key_type} = '{$keyType}';";
+        //DebugLog::log($sqlQuery);
+        $results = $this->dbConn->query($sqlQuery);
+        $counter = 0;
+        foreach($results as $result) {
+            //DebugLog::log($result);
+            $counter++;
+            $schemaColumnKey = ColumnKeyMapper::toEntity($result);
+        }
+        //DebugLog::log($counter);
+        if($counter <= 0) {
+            return null;
+        }
+        //DebugLog::log($schemaColumnData);
+        return $schemaColumnKey;
     }
 }
 ?>

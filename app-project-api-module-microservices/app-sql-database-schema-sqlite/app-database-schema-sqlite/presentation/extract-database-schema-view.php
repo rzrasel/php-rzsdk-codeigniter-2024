@@ -3,6 +3,7 @@ namespace App\DatabaseSchema\Presentation\Views;
 ?>
 <?php
 use App\DatabaseSchema\Presentation\ViewModels\ExtractDatabaseSchemaViewModel;
+use RzSDK\Log\DebugLog;
 ?>
 <?php
 class ExtractDatabaseSchemaView {
@@ -17,6 +18,7 @@ class ExtractDatabaseSchemaView {
     }
 
     public function onExtractSchema($schemaData) {
+        //DebugLog::log($schemaData);
         $this->viewModel->onExtractSchema($schemaData);
     }
 }

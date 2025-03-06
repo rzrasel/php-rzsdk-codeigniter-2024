@@ -137,6 +137,60 @@ class ExtractSqlStatementToDataEntity {
                     $constraintData["key_name"] = $pkMatches[1];
                     $constraintData["key_type"] = "primary key";
                     $constraintData["working_table"] = $tableName;
+                    $constraintData["main_column"] = array_map('trim', explode(',', $pkMatches[2])); // Handle composite keys
+                    $constraintData["reference_column"] = []; // PRIMARY KEY has no reference column
+                    $constraintDataList[] = $constraintData;
+                }
+
+                // Handle FOREIGN KEY constraints
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+FOREIGN KEY\s*\(([^)]+)\)\s+REFERENCES\s+(\w+)\s*\(([^)]+)\)/', $columnDefinition, $fkMatches)) {
+                    $constraintData = array();
+                    $constraintData["key_name"] = $fkMatches[1];
+                    $constraintData["key_type"] = "foreign key";
+                    $constraintData["working_table"] = $tableName;
+                    $constraintData["main_column"] = array_map('trim', explode(',', $fkMatches[2])); // Handle composite keys
+                    $constraintData["reference_column"] = [
+                        trim($fkMatches[3]), // referenced_table
+                        array_map('trim', explode(',', $fkMatches[4])) // referenced_columns
+                    ];
+                    $constraintDataList[] = $constraintData;
+                }
+
+                // Handle UNIQUE constraints
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+UNIQUE\s*\(([^)]+)\)/', $columnDefinition, $uniqueMatches)) {
+                    $constraintData = array();
+                    $constraintData["key_name"] = $uniqueMatches[1];
+                    $constraintData["key_type"] = "unique";
+                    $constraintData["working_table"] = $tableName;
+                    $constraintData["main_column"] = array_map('trim', explode(',', $uniqueMatches[2])); // Handle composite keys
+                    $constraintData["reference_column"] = []; // UNIQUE has no reference column
+                    $constraintDataList[] = $constraintData;
+                }
+            }
+        }
+
+        return $constraintDataList;
+    }
+
+    private function getConstraintsV1(string $tableName, string $sqlStatement): array {
+        $constraintDataList = array();
+
+        // Extract everything inside parentheses
+        if (preg_match('/\((.*)\);/s', $sqlStatement, $tableMatch)) {
+            $columnDefinitions = trim($tableMatch[1]);
+
+            // Split column definitions by commas, but handle nested parentheses
+            $columns = $this->splitColumnDefinitions($columnDefinitions);
+
+            foreach ($columns as $columnDefinition) {
+                $columnDefinition = trim($columnDefinition);
+
+                // Handle PRIMARY KEY constraints
+                if (preg_match('/CONSTRAINT\s+(\w+)\s+PRIMARY KEY\s*\(([^)]+)\)/', $columnDefinition, $pkMatches)) {
+                    $constraintData = array();
+                    $constraintData["key_name"] = $pkMatches[1];
+                    $constraintData["key_type"] = "primary key";
+                    $constraintData["working_table"] = $tableName;
                     $constraintData["main_column"] = trim($pkMatches[2]);
                     $constraintData["reference_column"] = []; // PRIMARY KEY has no reference column
                     $constraintDataList[] = $constraintData;

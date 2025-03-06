@@ -58,33 +58,14 @@ class ExtractDatabaseSchemaViewModel {
         foreach($sqlQueries as $sqlQuery) {
             $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
             $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlQuery);
+            //DebugLog::log($sqlToDataEntity);
             //
+            //$tableDataModel = new TableDataModel();
             $tableDataModel = $this->onInsertTableData($schemaId, $sqlToDataEntity);
             //DebugLog::log($tableDataModel);
             $this->onInsertColumnData($tableDataModel, $sqlToDataEntity);
             $this->onInsertColumnKeyData($schemaId, $tableDataModel, $sqlToDataEntity);
         }
-        DebugLog::log("Work Done");
-    }
-    public function onExtractSchemaV1($schemaData) {
-        //DebugLog::log($schemaData);
-        if(empty($schemaData)) {
-            return;
-        }
-        //DebugLog::log($schemaData);
-        $schemaId = $schemaData["schema_id"];
-        $sqlStatement = $schemaData["sql_statement"];
-        $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
-        $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlStatement);
-        //DebugLog::log($sqlToDataEntity);
-        //DebugLog::log(ExtractSchemaTableMapper::toEntity($sqlToDataEntity));
-        //DebugLog::log(ExtractSchemaColumnMapper::toEntity($sqlToDataEntity));
-        //DebugLog::log(ExtractSchemaColumnKeyMapper::toEntity($sqlToDataEntity));
-        //DebugLog::log($sqlToDataEntity);
-        $tableDataModel = $this->onInsertTableData($schemaId, $sqlToDataEntity);
-        //DebugLog::log($tableDataModel);
-        $this->onInsertColumnData($tableDataModel, $sqlToDataEntity);
-        $this->onInsertColumnKeyData($schemaId, $tableDataModel, $sqlToDataEntity);
         DebugLog::log("Work Done");
     }
 
@@ -183,9 +164,20 @@ class ExtractDatabaseSchemaViewModel {
             }
             $referenceColumn = $columnKeyItem->reference_column;
             $uniqueName = substr(strtolower($keyType), 0, 1) . "k>";
-            $uniqueName .= "{$workingTableId}>{$primaryColumnId}";
+            if(is_array($primaryColumnId)) {
+                $tempName = implode("+", $primaryColumnId);
+                $uniqueName .= "{$workingTableId}>{$tempName}";
+            } else {
+                $uniqueName .= "{$workingTableId}>{$primaryColumnId}";
+            }
             if(!empty($referenceColumn)) {
-                $uniqueName .= ">{$referenceColumn[0]}>{$referenceColumn[1]}";
+                // Index 0 is for reference table name
+                if(is_array($referenceColumn)) {
+                    $tempName = implode("#", $referenceColumn[1]);
+                    $uniqueName .= ">{$referenceColumn[0]}>$tempName";
+                } else {
+                    $uniqueName .= ">{$referenceColumn[0]}>{$referenceColumn[1]}";
+                }
             }
             //
             $columnKeyModel = new ColumnKeyModel();
@@ -204,6 +196,28 @@ class ExtractDatabaseSchemaViewModel {
             $columnKeyModel = $this->repository->onInsertColumnKey($schemaId, $columnKeyModel);
             //
         }
+    }
+
+    public function onExtractSchemaV1($schemaData) {
+        //DebugLog::log($schemaData);
+        if(empty($schemaData)) {
+            return;
+        }
+        //DebugLog::log($schemaData);
+        $schemaId = $schemaData["schema_id"];
+        $sqlStatement = $schemaData["sql_statement"];
+        $sqlStatementToDataEntity = new ExtractSqlStatementToDataEntity();
+        $sqlToDataEntity = $sqlStatementToDataEntity->toDataEntity($sqlStatement);
+        //DebugLog::log($sqlToDataEntity);
+        //DebugLog::log(ExtractSchemaTableMapper::toEntity($sqlToDataEntity));
+        //DebugLog::log(ExtractSchemaColumnMapper::toEntity($sqlToDataEntity));
+        //DebugLog::log(ExtractSchemaColumnKeyMapper::toEntity($sqlToDataEntity));
+        //DebugLog::log($sqlToDataEntity);
+        $tableDataModel = $this->onInsertTableData($schemaId, $sqlToDataEntity);
+        //DebugLog::log($tableDataModel);
+        $this->onInsertColumnData($tableDataModel, $sqlToDataEntity);
+        $this->onInsertColumnKeyData($schemaId, $tableDataModel, $sqlToDataEntity);
+        DebugLog::log("Work Done");
     }
 }
 ?>

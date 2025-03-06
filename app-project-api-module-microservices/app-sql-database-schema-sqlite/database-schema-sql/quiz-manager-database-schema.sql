@@ -27,45 +27,57 @@ DROP TABLE IF EXISTS tbl_quiz_attempt;
 
 
 CREATE TABLE IF NOT EXISTS tbl_language_data (
-    id                   BIGINT(20)     NOT NULL,
-    name                 TEXT           NOT NULL,
-    iso_code_2           TEXT           NOT NULL,
-    iso_code_3           TEXT           NOT NULL,
+    id                       BIGINT(20)     NOT NULL,
+    name                     TEXT           NOT NULL,
+    iso_code_2               TEXT           NOT NULL,
+    iso_code_3               TEXT           NOT NULL,
     CONSTRAINT pk_language_data_id PRIMARY KEY(id),
     CONSTRAINT uk_language_data_iso_code_2 UNIQUE(iso_code_2),
     CONSTRAINT uk_language_data_iso_code_3 UNIQUE(iso_code_3)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_subject_data (
-    language_id          BIGINT(20)     NOT NULL,
-    id                   BIGINT(20)     NOT NULL,
-    name                 TEXT           NOT NULL,
-    description          TEXT           NULL,
-    subject_code         TEXT           NOT NULL,
+    language_id              BIGINT(20)     NOT NULL,
+    id                       BIGINT(20)     NOT NULL,
+    name                     TEXT           NOT NULL,
+    description              TEXT           NULL,
+    subject_code             TEXT           NOT NULL,
+    subject_identity         TEXT           NOT NULL,
     CONSTRAINT pk_subject_data_id PRIMARY KEY(id),
     CONSTRAINT uk_subject_data_subject_code UNIQUE(subject_code),
+    CONSTRAINT uk_subject_data_subject_identity UNIQUE(subject_identity),
     CONSTRAINT fk_subject_data_language_id_language_data_id FOREIGN KEY(language_id) REFERENCES tbl_language_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_chapter_data (
-    subject_id           BIGINT(20)     NOT NULL,
-    id                   BIGINT(20)     NOT NULL,
-    name                 TEXT           NOT NULL,
-    index_order          INTEGER        NOT NULL,
-    chapter_identity     TEXT           NOT NULL,
+    subject_id               BIGINT(20)     NOT NULL,
+    id                       BIGINT(20)     NOT NULL,
+    name                     TEXT           NOT NULL,
+    index_order              INTEGER        NOT NULL,
+    chapter_identity         TEXT           NOT NULL,
     CONSTRAINT pk_chapter_data_id PRIMARY KEY(id),
     CONSTRAINT uk_chapter_data_chapter_identity UNIQUE(chapter_identity),
     CONSTRAINT fk_chapter_data_subject_id_subject_data_id FOREIGN KEY(subject_id) REFERENCES tbl_subject_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_class_data (
-    id                   BIGINT(20)     NOT NULL,
-    class_name           TEXT           NOT NULL,
-    class_code           TEXT           NOT NULL UNIQUE,
-    description          TEXT           NULL,
-    index_order          INTEGER        NOT NULL,
+    id                       BIGINT(20)     NOT NULL,
+    class_name               TEXT           NOT NULL,
+    class_code               TEXT           NOT NULL UNIQUE,
+    description              TEXT           NULL,
+    index_order              INTEGER        NOT NULL,
     CONSTRAINT pk_class_data_id PRIMARY KEY(id),
     CONSTRAINT uk_class_data_class_code UNIQUE(class_code)
+);
+
+CREATE TABLE IF NOT EXISTS tbl_class_subject_mapping (
+    id                   BIGINT(20)     NOT NULL AUTO_INCREMENT,
+    class_id             BIGINT(20)     NOT NULL,
+    subject_id           BIGINT(20)     NOT NULL,
+    CONSTRAINT pk_class_subject_mapping_id PRIMARY KEY(id),
+    CONSTRAINT fk_class_subject_mapping_class_id FOREIGN KEY(class_id) REFERENCES tbl_class_data(id),
+    CONSTRAINT fk_class_subject_mapping_subject_id FOREIGN KEY(subject_id) REFERENCES tbl_subject_data(id),
+    CONSTRAINT uk_class_subject_mapping UNIQUE(class_id, subject_id)
 );
 
 
