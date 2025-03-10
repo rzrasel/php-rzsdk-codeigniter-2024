@@ -90,9 +90,6 @@ DELETE FROM tbl_column_data;
 DELETE FROM tbl_table_data;
 DELETE FROM tbl_database_schema;
 
-
--- SQLite Database DATE CREATED: 2025-02-21, DATE MODIFIED: 2025-02-26 - VERSION: v-1.1.1
-
 -- Database Schema: Database Schema
 INSERT INTO tbl_database_schema (id, schema_name, schema_version, table_prefix, database_comment, modified_date, created_date) VALUES (174014882064916708, 'app_sys_database_tables_schema', '1.1.1', 'tbl_', NULL, '2025-02-21 15:40:20', '2025-02-21 15:40:20');
 

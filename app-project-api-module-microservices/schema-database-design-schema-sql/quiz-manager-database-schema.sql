@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS tbl_chapter_data (
 CREATE TABLE IF NOT EXISTS tbl_class_data (
     id                       BIGINT(20)     NOT NULL,
     class_name               TEXT           NOT NULL,
-    class_code               TEXT           NOT NULL UNIQUE,
+    class_code               TEXT           NOT NULL,
     description              TEXT           NULL,
     index_order              INTEGER        NOT NULL,
     CONSTRAINT pk_class_data_id PRIMARY KEY(id),
