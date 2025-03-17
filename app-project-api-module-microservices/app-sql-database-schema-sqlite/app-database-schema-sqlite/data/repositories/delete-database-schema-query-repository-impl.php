@@ -20,6 +20,18 @@ class DeleteDatabaseSchemaQueryRepositoryImpl implements DeleteDatabaseSchemaQue
         }
     }
 
+    public function onRunRawQuerySchemaTableData(array $postDataList): string {
+        //DebugLog::log($postDataList);
+        if(empty($postDataList)) {
+            return "Raw query data is empty";
+        }
+        foreach($postDataList as $itme) {
+            //DebugLog::log($itme);
+            $this->dbConn->query($itme);
+        }
+        return "Successfully raw query executed";
+    }
+
     public function onDeleteDatabaseSchemaTableData($actionType): string {
         if($actionType == DeleteActionType::DATABASE_SCHEMA_DATA) {
             $this->onDeleteCompositeKey();

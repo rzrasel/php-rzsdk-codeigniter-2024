@@ -12,6 +12,10 @@ class DeleteDatabaseSchemaQueryView {
         $this->viewModel = $viewModel;
     }
 
+    public function onRunRawQuery($postData) {
+        $this->viewModel->onRunRawQuery($postData);
+    }
+
     public function onDeleteDatabaseSchemaQuery($postData) {
         $this->viewModel->onDeleteDatabaseSchemaQuery($postData);
     }

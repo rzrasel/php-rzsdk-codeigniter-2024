@@ -10,9 +10,16 @@ $viewModel = new DeleteDatabaseSchemaQueryViewModel($repository);
 $view = new DeleteDatabaseSchemaQueryView($viewModel);
 ?>
 <?php
+$sqlStatement = "";
 if(!empty($_POST)) {
     //DebugLog::log($_POST);
-    $view->onDeleteDatabaseSchemaQuery($_POST);
+    $postTaskType = $_POST["post_task_type"];
+    if($postTaskType == "run_raw_query") {
+        $view->onRunRawQuery($_POST);
+        $sqlStatement = $_POST["sql_statement"];
+    } else if($postTaskType == "run_delete_query") {
+        $view->onDeleteDatabaseSchemaQuery($_POST);
+    }
 }
 ?>
 <table class="form-heading">
@@ -63,13 +70,28 @@ if(!empty($_POST)) {
         </tr>
         <tr>
             <td>Delete Database Schema Data:</td>
-            <td></td>
+            <td><input type="hidden" name="post_task_type" value="run_delete_query" /></td>
             <td class="form-summit-action-button"><button type="submit" name="database_delete_action_key" value="delete_database_schema_data" class="button-action-delete-database-schema-data">Delete Database Schema Data</button></td>
+        </tr>
+        <!--<tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>-->
+    </table>
+</form>
+<br />
+<form action="<?= $_SERVER["PHP_SELF"]; ?>" method="POST">
+    <table class="data-entry-fields" width="100%">
+        <tr>
+            <td>Run Query:</td>
+            <td></td>
+            <td><textarea id="sql_statement" name="sql_statement" required="required"><?= $sqlStatement; ?></textarea></td>
         </tr>
         <tr>
             <td></td>
-            <td></td>
-            <td></td>
+            <td><input type="hidden" name="post_task_type" value="run_raw_query" /></td>
+            <td class="form-summit-button"><button type="submit">Submit</button></td>
         </tr>
     </table>
 </form>

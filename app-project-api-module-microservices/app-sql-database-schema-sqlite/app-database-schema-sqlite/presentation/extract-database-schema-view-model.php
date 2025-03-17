@@ -46,7 +46,7 @@ class ExtractDatabaseSchemaViewModel {
         $input = preg_replace("/\s+/", " ", $sqlStatement); // Replace multiple spaces/new lines with a single space
 
         // Step 2: Split SQL statements properly
-        $statements = array_filter(array_map('trim', explode(";", $input)));
+        $statements = array_filter(array_map("trim", explode(";", $input)));
 
         // Step 3: Ensure each statement ends with a semicolon
         //$queries = array_map(fn($stmt) => $stmt . ";", $statements);

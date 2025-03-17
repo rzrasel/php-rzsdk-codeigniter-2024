@@ -2,19 +2,34 @@
 namespace App\Microservice\Presentation\Controller\Language;
 ?>
 <?php
-use Core\Database;
+//use Core\Database;
 use App\Microservice\Schema\Domain\Model\Language\LanguageEntity;
 use App\Microservice\Core\Utils\Type\Database\DatabaseType;
 use App\Microservice\Utils\Language\Data\Request\RequestData;
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseType;
 use App\Microservice\Data\Repository\Language\LanguageRepositoryImpl;
-use Domain\Services\LanguageService;
+//use Domain\Services\LanguageService;
 use App\Microservice\Presentation\ViewModel\Language\LanguageViewModel;
 use App\Microservice\Presentation\View\Language\LanguageView;
 ?>
 <?php
 class LanguageController {
+    public function handleRequest(RequestData $request): ResponseData {
+        $databaseType = DatabaseType::getByName($request->databaseType);
+        $db = new Database($databaseType, "localhost", "root", "password", "database_name", "path/to/sqlite.db");
+
+        $repository = new LanguageRepositoryImpl($db);
+        $service = new LanguageService($repository);
+        $viewModel = new LanguageViewModel($service);
+        $view = new LanguageView($viewModel);
+
+        return $view->renderAllLanguages();
+    }
+}
+?>
+<?php
+class LanguageControllerV2 {
     private $db;
     private $repository;
     private $service;
@@ -25,7 +40,8 @@ class LanguageController {
         // Initialize database connection based on request
         $this->db = new Database(DatabaseType::MYSQL, "localhost", "root", "password", "database_name");
         $this->repository = new LanguageRepositoryImpl($this->db);
-        $this->service = new LanguageService($this->repository);
+        /*$this->service = new LanguageService($this->repository);
+        $this->viewModel = new LanguageViewModel($this->service);*/
         $this->viewModel = new LanguageViewModel($this->service);
         $this->view = new LanguageView($this->viewModel);
     }
@@ -92,7 +108,7 @@ class LanguageControllerV1 {
 }
 ?>
 <?php
-// Create a new language
+/*// Create a new language
 $requestData = new RequestData("mysql", [
     'iso_code_2' => 'en',
     'iso_code_3' => 'eng',
@@ -147,7 +163,7 @@ $requestData = new RequestData("mysql"); // No data needed for fetching all
 $controller = new LanguageController();
 // Call the controller to get all languages
 $response = $controller->getAllLanguages();
-echo $response->toJson();
+echo $response->toJson();*/
 ?>
 <?php
 /*// Usage

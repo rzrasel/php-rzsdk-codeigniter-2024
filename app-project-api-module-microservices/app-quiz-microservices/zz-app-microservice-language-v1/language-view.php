@@ -15,6 +15,20 @@ class LanguageView {
         $this->viewModel = $viewModel;
     }
 
+    public function renderAllLanguages(): ResponseData {
+        $languages = $this->viewModel->getAllLanguages();
+        return new ResponseData("Languages retrieved successfully.", ResponseType::SUCCESS, $languages);
+    }
+}
+?>
+<?php
+class LanguageViewV2 {
+    private $viewModel;
+
+    public function __construct(LanguageViewModel $viewModel) {
+        $this->viewModel = $viewModel;
+    }
+
     public function createLanguage(LanguageEntity $language): ResponseData {
         $this->viewModel->createLanguage($language);
         return new ResponseData("Language created successfully.", ResponseType::SUCCESS);

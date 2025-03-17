@@ -1,11 +1,12 @@
 <?php
-namespace App\Microservice\Presentation\ViewModel\Language;
+namespace App\Microservice\Domain\Service\Language;
 ?>
 <?php
 use App\Microservice\Domain\Repository\Language\LanguageRepository;
+use App\Microservice\Schema\Domain\Model\Language\LanguageEntity;
 ?>
 <?php
-class LanguageViewModel {
+class LanguageService {
     private $repository;
 
     public function __construct(LanguageRepository $repository) {
@@ -13,23 +14,23 @@ class LanguageViewModel {
     }
 
     public function getLanguageById(int $id): ?LanguageEntity {
-        return $this->service->getLanguageById($id);
+        return $this->repository->findById($id);
     }
 
     public function getAllLanguages(): array {
-        return $this->service->getAllLanguages();
+        return $this->repository->findAll();
     }
 
     public function createLanguage(LanguageEntity $language): void {
-        $this->service->createLanguage($language);
+        $this->repository->save($language);
     }
 
     public function updateLanguage(LanguageEntity $language): void {
-        $this->service->updateLanguage($language);
+        $this->repository->update($language);
     }
 
     public function deleteLanguage(int $id): void {
-        $this->service->deleteLanguage($id);
+        $this->repository->delete($id);
     }
 }
 ?>
