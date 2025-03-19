@@ -1,14 +1,11 @@
 
--- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-03-06 - VERSION: v-1.1.1
+-- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-03-17 - VERSION: v-1.1.1
 -- DATABASE NAME: Quiz Manager Database Schema
 
 
 
 CREATE DATABASE IF NOT EXISTS quiz_manager_database_schema;
 USE quiz_manager_database_schema;
-
-
-
 
 DROP TABLE IF EXISTS tbl_media_question_mapping;
 DROP TABLE IF EXISTS tbl_answer_bank;
@@ -33,9 +30,11 @@ CREATE TABLE IF NOT EXISTS tbl_language_data (
     name                     TEXT           NOT NULL,
     iso_code_2               TEXT           NOT NULL,
     iso_code_3               TEXT           NOT NULL,
+    slug                     TEXT           NOT NULL,
     CONSTRAINT pk_language_data_id PRIMARY KEY(id),
     CONSTRAINT uk_language_data_iso_code_2 UNIQUE(iso_code_2),
-    CONSTRAINT uk_language_data_iso_code_3 UNIQUE(iso_code_3)
+    CONSTRAINT uk_language_data_iso_code_3 UNIQUE(iso_code_3),
+    CONSTRAINT uk_language_data_slug UNIQUE(slug)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_subject_data (
@@ -45,9 +44,10 @@ CREATE TABLE IF NOT EXISTS tbl_subject_data (
     description              TEXT           NULL,
     subject_code             TEXT           NOT NULL,
     subject_identity         TEXT           NOT NULL,
+    slug                     TEXT           NOT NULL,
     CONSTRAINT pk_subject_data_id PRIMARY KEY(id),
+    CONSTRAINT uk_subject_data_slug UNIQUE(slug),
     CONSTRAINT uk_subject_data_subject_code UNIQUE(subject_code),
-    CONSTRAINT uk_subject_data_subject_identity UNIQUE(subject_identity),
     CONSTRAINT fk_subject_data_language_id_language_data_id FOREIGN KEY(language_id) REFERENCES tbl_language_data(id)
 );
 
@@ -57,8 +57,10 @@ CREATE TABLE IF NOT EXISTS tbl_chapter_data (
     name                     TEXT           NOT NULL,
     index_order              INTEGER        NOT NULL,
     chapter_identity         TEXT           NOT NULL,
+    slug                     TEXT           NOT NULL,
     CONSTRAINT pk_chapter_data_id PRIMARY KEY(id),
     CONSTRAINT uk_chapter_data_chapter_identity UNIQUE(chapter_identity),
+    CONSTRAINT uk_chapter_data_slug UNIQUE(slug),
     CONSTRAINT fk_chapter_data_subject_id_subject_data_id FOREIGN KEY(subject_id) REFERENCES tbl_subject_data(id)
 );
 
@@ -68,8 +70,10 @@ CREATE TABLE IF NOT EXISTS tbl_class_data (
     class_code               TEXT           NOT NULL,
     description              TEXT           NULL,
     index_order              INTEGER        NOT NULL,
+    slug                     TEXT           NOT NULL,
     CONSTRAINT pk_class_data_id PRIMARY KEY(id),
-    CONSTRAINT uk_class_data_class_code UNIQUE(class_code)
+    CONSTRAINT uk_class_data_class_code UNIQUE(class_code),
+    CONSTRAINT uk_class_data_slug UNIQUE(slug)
 );
 
 CREATE TABLE IF NOT EXISTS tbl_class_subject_mapping (
@@ -100,7 +104,9 @@ CREATE TABLE IF NOT EXISTS tbl_question_bank (
     difficulty_level         TEXT           NOT NULL CHECK (difficulty_level IN ('Easy', 'Medium', 'Hard')),
     experience_level         TEXT           NOT NULL CHECK (experience_level IN ('Beginner', 'Experienced', 'Advanced')),
     question_type            TEXT           NOT NULL CHECK (question_type IN ('MCQ', 'Short Answer', 'Broad Answer', 'Paragraph Answer')),
+    slug                     TEXT           NOT NULL,
     CONSTRAINT pk_question_bank_id PRIMARY KEY(id),
+    CONSTRAINT uk_question_bank_slug UNIQUE(slug),
     CONSTRAINT fk_question_bank_chapter_id_chapter_data_id FOREIGN KEY(chapter_id) REFERENCES tbl_chapter_data(id),
     CONSTRAINT fk_question_bank_media_id_media_data_id FOREIGN KEY(media_id) REFERENCES tbl_media_data(id),
     CONSTRAINT fk_question_bank_subject_id_subject_data_id FOREIGN KEY(subject_id) REFERENCES tbl_subject_data(id)

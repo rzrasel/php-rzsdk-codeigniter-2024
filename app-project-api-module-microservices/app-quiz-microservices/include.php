@@ -25,7 +25,7 @@ use App\Microservice\Core\Utils\Type\Database\DatabaseType;
 ?>
 <?php
 defined("DATABASE_TYPE") or define("DATABASE_TYPE", DatabaseType::SQLITE->value);
-/*defined("DB_PATH") or define("DB_PATH", "database");
-defined("DB_FILE") or define("DB_FILE", "database-schema-database.sqlite");
-defined("DB_FULL_PATH") or define("DB_FULL_PATH", "" . DB_PATH . "/" . DB_FILE);*/
+defined("DB_PATH") or define("DB_PATH", "../database");
+defined("DB_FILE") or define("DB_FILE", "database-quiz-manager-database.sqlite");
+defined("DB_FULL_PATH") or define("DB_FULL_PATH", "" . DB_PATH . "/" . DB_FILE);
 ?>

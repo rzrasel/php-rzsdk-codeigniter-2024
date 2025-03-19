@@ -79,7 +79,7 @@ class ColumnDataMapper {
         } else if(is_object($dbSchema)) {
             $dataVarList = self::getDataVarList($model);
             //$domainVarList = self::getDomainVarList($model);
-            for ($i = 0; $i < count($dataVarList); $i++) {
+            for($i = 0; $i < count($dataVarList); $i++) {
                 $model->{$dataVarList[$i]} = $dbSchema->{$dataVarList[$i]};
             }
         }
@@ -97,7 +97,7 @@ class ColumnDataMapper {
         } else if(is_object($columnData)) {
             $dataVarList = self::getDataVarList($columnData);
             $domainVarList = self::getDomainVarList($model);
-            for ($i = 0; $i < count($dataVarList); $i++) {
+            for($i = 0; $i < count($dataVarList); $i++) {
                 $model->{$domainVarList[$i]} = $columnData->{$dataVarList[$i]};
             }
         }
