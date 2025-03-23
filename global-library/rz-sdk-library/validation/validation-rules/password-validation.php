@@ -1,5 +1,5 @@
 <?php
-namespace RzSDK\Validation;
+namespace RzSDK\Data\Validation\Rule;
 ?>
 <?php
 class PasswordValidation {
