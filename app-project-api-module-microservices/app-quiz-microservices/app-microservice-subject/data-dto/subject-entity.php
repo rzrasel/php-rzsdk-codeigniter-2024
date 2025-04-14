@@ -1,23 +1,27 @@
 <?php
-namespace App\Microservice\Schema\Domain\Model\Language;
+namespace App\Microservice\Schema\Domain\Model\Subject;
 ?>
 <?php
-class LanguageEntity {
-    public $id              = "id";
-    public $name            = "name";
-    public $iso_code_2      = "iso_code_2";
-    public $iso_code_3      = "iso_code_3";
-    public $slug            = "slug";
-    public $created_date    = "created_date";
-    public $modified_date   = "modified_date";
-    public $created_by      = "created_by";
-    public $modified_by     = "modified_by";
+class SubjectEntity {
+    public $language_id         = "language_id";
+    public $id                  = "id";
+    public $name                = "name";
+    public $description         = "description";
+    public $subject_code        = "subject_code";
+    public $subject_identity    = "subject_identity";
+    public $slug                = "slug";
+    public $created_date        = "created_date";
+    public $modified_date       = "modified_date";
+    public $created_by          = "created_by";
+    public $modified_by         = "modified_by";
 
     public static function set(
+        $languageId = null,
         $id = null,
         $name = null,
-        $isoCode2 = null,
-        $isoCode3 = null,
+        $description = null,
+        $subjectCode = null,
+        $subjectIdentity = null,
         $slug = null,
         $createdDate = null,
         $modifiedDate = null,
@@ -25,10 +29,12 @@ class LanguageEntity {
         $modifiedBy = null,
     ): self {
         $dataModel = new self();
+        $dataModel->language_id = $languageId;
         $dataModel->id = $id;
         $dataModel->name = $name;
-        $dataModel->iso_code_2 = $isoCode2;
-        $dataModel->iso_code_3 = $isoCode3;
+        $dataModel->description = $description;
+        $dataModel->subject_code = $subjectCode;
+        $dataModel->subject_identity = $subjectIdentity;
         $dataModel->slug = $slug;
         $dataModel->created_date = $createdDate;
         $dataModel->modified_date = $modifiedDate;

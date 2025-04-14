@@ -1,5 +1,5 @@
 <?php
-namespace App\Microservice\Model\Request\Language;
+namespace App\Microservice\Protocol\State\Model\Request\Language;
 ?>
 <?php
 use RzSDK\Data\Validation\Preparation\PrepareValidationRules;
@@ -9,8 +9,8 @@ use RzSDK\Data\Validation\Build\BuildValidationRules;
 class LanguageRequestData {
     public $database_type;
     public $language_name = "language_name";
-    public $iso_code_2;
-    public $iso_code_3;
+    public $iso_code_2 = "iso_code_2";
+    public $iso_code_3  = "iso_code_3";
     public $slug = "slug";
 
     public function __construct() {}
@@ -22,13 +22,55 @@ class LanguageRequestData {
         $this->iso_code_3 = $iso_code_3;
         $this->slug = $slug;
     }*/
+    public static function set(
+        $database_type = null,
+        $language_name = null,
+        $iso_code_2 = null,
+        $iso_code_3 = null,
+        $slug = null,
+    ): self {
+        $dataModel = new self();
+        $dataModel->database_type = $database_type;
+        $dataModel->language_name = $language_name;
+        $dataModel->iso_code_2 = $iso_code_2;
+        $dataModel->iso_code_3 = $iso_code_3;
+        $dataModel->slug = $slug;
+        return $dataModel;
+    }
 
     public function language_name_rules() {
         $rules = new PrepareValidationRules();
         return array(
             $rules->notNullRule("Language name can not be null"),
-            $rules->minLengthRule(2, "Language name length must be at least 2"),
-            $rules->maxLengthRule(255, "Language name length must be less than 255"),
+            $rules->minLengthRule(2, "Language name length must be at least 2 characters"),
+            $rules->maxLengthRule(255, "Language name length must be less than 255 characters"),
+        );
+    }
+
+    public function iso_code_2_rules() {
+        $rules = new PrepareValidationRules();
+        return array(
+            $rules->notNullRule("ISO code 2 can not be null"),
+            $rules->minLengthRule(2, "ISO code 2 length must be at least 2 characters"),
+            $rules->maxLengthRule(255, "ISO code 2 length must be less than 255 characters"),
+        );
+    }
+
+    public function iso_code_3_rules() {
+        $rules = new PrepareValidationRules();
+        return array(
+            $rules->notNullRule("ISO code 3 can not be null"),
+            $rules->minLengthRule(3, "ISO code 3 length must be at least 2 characters"),
+            $rules->maxLengthRule(255, "ISO code 3 length must be less than 255 characters"),
+        );
+    }
+
+    public function slug_rules() {
+        $rules = new PrepareValidationRules();
+        return array(
+            $rules->notNullRule("Slug can not be null"),
+            $rules->minLengthRule(2, "Slug length must be at least 2 characters"),
+            $rules->maxLengthRule(255, "Slug length must be less than 255 characters"),
         );
     }
 

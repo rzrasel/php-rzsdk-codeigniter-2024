@@ -2,17 +2,17 @@
 namespace App\Microservice\Core\Utils\Data\Response;
 ?>
 <?php
-use App\Microservice\Core\Utils\Type\Response\ResponseType;
+use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 ?>
 <?php
 class ResponseData {
     public $message;
-    public $type;
+    public $status;
     public $data;
 
-    public function __construct(string $message, ResponseType $type, $data = null) {
+    public function __construct(string $message, ResponseStatus $status, $data = null) {
         $this->message = $message;
-        $this->type = $type->value;
+        $this->status = $status->value;
         $this->data = $data;
     }
 

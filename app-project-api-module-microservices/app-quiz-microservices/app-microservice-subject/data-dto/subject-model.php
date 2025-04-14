@@ -1,23 +1,27 @@
 <?php
-namespace App\Microservice\Schema\Data\Model\Language;
+namespace App\Microservice\Schema\Data\Model\Subject;
 ?>
 <?php
-class LanguageModel {
+class SubjectModel {
+    public $languageId;
     public $id;
     public $name;
-    public $isoCode2;
-    public $isoCode3;
+    public $description;
+    public $subjectCode;
+    public $subjectIdentity;
     public $slug;
-    public $modifiedDate;
     public $createdDate;
-    public $modifiedBy;
+    public $modifiedDate;
     public $createdBy;
+    public $modifiedBy;
 
     public static function set(
+        $languageId = null,
         $id = null,
         $name = null,
-        $isoCode2 = null,
-        $isoCode3 = null,
+        $description = null,
+        $subjectCode = null,
+        $subjectIdentity = null,
         $slug = null,
         $createdDate = null,
         $modifiedDate = null,
@@ -25,15 +29,17 @@ class LanguageModel {
         $modifiedBy = null,
     ): self {
         $dataModel = new self();
+        $dataModel->languageId = $languageId;
         $dataModel->id = $id;
         $dataModel->name = $name;
-        $dataModel->isoCode2 = $isoCode2;
-        $dataModel->isoCode3 = $isoCode3;
+        $dataModel->description = $description;
+        $dataModel->subjectCode = $subjectCode;
+        $dataModel->subjectIdentity = $subjectIdentity;
         $dataModel->slug = $slug;
-        $dataModel->modifiedDate = $modifiedDate;
         $dataModel->createdDate = $createdDate;
-        $dataModel->modifiedBy = $modifiedBy;
+        $dataModel->modifiedDate = $modifiedDate;
         $dataModel->createdBy = $createdBy;
+        $dataModel->modifiedBy = $modifiedBy;
         return $dataModel;
     }
 

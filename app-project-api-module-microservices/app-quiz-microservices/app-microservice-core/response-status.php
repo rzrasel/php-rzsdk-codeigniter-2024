@@ -2,7 +2,7 @@
 namespace App\Microservice\Core\Utils\Type\Response;
 ?>
 <?php
-enum ResponseType: string {
+enum ResponseStatus: string {
     case SUCCESS    = "success";
     case ERROR      = "error";
 

@@ -1,11 +1,14 @@
 
--- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-03-17 - VERSION: v-1.1.1
+-- SQLite Database DATE CREATED: 2025-02-23, DATE MODIFIED: 2025-03-24 - VERSION: v-1.1.1
 -- DATABASE NAME: Quiz Manager Database Schema
 
 
 
 CREATE DATABASE IF NOT EXISTS quiz_manager_database_schema;
 USE quiz_manager_database_schema;
+
+
+
 
 DROP TABLE IF EXISTS tbl_media_question_mapping;
 DROP TABLE IF EXISTS tbl_answer_bank;
@@ -26,11 +29,15 @@ DROP TABLE IF EXISTS tbl_quiz_attempt;
 
 
 CREATE TABLE IF NOT EXISTS tbl_language_data (
-    id                       BIGINT(20)     NOT NULL,
-    name                     TEXT           NOT NULL,
-    iso_code_2               TEXT           NOT NULL,
-    iso_code_3               TEXT           NOT NULL,
-    slug                     TEXT           NOT NULL,
+    id                BIGINT(20)     NOT NULL,
+    name              TEXT           NOT NULL,
+    iso_code_2        TEXT           NOT NULL,
+    iso_code_3        TEXT           NOT NULL,
+    slug              TEXT           NOT NULL,
+    created_date      DATETIME       NOT NULL,
+    modified_date     DATETIME       NOT NULL,
+    created_by        BIGINT(20)     NOT NULL,
+    modified_by       BIGINT(20)     NOT NULL,
     CONSTRAINT pk_language_data_id PRIMARY KEY(id),
     CONSTRAINT uk_language_data_iso_code_2 UNIQUE(iso_code_2),
     CONSTRAINT uk_language_data_iso_code_3 UNIQUE(iso_code_3),
@@ -38,13 +45,17 @@ CREATE TABLE IF NOT EXISTS tbl_language_data (
 );
 
 CREATE TABLE IF NOT EXISTS tbl_subject_data (
-    language_id              BIGINT(20)     NOT NULL,
-    id                       BIGINT(20)     NOT NULL,
-    name                     TEXT           NOT NULL,
-    description              TEXT           NULL,
-    subject_code             TEXT           NOT NULL,
-    subject_identity         TEXT           NOT NULL,
-    slug                     TEXT           NOT NULL,
+    language_id          BIGINT(20)     NOT NULL,
+    id                   BIGINT(20)     NOT NULL,
+    name                 TEXT           NOT NULL,
+    description          TEXT           NULL,
+    subject_code         TEXT           NOT NULL,
+    subject_identity     TEXT           NOT NULL,
+    slug                 TEXT           NOT NULL,
+    created_date         DATETIME       NOT NULL,
+    modified_date        DATETIME       NOT NULL,
+    created_by           BIGINT(20)     NOT NULL,
+    modified_by          BIGINT(20)     NOT NULL,
     CONSTRAINT pk_subject_data_id PRIMARY KEY(id),
     CONSTRAINT uk_subject_data_slug UNIQUE(slug),
     CONSTRAINT uk_subject_data_subject_code UNIQUE(subject_code),
@@ -146,7 +157,7 @@ CREATE TABLE IF NOT EXISTS tbl_mcq_option (
 CREATE TABLE IF NOT EXISTS tbl_quiz_data (
     id                       BIGINT(20)     NOT NULL,
     subject_id               BIGINT(20)     NULL,
-    chapter_id               BIGINT         NULL,
+    chapter_id               BIGINT(20)     NULL,
     quiz_name                TEXT           NOT NULL,
     quiz_type                TEXT           NOT NULL CHECK (quiz_type IN ('Mixed', 'Single Subject', 'Single Chapter')),
     CONSTRAINT pk_quiz_data_id PRIMARY KEY(id),
@@ -156,7 +167,7 @@ CREATE TABLE IF NOT EXISTS tbl_quiz_data (
 
 CREATE TABLE IF NOT EXISTS tbl_quiz_question (
     id                       BIGINT(20)     NOT NULL,
-    quiz_id                  BIGINT         NOT NULL,
+    quiz_id                  BIGINT(20)     NOT NULL,
     question_id              BIGINT(20)     NOT NULL,
     CONSTRAINT pk_quiz_question_id PRIMARY KEY(id),
     CONSTRAINT fk_quiz_question_question_id_question_bank_id FOREIGN KEY(question_id) REFERENCES tbl_question_bank(id),

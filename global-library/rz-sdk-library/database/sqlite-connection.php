@@ -174,14 +174,14 @@ class SqliteConnection {
 
         $sqlQuery = "SELECT COUNT(*) as count FROM $table WHERE $column = :value";
         //DebugLog::log($sqlQuery);
-        $params = [':value' => $value];
+        $params = [":value" => $value];
 
         try {
             $stmt = $this->pdo->prepare($sqlQuery);
             $stmt->execute($params);
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            return ($result['count'] > 0);
+            return ($result["count"] > 0);
         } catch (PDOException $e) {
             error_log("SQL Query Error: " . $e->getMessage());
             return false;
@@ -207,7 +207,7 @@ class SqliteConnection {
             $stmt->execute($params);
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            return ($result['count'] > 0);
+            return ($result["count"] > 0);
         } catch (PDOException $e) {
             //error_log("SQL Query Error: " . $e->getMessage());
             DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);
@@ -239,7 +239,7 @@ class SqliteConnection {
             $stmt->execute($params);
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            return ($result['count'] > 0);
+            return ($result["count"] > 0);
         } catch (PDOException $e) {
             //error_log("SQL Query Error: " . $e->getMessage());
             DebugLog::log("SQL query error: " . $e->getMessage(), LogType::WARNING, true, 0, __CLASS__);

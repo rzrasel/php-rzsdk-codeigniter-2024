@@ -34,7 +34,8 @@ class ValidationHelper {
             return array(
                 "is_validate" => $isValidated,
                 "message" => implode(", ", $message),
-                "data" => $requestDataSet,
+                "data_set" => $requestDataSet,
+                "data_model" => $dataModelObject,
             );
         }
         $buildValidationRules = new BuildValidationRules();
@@ -65,7 +66,8 @@ class ValidationHelper {
         return array(
             "is_validate" => $isValidated,
             "message" => implode(", ", $message),
-            "data" => $dataModelObject,
+            "data_set" => $requestDataSet,
+            "data_model" => $dataModelObject,
         );
     }
 }

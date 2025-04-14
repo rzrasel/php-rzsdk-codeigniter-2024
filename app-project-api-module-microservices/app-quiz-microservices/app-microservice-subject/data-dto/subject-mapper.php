@@ -1,23 +1,23 @@
 <?php
-namespace App\Microservice\Data\Mapper\Language;
+namespace App\Microservice\Data\Mapper\Subject;
 ?>
 <?php
-use App\Microservice\Schema\Domain\Model\Language\LanguageEntity;
-use App\Microservice\Schema\Data\Model\Language\LanguageModel;
+use App\Microservice\Schema\Domain\Model\Subject\SubjectEntity;
+use App\Microservice\Schema\Data\Model\Subject\SubjectModel;
 ?>
 <?php
-class LanguageMapper {
-    public static function getDataVarList(LanguageEntity $entityData) {
+class SubjectMapper {
+    public static function getDataVarList(SubjectEntity $entityData) {
         return $entityData->getVarList();
     }
 
-    public static function getDomainVarList(LanguageModel $modelData) {
+    public static function getDomainVarList(SubjectModel $modelData) {
         return $modelData->getVarList();
     }
 
-    public static function toData($modelData): LanguageEntity {
-        //|Initialize a new LanguageEntity instance|------------------|
-        $entityData = new LanguageEntity();
+    public static function toData($modelData): SubjectEntity {
+        //|Initialize a new SubjectEntity instance|------------------|
+        $entityData = new SubjectEntity();
         //|Get entity and domain variable names|---------------------|
         $dataVarList = self::getDataVarList($entityData);
         $domainVarList = self::getDomainVarList($modelData);
@@ -37,13 +37,13 @@ class LanguageMapper {
             }, $dataVarList, $domainVarList);
         }
 
-        //|RETURN THE POPULATED LanguageEntity INSTANCE|--------------|
+        //|RETURN THE POPULATED SubjectEntity INSTANCE|--------------|
         return $entityData;
     }
 
-    public static function toDomain($entityData): LanguageModel {
-        //|Initialize a new LanguageModel instance|------------------|
-        $modelData = new LanguageModel();
+    public static function toDomain($entityData): SubjectModel {
+        //|Initialize a new SubjectModel instance|------------------|
+        $modelData = new SubjectModel();
         //|Get entity and domain variable names|---------------------|
         $dataVarList = self::getDataVarList($entityData);
         $domainVarList = self::getDomainVarList($modelData);
@@ -63,7 +63,7 @@ class LanguageMapper {
             }, $dataVarList, $domainVarList);
         }
 
-        //|RETURN THE POPULATED LanguageModel INSTANCE|--------------|
+        //|RETURN THE POPULATED SubjectModel INSTANCE|--------------|
         return $modelData;
     }
 }

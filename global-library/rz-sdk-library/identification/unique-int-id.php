@@ -2,6 +2,9 @@
 namespace RzSDK\Identification;
 ?>
 <?php
+use RzSDK\Identification\RandomIdGenerator;
+?>
+<?php
 class UniqueIntId {
     //private currentMicrotime = round(microtime(true) * 1000);
     //private currentMicrotime;
@@ -29,6 +32,24 @@ class UniqueIntId {
     
     public function getId() {
         return $this->getMicrotime() . "" . $this->getRandomDigits(5, false);
+    }
+
+    public function getSysUserId(string $userString = null) {
+        if(empty($userString)) {
+            $userString =RandomIdGenerator::getRandomString(50);
+        }
+        $sysUser = $userString . strtolower($userString) . strtoupper($userString);
+        //echo $sysUser;
+        $sysUserId = 0;
+        for($i = 0; $i < strlen($sysUser); $i++) {
+            $sysUserId += ord($sysUser[$i]);
+        }
+        $sysUserId = (int)($sysUserId . "" . ($sysUserId * 2) . "" . ($sysUserId * 3));
+        /*echo strlen($sysUserId);
+        echo "<br />";
+        echo $sysUserId;
+        echo "<br />";*/
+        return substr($sysUserId, 0, 16);
     }
 }
 ?>

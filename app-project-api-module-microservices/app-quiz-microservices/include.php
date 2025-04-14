@@ -30,3 +30,7 @@ defined("DB_PATH") or define("DB_PATH", "../database");
 defined("DB_FILE") or define("DB_FILE", "database-quiz-manager-database.sqlite");
 defined("DB_FULL_PATH") or define("DB_FULL_PATH", "" . DB_PATH . "/" . DB_FILE);
 ?>
+<?php
+$sysUserIdStr = "appQuizMicroserviceModulateProjectSystemUserId";
+defined("SYS_USER_ID_STR") or define("SYS_USER_ID_STR", $sysUserIdStr);
+?>
