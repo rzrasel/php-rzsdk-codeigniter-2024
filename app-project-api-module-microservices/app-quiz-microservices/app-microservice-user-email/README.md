@@ -1495,6 +1495,7 @@ class UserEmailMapper {
 - use response for ResponseData class
 - also provide how to use usage of UserEmailController class or call UserEmailController class
 
+*** refactor and optimize code if needed
 *** don't break code consistency
 *** code or directory refactor if needed
 *** code or directory refactor if better options

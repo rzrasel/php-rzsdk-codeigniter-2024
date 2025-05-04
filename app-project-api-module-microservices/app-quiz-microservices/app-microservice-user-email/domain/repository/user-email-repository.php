@@ -2,11 +2,13 @@
 namespace App\Microservice\Domain\Repository\User\Email;
 ?>
 <?php
-use App\Microservice\Schema\Domain\Model\User\Email\UserEmailModel;
+use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
+use App\Microservice\Core\Utils\Data\Response\ResponseData;
 ?>
 <?php
 interface UserEmailRepository {
-    /*public function create(UserEmailModel $email): UserEmailModel;
+    public function create(UserEmailEntity $userEmailEntity): ResponseData;
+    /*
     public function findByEmail(string $email): ?UserEmailModel;
     public function findById(string $id): ?UserEmailModel;
     public function findByUserId(string $user_id): array;

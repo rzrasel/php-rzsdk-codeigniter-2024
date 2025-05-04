@@ -1,10 +1,13 @@
 <?php
-namespace RzSDK\Database;
+namespace App\Microservice\Action\Type\Email;
 ?>
 <?php
-enum DbType: string {
-    case SQLITE = "SQLite";
-    case MYSQL  = "MySQL";
+enum EmailActionType: string {
+    case GET = "get";
+    case FIND = "find";
+    case SELECT = "select";
+    case CREATE = "create";
+    case UPDATE = "update";
 
     public static function getByName(string $value): ?self {
         foreach (self::cases() as $case) {

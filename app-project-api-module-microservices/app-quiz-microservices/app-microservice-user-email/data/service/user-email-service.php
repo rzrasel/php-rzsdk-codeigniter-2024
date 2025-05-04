@@ -5,6 +5,8 @@ namespace App\Microservice\Schema\Data\Services\User\Email;
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Domain\Repository\User\Email\UserEmailRepository;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
+use App\Microservice\Data\Mapper\User\Email\UserEmailMapper;
 ?>
 <?php
 class UserEmailService {
@@ -14,8 +16,12 @@ class UserEmailService {
         $this->repository = $repository;
     }
 
-    public function addEmail($requestDataSet): ResponseData {
-        return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $requestDataSet);
+    public function addEmail(UserEmailRequestModel $userEmailRequestModel): ResponseData {
+        $response = $this->repository->create(UserEmailMapper::mapRequestToEntity($userEmailRequestModel));
+        $message = $response->message;
+        $status = ResponseStatus::getByValue($response->status);
+        $data = UserEmailMapper::mapEntityToResponseDto($response->data);
+        return new ResponseData($message, $status, $data);
     }
 
     /*public function addEmail(string $user_id, AddEmailRequest $request): ResponseData {

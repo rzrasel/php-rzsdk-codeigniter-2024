@@ -5,8 +5,8 @@ namespace App\Microservice\Presentation\Controller\Use\Email;
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Schema\Data\Services\User\Email\UserEmailService;
-use App\Microservice\Presentation\Controller\Use\Email\UserEmailViewModel;
 use App\Microservice\Data\Repository\User\Email\UserEmailRepositoryImpl;
+
 ?>
 <?php
 class UserEmailController {
@@ -23,7 +23,7 @@ class UserEmailController {
             return new ResponseData("Failed data empty", ResponseStatus::ERROR);
         }
         try {
-            $response = $this->viewModel->addEmail($requestDataSet);
+            $response = $this->viewModel->userEmailAction($requestDataSet);
             //return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $requestDataSet);
             return $response;
         } catch (\Exception $e) {

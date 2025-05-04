@@ -3,8 +3,10 @@ namespace App\Microservice\Data\Repository\User\Email;
 ?>
 <?php
 use App\Microservice\Domain\Repository\User\Email\UserEmailRepository;
-use App\Microservice\Schema\Domain\Model\User\Email\UserEmailModel;
+use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
 use App\Microservice\Core\Utils\Database\Database;
+use App\Microservice\Core\Utils\Data\Response\ResponseData;
+use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 ?>
 <?php
 class UserEmailRepositoryImpl implements UserEmailRepository {
@@ -13,6 +15,10 @@ class UserEmailRepositoryImpl implements UserEmailRepository {
 
     public function __construct() {
         $this->dbConn = (new Database())->getConnection();
+    }
+
+    public function create(UserEmailEntity $userEmailEntity): ResponseData {
+        return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmailEntity);
     }
 
     /*public function create(UserEmailModel $email): UserEmailModel {
