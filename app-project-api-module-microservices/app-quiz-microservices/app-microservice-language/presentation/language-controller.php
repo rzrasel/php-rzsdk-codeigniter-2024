@@ -16,8 +16,8 @@ use App\Microservice\Protocol\State\Model\Request\Language\LanguageRequestData;
 ?>
 <?php
 class LanguageController {
-    private $viewModel;
-    private $view;
+    private LanguageViewModel $viewModel;
+    private LanguageView $view;
 
     public function __construct() {
         // Initialize database connection based on request
@@ -33,7 +33,7 @@ class LanguageController {
         }
         try {
             $response = $this->viewModel->createLanguage($requestDataSet);
-            //return new ResponseData("Language created successfully.", ResponseType::SUCCESS, $response);
+            //return new ResponseData("Language created successfully.", ResponseStatus::SUCCESS, $response);
             return $response;
         } catch (\Exception $e) {
             return new ResponseData("Failed to create language: " . $e->getMessage(), ResponseStatus::ERROR);

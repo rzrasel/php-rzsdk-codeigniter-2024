@@ -7,8 +7,7 @@ require_once("include.php");
 <?php
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
-use App\Microservice\Protocol\State\Model\Request\Language\LanguageRequestData;
-use App\Microservice\Presentation\Controller\Language\LanguageController;
+use App\Microservice\Presentation\Controller\Use\Email\UserEmailController;
 ?>
 <?php
 //header("Content-Type: application/json");
@@ -27,7 +26,7 @@ if(empty($_POST)) {
         $_POST = $inputData;
     }
 }
-$controller = new LanguageController();
-$response = $controller->createLanguage($_POST);
+$controller = new UserEmailController();
+$response = $controller->addEmail($_POST);
 echo $response->toJson();
 ?>
