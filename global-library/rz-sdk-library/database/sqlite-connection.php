@@ -54,12 +54,13 @@ class SqliteConnection {
     }
 
     //|-----------------------|SQL QUERY|------------------------|
-    public function query($sqlQuery, SqliteFetchType $fetchMode = SqliteFetchType::NONE) {
+    public function query($sqlQuery, SqliteFetchType $fetchMode = SqliteFetchType::FETCH_NONE) {
+        // FETCH_DEFAULT is actually FETCH_ASSOC return array data
         //$fetchMode->valueDebugLog::log($fetchMode->value);
         if ($this->pdo !== null) {
             $query = preg_replace("/escape_string\((.*?)\)/", $this->escapeString("$1"), $sqlQuery);
             try {
-                if($fetchMode == SqliteFetchType::NONE) {
+                if($fetchMode == SqliteFetchType::FETCH_NONE) {
                     return $this->pdo->query($query);
                 } else {
                     $statement = $this->pdo->query($query);
@@ -362,11 +363,35 @@ class SqliteConnection {
 
     public static function bindValue($value, $key = "") {
         $itemValue = "";
+        if(!empty($value)) {
+            if (strtolower(gettype($value)) == "null") {
+                $itemValue = NULL;
+                return $itemValue;
+            } else if (strtolower(gettype($value)) == "boolean") {
+                $itemValue = FALSE;
+                if ($value) {
+                    $itemValue = TRUE;
+                } else if (strtolower($value) == "true") {
+                    $itemValue = TRUE;
+                }
+                return $itemValue;
+            } else if (strtolower(gettype($value)) == "string") {
+                $itemValue = $value;
+                return $itemValue;
+            }
+        }
         if(empty($value)) {
             $itemValue = '';
             if(is_null($value)) {
                 $itemValue = NULL;
             }
+            /*else {
+                if(is_int($value) || is_numeric($value)) {
+                    $itemValue = $value;
+                } else {
+                    $itemValue = 'FALSE';
+                }
+            }*/
         } else if(self::isBoolean($value)) {
             $itemValue = 'FALSE';
             if($value && strtolower("$value") == 'true') {
@@ -383,6 +408,8 @@ class SqliteConnection {
             if(self::isBoolean($value)) {
                 $itemValue = 'FALSE';
                 if($value && strtolower("$value") == 'true') {
+                    $itemValue = 'TRUE';
+                } else if($value == 1) {
                     $itemValue = 'TRUE';
                 }
             }

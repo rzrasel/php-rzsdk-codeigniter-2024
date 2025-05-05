@@ -5,6 +5,7 @@ namespace App\Microservice\Data\Mapper\User\Email;
 use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailResponseDto;
+use RzSDK\Database\SqliteFetchType;
 ?>
 <?php
 class UserEmailMapper {
@@ -37,9 +38,48 @@ class UserEmailMapper {
                 $userEmailResponseDto->{$key} = $userEmailEntity->{$key};
             }
         }
-        $userEmailResponseDto->user_email = $userEmailEntity->email;
-        $userEmailResponseDto->email_provider = $userEmailEntity->provider;
+        $mappedKey = UserEmailRequestModel::mapKeyToUserInput();
+        foreach ($mappedKey as $key => $value) {
+            if (in_array($key, $domainVarList)) {
+                $userEmailResponseDto->{$value} = $userEmailEntity->{$key};
+            }
+        }
         return $userEmailResponseDto;
+    }
+
+    public static function mapDbToEntity($dbData): array {
+        //echo gettype($dbData);
+        //print_r($dbData);
+        $retVal = array();
+        $entityData = new UserEmailEntity();
+        $dataVarList = $entityData->getVarList($entityData);
+        if(is_object($dbData)) {
+            while ($row = $dbData->fetch(SqliteFetchType::FETCH_OBJ->value)) {
+                $entityData = new UserEmailEntity();
+                foreach ($dataVarList as $key) {
+                    $entityData->{$key} = $row->{$key};
+                }
+                $retVal[] = $entityData;
+            }
+            /*foreach ($dbData as $item) {
+                //print_r($item);
+                $entityData = new UserEmailEntity();
+                foreach ($dataVarList as $key) {
+                    $entityData->{$key} = $item[$key];
+                }
+                $retVal[] = $entityData;
+            }*/
+        } else if(is_array($dbData)) {
+            foreach ($dbData as $item) {
+                print_r($item);
+                $entityData = new UserEmailEntity();
+                /*foreach ($dataVarList as $key) {
+                    $entityData->{$key} = $item[$key];
+                }*/
+                $retVal[] = $entityData;
+            }
+        }
+        return $retVal;
     }
 
     /*public static function mapEntityToParams(UserEmailModel $email): array {

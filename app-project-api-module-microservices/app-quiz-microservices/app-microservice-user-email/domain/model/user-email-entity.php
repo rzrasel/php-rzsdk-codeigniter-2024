@@ -20,26 +20,53 @@ class UserEmailEntity {
 
     public function __construct(
         $user_id = null,
+        $id = null,
         $email = null,
-        $created_by = null,
-        $modified_by = null,
         $provider = null,
         $is_primary = null,
+        $verification_code = null,
+        $last_verification_sent_at = null,
+        $verification_code_expiry = null,
         $verification_status = null,
         $status = null,
-        $id = null
+        $created_date = null,
+        $modified_date = null,
+        $created_by = null,
+        $modified_by = null
     ) {
-        $this->id = $id;
         $this->user_id = $user_id;
+        $this->id = $id;
         $this->email = $email;
         $this->provider = $provider;
         $this->is_primary = $is_primary;
+        $this->verification_code = $verification_code;
+        $this->last_verification_sent_at = $last_verification_sent_at;
+        $this->verification_code_expiry = $verification_code_expiry;
         $this->verification_status = $verification_status;
         $this->status = $status;
+        $this->created_date = $created_date;
+        $this->modified_date = $modified_date;
         $this->created_by = $created_by;
         $this->modified_by = $modified_by;
-        $this->created_date = date('Y-m-d H:i:s');
-        $this->modified_date = date('Y-m-d H:i:s');
+    }
+
+    public static function mapToEntityColumn() {
+        return new self(
+            "user_id",
+            "id",
+            "email",
+            "provider",
+            "is_primary",
+            "verification_code",
+            "last_verification_sent_at",
+            "verification_code_expiry",
+            "verification_status",
+            "status",
+            "created_date",
+            "modified_date",
+            "created_by",
+            "modified_by"
+        );
     }
 
     public function getVarList() {

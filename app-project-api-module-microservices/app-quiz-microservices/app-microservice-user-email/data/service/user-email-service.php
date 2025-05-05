@@ -7,6 +7,8 @@ use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Domain\Repository\User\Email\UserEmailRepository;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
 use App\Microservice\Data\Mapper\User\Email\UserEmailMapper;
+use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
+
 ?>
 <?php
 class UserEmailService {
@@ -17,11 +19,23 @@ class UserEmailService {
     }
 
     public function addEmail(UserEmailRequestModel $userEmailRequestModel): ResponseData {
-        $response = $this->repository->create(UserEmailMapper::mapRequestToEntity($userEmailRequestModel));
+        $userEmailEntity = UserEmailMapper::mapRequestToEntity($userEmailRequestModel);
+        //
+        //$userEmailEntity->is_primary = false;
+        $userEmailEntity->verification_status = "pending";
+        $userEmailEntity->status = "active";
+        $userEmailEntity->created_date = date("Y-m-d H:i:s");
+        $userEmailEntity->modified_date = date("Y-m-d H:i:s");
+        $userEmailEntity->created_by = $userEmailRequestModel->user_id;
+        $userEmailEntity->modified_by = $userEmailRequestModel->user_id;
+        //
+        $response = $this->repository->create($userEmailEntity);
+        //
         $message = $response->message;
         $status = ResponseStatus::getByValue($response->status);
-        $data = UserEmailMapper::mapEntityToResponseDto($response->data);
-        return new ResponseData($message, $status, $data);
+        $responseData = UserEmailMapper::mapEntityToResponseDto($response->data);
+        //
+        return new ResponseData($message, $status, $responseData);
     }
 
     /*public function addEmail(string $user_id, AddEmailRequest $request): ResponseData {

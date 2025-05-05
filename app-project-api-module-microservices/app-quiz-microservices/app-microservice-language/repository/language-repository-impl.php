@@ -71,9 +71,9 @@ class LanguageRepositoryImpl implements LanguageRepository {
         $dataVarList = $tempLanguageEntity->getVarList();
         $columns = "";
         $values = "";
-        foreach($dataVarList as $var) {
-            $columns .= "$var, ";
-            $values .= ":$var, ";
+        foreach($dataVarList as $value) {
+            $columns .= "$value, ";
+            $values .= ":$value, ";
         }
         $columns = trim(trim($columns), ",");
         $values = trim(trim($values), ",");
