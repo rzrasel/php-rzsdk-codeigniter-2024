@@ -8,6 +8,7 @@ use App\Microservice\Domain\Repository\User\Email\UserEmailRepository;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
 use App\Microservice\Data\Mapper\User\Email\UserEmailMapper;
 use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
+use App\Microservice\Type\Verification\Status\Email\EmailVerificationStatus;
 
 ?>
 <?php
@@ -22,7 +23,7 @@ class UserEmailService {
         $userEmailEntity = UserEmailMapper::mapRequestToEntity($userEmailRequestModel);
         //
         //$userEmailEntity->is_primary = false;
-        $userEmailEntity->verification_status = "pending";
+        $userEmailEntity->verification_status = EmailVerificationStatus::PENDING->value;
         $userEmailEntity->status = "active";
         $userEmailEntity->created_date = date("Y-m-d H:i:s");
         $userEmailEntity->modified_date = date("Y-m-d H:i:s");
@@ -33,9 +34,10 @@ class UserEmailService {
         //
         $message = $response->message;
         $status = ResponseStatus::getByValue($response->status);
+        $statusCode = $response->status_code;
         $responseData = UserEmailMapper::mapEntityToResponseDto($response->data);
         //
-        return new ResponseData($message, $status, $responseData);
+        return new ResponseData($message, $status, $responseData, $statusCode);
     }
 
     /*public function addEmail(string $user_id, AddEmailRequest $request): ResponseData {

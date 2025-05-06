@@ -1,11 +1,11 @@
 <?php
-namespace App\Microservice\Presentation\Controller\Use\Email;
+namespace App\Microservice\Presentation\ViewModel\Use\Email;
 ?>
 <?php
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
 use App\Microservice\Schema\Data\Services\User\Email\UserEmailService;
-use App\Microservice\Action\Type\Email\EmailActionType;
+use App\Microservice\Type\Action\Email\EmailActionType;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use RzSDK\Identification\UniqueIntId;
 ?>

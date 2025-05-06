@@ -14,5 +14,14 @@ enum ResponseStatus: string {
         }
         return null;
     }
+
+    public static function getByValue(string $value): ?self {
+        foreach (self::cases() as $case) {
+            if ($case->value === $value) {
+                return $case;
+            }
+        }
+        return null;
+    }
 }
 ?>

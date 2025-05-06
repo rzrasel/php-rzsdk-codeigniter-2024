@@ -6,7 +6,7 @@ use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Schema\Data\Services\User\Email\UserEmailService;
 use App\Microservice\Data\Repository\User\Email\UserEmailRepositoryImpl;
-
+use App\Microservice\Presentation\ViewModel\Use\Email\UserEmailViewModel;
 ?>
 <?php
 class UserEmailController {

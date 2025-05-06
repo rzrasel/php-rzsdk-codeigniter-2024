@@ -29,6 +29,8 @@ class UserEmailRequestModel {
         $this->action_type = $action_type;
     }
 
+    public function mapToDataModel() {}
+
     public static function mapKeyToUserInput() {
         return array(
             "email" => "user_email",

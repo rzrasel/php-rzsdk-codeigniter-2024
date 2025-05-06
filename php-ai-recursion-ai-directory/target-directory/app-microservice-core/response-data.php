@@ -9,11 +9,13 @@ class ResponseData {
     public $message;
     public $status;
     public $data;
+    public int $status_code;
 
-    public function __construct(string $message, ResponseStatus $status, mixed $data = null) {
+    public function __construct(string $message, ResponseStatus $status, mixed $data = null, int $statusCode = 200) {
         $this->message = $message;
         $this->status = $status->value;
         $this->data = $data;
+        $this->status_code = $statusCode;
     }
 
     public function toJson(): string {

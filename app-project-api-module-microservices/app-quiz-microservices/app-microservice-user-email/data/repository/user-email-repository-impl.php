@@ -39,6 +39,7 @@ class UserEmailRepositoryImpl implements UserEmailRepository {
                 "'{$userEmailEntity->email}' email already exists.",
                 ResponseStatus::ERROR,
                 $userEmailEntity,
+                409,
             );
         }
         //
@@ -124,8 +125,8 @@ class UserEmailRepositoryImpl implements UserEmailRepository {
         return new ResponseData("User email updated successfully.", ResponseStatus::SUCCESS, $userEmailEntity);
     }
 
-    public function getResponse($message, ResponseStatus $status, $responseData) {
-        return new ResponseData($message, $status, $responseData);
+    public function getResponse($message, ResponseStatus $status, $responseData, $statusCode = 200) {
+        return new ResponseData($message, $status, $responseData, $statusCode);
     }
 
     /*public function save(CompositeKeyModel $compositeKey): void {
