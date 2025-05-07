@@ -6,7 +6,7 @@ enum PasswordActionType: string {
     case GET = "get";
     case FIND = "find";
     case SELECT = "select";
-    case CREATE = "create";
+    case INSERT = "insert";
     case UPDATE = "update";
 
     public static function getByName(string $value): ?self {

@@ -7,7 +7,8 @@ use App\Microservice\Core\Utils\Data\Response\ResponseData;
 ?>
 <?php
 interface UserEmailRepository {
-    public function create(UserEmailEntity $userEmailEntity): ResponseData;
+    public function create(UserEmailEntity $userEmail): ResponseData;
+    public function select(UserEmailEntity $userEmail, array $columns): ResponseData;
     /*
     public function findByEmail(string $email): ?UserEmailModel;
     public function findById(string $id): ?UserEmailModel;

@@ -50,10 +50,10 @@ class UserPasswordEntity {
             "password_hash",
             "expiry",
             "status",
-            "created_date",
             "modified_date",
-            "created_by",
-            "modified_by"
+            "created_date",
+            "modified_by",
+            "created_by"
         );
     }
 

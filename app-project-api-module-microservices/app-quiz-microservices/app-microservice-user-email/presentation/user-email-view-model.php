@@ -3,49 +3,88 @@ namespace App\Microservice\Presentation\ViewModel\Use\Email;
 ?>
 <?php
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
-use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
-use App\Microservice\Schema\Data\Services\User\Email\UserEmailService;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailInsertRequestModel;
+use App\Microservice\Domain\UseCase\User\Email\UserEmailUseCase;
 use App\Microservice\Type\Action\Email\EmailActionType;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
-use RzSDK\Identification\UniqueIntId;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailSelectRequestModel;
 ?>
 <?php
 class UserEmailViewModel {
-    private $service;
+    private $useCase;
 
-    public function __construct(UserEmailService $service) {
-        $this->service = $service;
+    public function __construct(UserEmailUseCase $useCase) {
+        $this->useCase = $useCase;
     }
 
-    public function userEmailAction($requestDataSet): ResponseData {
-        $userEmailRequestModel = new UserEmailRequestModel();
+    public function executeViewModel(array $requestDataSet): ResponseData {
+        $actionType = EmailActionType::getByValue($requestDataSet["action_type"]);
+        if ($actionType == EmailActionType::INSERT) {
+            return $this->createEmail($requestDataSet);
+        } else if ($actionType == EmailActionType::SELECT) {
+            return $this->selectEmail($requestDataSet);
+        }
+        return new ResponseData("Missing requested action type", ResponseStatus::ERROR, $requestDataSet, 404);
+    }
+
+    public function createEmail(array $requestDataSet): ResponseData {
+        $requiredFields = array(
+            "user_id",
+            "action_type",
+        );
+        foreach ($requiredFields as $field) {
+            if (empty($requestDataSet[$field])) {
+                return new ResponseData("Missing required field: $field", ResponseStatus::ERROR, 400);
+            }
+        }
+        //
+        $userEmailRequestModel = new UserEmailInsertRequestModel();
         $varList = $userEmailRequestModel->getVarList();
         foreach ($varList as $key) {
             if (array_key_exists($key, $requestDataSet)) {
                 $userEmailRequestModel->{$key} = $requestDataSet[$key];
             }
         }
-        $mappedKey = UserEmailRequestModel::mapKeyToUserInput();
-        foreach ($mappedKey as $key => $value) {
-            if (array_key_exists($value, $requestDataSet)) {
-                $userEmailRequestModel->{$key} = $requestDataSet[$value];
-            }
-        }
-        return $this->executeEmailAction($userEmailRequestModel);
+        //
+        //return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmailModel, 201);
+        return $this->useCase->createEmail($userEmailRequestModel);
     }
 
-    public function executeEmailAction(UserEmailRequestModel $userEmailRequestModel): ResponseData {
-        if(empty($userEmailRequestModel->action_type)) {
-            return new ResponseData("Failed to create user email action type is null", ResponseStatus::ERROR, $userEmailRequestModel);
+    public function selectEmail(array $requestDataSet): ResponseData {
+        $requiredFields = array(
+            "action_type",
+        );
+        foreach ($requiredFields as $field) {
+            if (empty($requestDataSet[$field])) {
+                return new ResponseData("Missing required field: $field", ResponseStatus::ERROR, 400);
+            }
         }
-        $actionType = EmailActionType::getByValue($userEmailRequestModel->action_type);
-        if ($actionType == EmailActionType::CREATE) {
-            $uniqueIntId = new UniqueIntId();
-            $userEmailRequestModel->id = $uniqueIntId->getId();
-            return $this->service->addEmail($userEmailRequestModel);
-        } else {
-            return new ResponseData("Failed to create user email action type not found", ResponseStatus::ERROR, $userEmailRequestModel);
+        $userEmail = new UserEmailSelectRequestModel();
+        //
+        $dataVarList = $userEmail->getVarList();
+        foreach ($dataVarList as $key) {
+            if(array_key_exists($key, $requestDataSet)) {
+                $userEmail->{$key} = $requestDataSet[$key];
+            }
         }
+        //
+        $columnRawData = $userEmail->columns;
+        if (!empty($columnRawData)) {
+            if (is_array($columnRawData)) {
+                $userEmail->columns = $columnRawData;
+            } else if (is_string($columnRawData)) {
+                $decoded = json_decode($columnRawData, true);
+                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                    $userEmail->columns = $decoded;
+                } else {
+                    // Treat as comma-separated string
+                    $userEmail->columns = array_map('trim', explode(',', $columnRawData));
+                }
+            }
+        }
+        //
+        //return new ResponseData("User email selected successfully.", ResponseStatus::SUCCESS, $requestDataSet, 200);
+        return $this->useCase->selectEmail($userEmail);
     }
 }
 ?>

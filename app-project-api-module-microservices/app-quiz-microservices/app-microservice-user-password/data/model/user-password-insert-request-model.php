@@ -2,15 +2,15 @@
 namespace App\Microservice\Schema\Data\Model\User\Password;
 ?>
 <?php
-class UserPasswordRequestModel {
-    public $user_id;
-    public $password;
-    public $action_type;
+class UserPasswordInsertRequestModel {
+    public ?string $user_id;
+    public ?string $password;
+    public mixed $action_type;
 
     public function __construct(
-        $user_id = null,
-        $password = null,
-        $action_type = null
+        ?string $user_id = null,
+        ?string $password = null,
+        mixed $action_type = null
     ) {
         $this->user_id = $user_id;
         $this->password = $password;

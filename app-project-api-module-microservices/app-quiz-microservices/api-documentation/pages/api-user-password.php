@@ -53,7 +53,7 @@ $baseUrl = dirname($baseUrl);
             <pre>{
   "user_id": "989898",
   "password": "123456",
-  "action_type": "create"
+  "action_type": "insert"
 }</pre>
         </section>
 

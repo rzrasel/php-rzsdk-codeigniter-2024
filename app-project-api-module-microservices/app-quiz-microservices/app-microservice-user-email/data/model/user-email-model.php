@@ -2,14 +2,21 @@
 namespace App\Microservice\Schema\Data\Model\User\Email;
 ?>
 <?php
-class UserEmailRequestModel {
+class UserEmailModel {
     public $user_id;
     public $id;
     public $email;
     public $provider;
     public $is_primary;
     public $verification_code;
-    public $action_type;
+    public $last_verification_sent_at;
+    public $verification_code_expiry;
+    public $verification_status;
+    public $status;
+    public $created_date;
+    public $modified_date;
+    public $created_by;
+    public $modified_by;
 
     public function __construct(
         $user_id = null,
@@ -18,7 +25,14 @@ class UserEmailRequestModel {
         $provider = null,
         $is_primary = null,
         $verification_code = null,
-        $action_type = null,
+        $last_verification_sent_at = null,
+        $verification_code_expiry = null,
+        $verification_status = null,
+        $status = null,
+        $created_date = null,
+        $modified_date = null,
+        $created_by = null,
+        $modified_by = null
     ) {
         $this->user_id = $user_id;
         $this->id = $id;
@@ -26,16 +40,14 @@ class UserEmailRequestModel {
         $this->provider = $provider;
         $this->is_primary = $is_primary;
         $this->verification_code = $verification_code;
-        $this->action_type = $action_type;
-    }
-
-    public function mapToDataModel() {}
-
-    public static function mapKeyToUserInput() {
-        return array(
-            "email" => "user_email",
-            "provider" => "email_provider",
-        );
+        $this->last_verification_sent_at = $last_verification_sent_at;
+        $this->verification_code_expiry = $verification_code_expiry;
+        $this->verification_status = $verification_status;
+        $this->status = $status;
+        $this->created_date = $created_date;
+        $this->modified_date = $modified_date;
+        $this->created_by = $created_by;
+        $this->modified_by = $modified_by;
     }
 
     public function getVarList() {
@@ -53,3 +65,4 @@ class UserEmailRequestModel {
         );
     }
 }
+?>

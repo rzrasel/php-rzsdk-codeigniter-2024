@@ -1,42 +1,91 @@
 <?php
-namespace App\Microservice\Schema\Data\Services\User\Email;
+namespace App\Microservice\Domain\UseCase\User\Email;
+//namespace App\Microservice\Schema\Data\Services\User\Email;
 ?>
 <?php
+use RzSDK\Identification\UniqueIntId;
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Domain\Repository\User\Email\UserEmailRepository;
-use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailInsertRequestModel;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailModel;
 use App\Microservice\Data\Mapper\User\Email\UserEmailMapper;
 use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
 use App\Microservice\Type\Verification\Status\Email\EmailVerificationStatus;
-
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailSelectRequestModel;
 ?>
 <?php
-class UserEmailService {
+class UserEmailUseCase {
     private UserEmailRepository $repository;
 
     public function __construct(UserEmailRepository $repository) {
         $this->repository = $repository;
     }
 
-    public function addEmail(UserEmailRequestModel $userEmailRequestModel): ResponseData {
-        $userEmailEntity = UserEmailMapper::mapRequestToEntity($userEmailRequestModel);
+    public function createEmail(UserEmailInsertRequestModel $userEmail): ResponseData {
+        $userEmailModel = new UserEmailModel();
+        $uniqueIntId = new UniqueIntId();
         //
-        //$userEmailEntity->is_primary = false;
-        $userEmailEntity->verification_status = EmailVerificationStatus::PENDING->value;
-        $userEmailEntity->status = "active";
-        $userEmailEntity->created_date = date("Y-m-d H:i:s");
-        $userEmailEntity->modified_date = date("Y-m-d H:i:s");
-        $userEmailEntity->created_by = $userEmailRequestModel->user_id;
-        $userEmailEntity->modified_by = $userEmailRequestModel->user_id;
+        $userEmailModel->user_id = $userEmail->user_id;
+        $userEmailModel->id = $uniqueIntId->getId();
+        $userEmailModel->email = $userEmail->user_email;
+        $userEmailModel->provider = $userEmail->email_provider;
+        $userEmailModel->is_primary = false;
+        if($userEmail->is_primary && strtolower($userEmail->is_primary) == "true") {
+            $userEmailModel->is_primary = true;
+        }
+        //$userEmailModel->is_primary = $userEmail->is_primary;
+        $userEmailModel->verification_code = $userEmail->verification_code;
+        $userEmailModel->last_verification_sent_at = null;
+        $userEmailModel->verification_code_expiry = null;
+        $userEmailModel->verification_status = EmailVerificationStatus::PENDING->value;
+        $userEmailModel->status = "active";
+        $userEmailModel->created_date = date("Y-m-d H:i:s");
+        $userEmailModel->modified_date = date("Y-m-d H:i:s");
+        $userEmailModel->created_by = $userEmail->user_id;
+        $userEmailModel->modified_by = $userEmail->user_id;
+        //
+        $userEmailEntity = UserEmailMapper::mapModelToEntity($userEmailModel);
         //
         $response = $this->repository->create($userEmailEntity);
         //
         $message = $response->message;
-        $status = ResponseStatus::getByValue($response->status);
+        $status = $response->status;
         $statusCode = $response->status_code;
         $responseData = UserEmailMapper::mapEntityToResponseDto($response->data);
         //
+        //return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmailEntity, 201);
+        return new ResponseData($message, $status, $responseData, $statusCode);
+    }
+
+    public function selectEmail(UserEmailSelectRequestModel $userEmail): ResponseData {
+        $userEmailModel = new UserEmailModel();
+        //
+        $userEmailModel->user_id = $userEmail->user_id;
+        $userEmailModel->email = $userEmail->user_email;
+        $userEmailModel->provider = $userEmail->email_provider;
+        $userEmailModel->is_primary = false;
+        if($userEmail->is_primary && strtolower($userEmail->is_primary) == "true") {
+            $userEmailModel->is_primary = true;
+        }
+        $userEmailModel->verification_code = $userEmail->verification_code;
+        $userEmailModel->last_verification_sent_at = $userEmail->last_verification_sent_at;
+        $userEmailModel->verification_code_expiry = $userEmail->verification_code_expiry;
+        $userEmailModel->verification_status = $userEmail->verification_status;
+        $userEmailModel->status = $userEmail->status;
+        $userEmailModel->created_date = null;
+        $userEmailModel->modified_date = null;
+        $userEmailModel->created_by = null;
+        $userEmailModel->modified_by = null;
+        $columnList = $userEmail->columns;
+        //
+        $userEmailEntity = UserEmailMapper::mapModelToEntity($userEmailModel);
+        //return new ResponseData("User email selected successfully.", ResponseStatus::SUCCESS, $userEmail, 200);
+        $response = $this->repository->select($userEmailEntity, $columnList);
+        $message = $response->message;
+        $status = $response->status;
+        $statusCode = $response->status_code;
+        $responseData = UserEmailMapper::mapEntityToResponseDto($response->data);
         return new ResponseData($message, $status, $responseData, $statusCode);
     }
 

@@ -53,7 +53,7 @@ $baseUrl = dirname($baseUrl);
   "email_provider": "user",
   "is_primary": "false",
   "verification_code": "",
-  "action_type": "create"
+  "action_type": "insert"
 }</pre>
         </section>
 

@@ -3,13 +3,13 @@ namespace App\Microservice\Data\Mapper\User\Email;
 ?>
 <?php
 use App\Microservice\Schema\Domain\Model\User\Email\UserEmailEntity;
-use App\Microservice\Schema\Data\Model\User\Email\UserEmailRequestModel;
+use App\Microservice\Schema\Data\Model\User\Email\UserEmailModel;
 use App\Microservice\Schema\Data\Model\User\Email\UserEmailResponseDto;
 use RzSDK\Database\SqliteFetchType;
 ?>
 <?php
 class UserEmailMapper {
-    public static function getDataVarList(UserEmailRequestModel $requestDataModel) {
+    public static function getDataVarList(UserEmailModel $requestDataModel) {
         return $requestDataModel->getVarList();
     }
 
@@ -17,33 +17,48 @@ class UserEmailMapper {
         return $modelData->getVarList();
     }
 
-    public static function mapRequestToEntity(UserEmailRequestModel $requestDataModel): UserEmailEntity {
+    public static function mapModelToEntity(UserEmailModel $dataModel): UserEmailEntity {
         $entityData = new UserEmailEntity();
-        $dataVarList = $requestDataModel->getVarList();
+        $dataVarList = $dataModel->getVarList();
         $domainVarList = $entityData->getVarList();
-        array_map(function ($key) use ($requestDataModel, $domainVarList, $entityData) {
+        array_map(function ($key) use ($dataModel, $domainVarList, $entityData) {
             if (in_array($key, $domainVarList)) {
-                $entityData->{$key} = $requestDataModel->{$key};
+                $entityData->{$key} = $dataModel->{$key};
             }
         }, $dataVarList);
         return $entityData;
     }
 
-    public static function mapEntityToResponseDto(UserEmailEntity $userEmailEntity): UserEmailResponseDto {
+    public static function mapEntityToResponseDto(mixed $domainModel): mixed {
+        if (is_array($domainModel)) {
+            $retDataList = array();
+            $userEmailResponseDto = new UserEmailResponseDto();
+            $userEmailEntity = new UserEmailEntity();
+            $dataVarList = $userEmailResponseDto->getVarList();
+            $domainVarList = $userEmailEntity->getVarList();
+            foreach($domainModel as $item) {
+                $responseModel = new UserEmailResponseDto();
+                foreach ($dataVarList as $key) {
+                    if (in_array($key, $domainVarList)) {
+                        $responseModel->{$key} = $item->{$key};
+                    }
+                }
+                $responseModel->user_email = $item->email;
+                $responseModel->email_provider = $item->provider;
+                $retDataList[] = $responseModel;
+            }
+            return $retDataList;
+        }
         $userEmailResponseDto = new UserEmailResponseDto();
         $dataVarList = $userEmailResponseDto->getVarList();
-        $domainVarList = $userEmailEntity->getVarList();
+        $domainVarList = $domainModel->getVarList();
         foreach ($domainVarList as $key) {
             if (in_array($key, $dataVarList)) {
-                $userEmailResponseDto->{$key} = $userEmailEntity->{$key};
+                $userEmailResponseDto->{$key} = $domainModel->{$key};
             }
         }
-        $mappedKey = UserEmailRequestModel::mapKeyToUserInput();
-        foreach ($mappedKey as $key => $value) {
-            if (in_array($key, $domainVarList)) {
-                $userEmailResponseDto->{$value} = $userEmailEntity->{$key};
-            }
-        }
+        $userEmailResponseDto->user_email = $domainModel->email;
+        $userEmailResponseDto->email_provider = $domainModel->provider;
         return $userEmailResponseDto;
     }
 
@@ -52,7 +67,7 @@ class UserEmailMapper {
         //print_r($dbData);
         $retVal = array();
         $entityData = new UserEmailEntity();
-        $dataVarList = $entityData->getVarList($entityData);
+        $dataVarList = $entityData->getVarList();
         if(is_object($dbData)) {
             while ($row = $dbData->fetch(SqliteFetchType::FETCH_OBJ->value)) {
                 $entityData = new UserEmailEntity();
@@ -101,3 +116,4 @@ class UserEmailMapper {
         ];
     }*/
 }
+?>

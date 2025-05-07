@@ -27,6 +27,6 @@ if(empty($_POST)) {
     }
 }
 $controller = new UserEmailController();
-$response = $controller->addEmail($_POST);
+$response = $controller->executeController($_POST);
 echo $response->toJson();
 ?>

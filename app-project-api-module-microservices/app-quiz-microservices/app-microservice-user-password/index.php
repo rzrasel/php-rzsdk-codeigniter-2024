@@ -27,6 +27,6 @@ if(empty($_POST)) {
     }
 }
 $controller = new UserPasswordController();
-$response = $controller->createPassword($_POST);
+$response = $controller->executeController($_POST);
 echo $response->toJson();
 ?>

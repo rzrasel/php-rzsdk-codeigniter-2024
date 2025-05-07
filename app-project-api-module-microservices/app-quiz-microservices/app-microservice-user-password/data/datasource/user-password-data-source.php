@@ -8,9 +8,10 @@ use App\Microservice\Core\Utils\Data\Response\ResponseData;
 <?php
 interface UserPasswordDataSource {
     public function create(UserPasswordEntity $userPassword): ResponseData;
-    public function isPasswordExists(UserPasswordEntity $userPassword): bool;
+    public function update(UserPasswordEntity $userPassword): ResponseData;
+    public function select(UserPasswordEntity $userPassword, array $columns): ResponseData;
+    public function isActivePasswordExists(UserPasswordEntity $userPassword): ResponseData;
     /*public function getById(string $id): ?UserPasswordEntity;
-    public function getByUserId(string $userId): ?UserPasswordEntity;
-    public function update(UserPasswordEntity $userPassword): bool;*/
+    public function getByUserId(string $userId): ?UserPasswordEntity;*/
 }
 ?>

@@ -12,25 +12,17 @@ class UserPasswordController {
     private UserPasswordViewModel $viewModel;
 
     public function __construct() {
-        $userPasswordModule = new UserPasswordModule();
-        $this->viewModel = $userPasswordModule->provideViewModel();
+        $this->viewModel = (new UserPasswordModule())->provideViewModel();
     }
 
-    public function createPassword(array $requestDataSet): ResponseData {
+    public function executeController(array $requestDataSet): ResponseData {
         // Validate input
         try {
-            $requiredFields = array(
-                "user_id",
-                "password",
-                "action_type",
-            );
-            foreach ($requiredFields as $field) {
-                if (empty($requestDataSet[$field])) {
-                    return new ResponseData("Missing required field: $field", ResponseStatus::ERROR, 400);
-                }
+            if (empty($requestDataSet["action_type"])) {
+                return new ResponseData("Missing required field: action_type", ResponseStatus::ERROR, 404);
             }
 
-            return $this->viewModel->createPassword($requestDataSet);
+            return $this->viewModel->executeViewModel($requestDataSet);
         } catch (\Exception $e) {
             return new ResponseData("Failed to create password: " . $e->getMessage(), ResponseStatus::ERROR, 500);
         }

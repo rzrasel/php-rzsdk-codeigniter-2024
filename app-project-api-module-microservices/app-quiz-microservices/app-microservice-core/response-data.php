@@ -6,14 +6,23 @@ use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 ?>
 <?php
 class ResponseData {
-    public $message;
-    public $status;
-    public $data;
+    public string $message;
+    public mixed $status;
     public int $status_code;
+    public mixed $data;
 
-    public function __construct(string $message, ResponseStatus $status, mixed $data = null, int $statusCode = 200) {
+    public function __construct(
+        string $message,
+        mixed $status,
+        mixed $data = null,
+        int $statusCode = 200
+    ) {
         $this->message = $message;
-        $this->status = $status->value;
+        if($status instanceof ResponseStatus) {
+            $this->status = $status->value;
+        } else {
+            $this->status = $status;
+        }
         $this->data = $data;
         $this->status_code = $statusCode;
     }

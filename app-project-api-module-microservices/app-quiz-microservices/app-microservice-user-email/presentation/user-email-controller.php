@@ -4,28 +4,24 @@ namespace App\Microservice\Presentation\Controller\Use\Email;
 <?php
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
-use App\Microservice\Schema\Data\Services\User\Email\UserEmailService;
+use App\Microservice\Domain\UseCase\User\Email\UserEmailUseCase;
 use App\Microservice\Data\Repository\User\Email\UserEmailRepositoryImpl;
+use App\Microservice\Dependency\Injection\Module\Use\Email\UserEmailModule;
 use App\Microservice\Presentation\ViewModel\Use\Email\UserEmailViewModel;
 ?>
 <?php
 class UserEmailController {
-    private UserEmailService $service;
     private UserEmailViewModel $viewModel;
     public function __construct() {
-        $repository = new UserEmailRepositoryImpl();
-        $service = new UserEmailService($repository);
-        $this->viewModel = new UserEmailViewModel($service);
+        $this->viewModel = (new UserEmailModule())->provideViewModel();
     }
 
-    public function addEmail($requestDataSet): ResponseData {
-        if(empty($requestDataSet)) {
-            return new ResponseData("Failed data empty", ResponseStatus::ERROR);
-        }
+    public function executeController(array $requestDataSet): ResponseData {
         try {
-            $response = $this->viewModel->userEmailAction($requestDataSet);
-            //return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $requestDataSet);
-            return $response;
+            if (empty($requestDataSet["action_type"])) {
+                return new ResponseData("Missing required field: action_type", ResponseStatus::ERROR, 404);
+            }
+            return $this->viewModel->executeViewModel($requestDataSet);
         } catch (\Exception $e) {
             return new ResponseData("Failed to create user email: " . $e->getMessage(), ResponseStatus::ERROR);
         }
