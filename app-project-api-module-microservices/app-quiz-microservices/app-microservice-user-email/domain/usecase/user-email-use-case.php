@@ -22,7 +22,79 @@ class UserEmailUseCase {
         $this->repository = $repository;
     }
 
-    public function createEmail(UserEmailInsertRequestModel $userEmail): ResponseData {
+    public function createEmail(UserEmailInsertRequestModel $request): ResponseData {
+        if (!filter_var($request->user_email, FILTER_VALIDATE_EMAIL)) {
+            return new ResponseData(
+                "Invalid email format",
+                ResponseStatus::ERROR,
+                null,
+                400
+            );
+        }
+
+        $model = new UserEmailModel();
+        $model->user_id = $request->user_id;
+        $model->id = (new UniqueIntId())->getId();
+        $model->email = strtolower(trim($request->user_email));
+        $model->provider = $request->email_provider ?? 'user';
+        $model->is_primary = false;
+        if($request->is_primary && strtolower($request->is_primary) == "true") {
+            $model->is_primary = true;
+        }
+        $model->verification_code = $request->verification_code;
+        $model->verification_status = EmailVerificationStatus::PENDING->value;
+        $model->status = 'active';
+        $model->created_date = date("Y-m-d H:i:s");
+        $model->modified_date = date("Y-m-d H:i:s");
+        $model->created_by = $request->user_id;
+        $model->modified_by = $request->user_id;
+
+        $entity = UserEmailMapper::mapModelToEntity($model);
+        $response = $this->repository->create($entity);
+
+        if ($response->status === ResponseStatus::SUCCESS->value) {
+            $response->data = UserEmailMapper::mapEntityToResponseDto($response->data);
+        }
+
+        return $response;
+    }
+
+    public function selectEmail(UserEmailSelectRequestModel $request): ResponseData {
+        $model = new UserEmailModel();
+        $model->user_id = $request->user_id;
+        $model->email = $request->user_email;
+        $model->provider = $request->email_provider;
+        $model->is_primary = false;
+        if($request->is_primary && strtolower($request->is_primary) == "true") {
+            $model->is_primary = true;
+        }
+        $model->verification_code = $request->verification_code;
+        $model->verification_status = $request->verification_status;
+        $model->status = $request->status;
+
+        $columns = $this->normalizeColumns($request->columns);
+        $entity = UserEmailMapper::mapModelToEntity($model);
+        $response = $this->repository->select($entity, $columns);
+
+        if ($response->status === ResponseStatus::SUCCESS->value) {
+            $response->data = UserEmailMapper::mapEntityToResponseDto($response->data);
+        }
+
+        return $response;
+    }
+
+    private function normalizeColumns($columns): array {
+        if (empty($columns)) return [];
+
+        if (is_string($columns)) {
+            $decoded = json_decode($columns, true);
+            return json_last_error() === JSON_ERROR_NONE ? $decoded : explode(',', $columns);
+        }
+
+        return $columns;
+    }
+
+    public function createEmailV(UserEmailInsertRequestModel $userEmail): ResponseData {
         $userEmailModel = new UserEmailModel();
         $uniqueIntId = new UniqueIntId();
         //
@@ -58,7 +130,7 @@ class UserEmailUseCase {
         return new ResponseData($message, $status, $responseData, $statusCode);
     }
 
-    public function selectEmail(UserEmailSelectRequestModel $userEmail): ResponseData {
+    public function selectEmailV(UserEmailSelectRequestModel $userEmail): ResponseData {
         $userEmailModel = new UserEmailModel();
         //
         $userEmailModel->user_id = $userEmail->user_id;

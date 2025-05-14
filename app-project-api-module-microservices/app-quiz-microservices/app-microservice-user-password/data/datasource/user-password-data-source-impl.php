@@ -49,28 +49,25 @@ class UserPasswordDataSourceImpl implements UserPasswordDataSource {
 
     public function update(UserPasswordEntity $userPassword): ResponseData {
         $usePasswordTableName = self::$usePasswordTableName;
-        $tempUserEmailEntity = UserPasswordEntity::mapToEntityColumn();
+        $tempUserPasswordEntity = UserPasswordEntity::mapToEntityColumn();
         $fullEntityKeyValueList = array();
-        foreach ($tempUserEmailEntity as $key => $value) {
+        foreach ($tempUserPasswordEntity as $key => $value) {
             $fullEntityKeyValueList[$key] = $userPassword->{$value};
         }
         $extraKeyList = array(
-            $tempUserEmailEntity->created_date,
-            $tempUserEmailEntity->created_by,
+            $tempUserPasswordEntity->created_date,
+            $tempUserPasswordEntity->created_by,
         );
         $unsetKeyList = array(
-            $tempUserEmailEntity->user_id,
-            $tempUserEmailEntity->id,
-            $tempUserEmailEntity->created_date,
-            $tempUserEmailEntity->created_by,
+            $tempUserPasswordEntity->user_id,
+            $tempUserPasswordEntity->id,
+            $tempUserPasswordEntity->created_date,
+            $tempUserPasswordEntity->created_by,
         );
         $whereKeyList = array(
-            $tempUserEmailEntity->user_id,
-            $tempUserEmailEntity->id,
+            $tempUserPasswordEntity->user_id,
+            $tempUserPasswordEntity->id,
         );
-        /*$params = array();
-        $updateDataSet = "";
-        $whereList = array();*/
 
         $params = array();
         $setParts = array();
@@ -90,17 +87,19 @@ class UserPasswordDataSourceImpl implements UserPasswordDataSource {
         $whereClause = implode(' AND ', $whereParts);
         /*$updateDataSet = trim(trim($updateDataSet), ",");
         $whereClause = implode(" AND ", $whereList);*/
-        $sqlQuery = "UPDATE $usePasswordTableName SET $setClause WHERE $whereClause;";
+        $sqlQuery = "UPDATE " . self::$usePasswordTableName . "
+                    SET {$setClause}
+                    WHERE {$whereClause};";
         //print_r($sqlQuery);
         $this->dbConn->execute($sqlQuery, $params);
-        return new ResponseData("Password updated successfully", ResponseStatus::SUCCESS, $tempUserEmailEntity, 204);
+        return new ResponseData("Password updated successfully", ResponseStatus::SUCCESS, $userPassword, 204);
     }
 
-    public function select(UserPasswordEntity $userPassword, array $columns): ResponseData {
+    public function select(UserPasswordEntity $userPassword, array $whereColumns): ResponseData {
         $usePasswordTableName = self::$usePasswordTableName;
         $varList = $userPassword->getVarList();
         $whereParts = array();
-        foreach ($columns as $key) {
+        foreach ($whereColumns as $key) {
             if(in_array($key, $varList)) {
                 $value = $userPassword->{$key};
                 $whereParts[] = "$key = '{$value}'";

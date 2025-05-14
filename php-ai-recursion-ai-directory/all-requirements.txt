@@ -1,1580 +1,24 @@
-//----- File: dashboard/api/DashboardApiService.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.api
-
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-
-interface DashboardApiService {
-    @GET("dashboard/")
-    suspend fun getDashboard(
-    ): Response<DashboardDto>
-
-    @POST("dashboard/")
-    suspend fun dashboard(
-        @Body dashboardRequest: DashboardRequest
-    ): Response<DashboardDto>
-}
-
-//----- File: dashboard/data/datasource/DashboardRemoteDataSource.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.datasource
-
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-import com.rzrasel.wordquiz.networkstate.NetworkState
-
-interface DashboardRemoteDataSource {
-    suspend fun getDashboard(request: DashboardRequest): NetworkState<DashboardDto>
-}
-
-//----- File: dashboard/data/datasource/DashboardRemoteDataSourceImpl.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.datasource
-
-import com.rzrasel.wordquiz.feature.dashboard.api.DashboardApiService
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-import com.rzrasel.wordquiz.networkstate.NetworkState
-import retrofit2.HttpException
-import java.io.IOException
-
-class DashboardRemoteDataSourceImpl(
-    private val apiService: DashboardApiService
-) : DashboardRemoteDataSource {
-    override suspend fun getDashboard(request: DashboardRequest): NetworkState<DashboardDto> {
-        return try {
-            val response = apiService.getDashboard()
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    NetworkState.Success(it)
-                } ?: NetworkState.Error("Empty response body")
-            } else {
-                NetworkState.Error("HTTP error: ${response.code()}")
-            }
-        } catch (e: HttpException) {
-            NetworkState.Error("HTTP error: ${e.code()}")
-        } catch (e: IOException) {
-            NetworkState.Error("Network error: ${e.message}")
-        } catch (e: Exception) {
-            NetworkState.Error("Unknown error: ${e.message}")
-        }
-    }
-}
-
-//----- File: dashboard/data/mapper/DashboardModelMapper.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.mapper
-
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardCategoryDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardCategoryModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDataDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardDataModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardQuizItemDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardQuizItemModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardTaskItemDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardTaskItemModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.QuizAttemptDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.QuizAttemptModel
-
-//Mapper (DTO → Model) (DTO To Model)
-
-fun DashboardDto.toDashboardModel(): DashboardModel {
-    return DashboardModel(
-        type = type,
-        message = message,
-        data = data?.toDataModel()
-    )
-}
-
-fun DashboardDataDto.toDataModel(): DashboardDataModel {
-    return DashboardDataModel(
-        accessToken = accessToken,
-        data = data.map { it.toQuizListModel() } as ArrayList<DashboardQuizItemModel>
-    )
-}
-
-fun DashboardQuizItemDto.toQuizListModel(): DashboardQuizItemModel {
-    return DashboardQuizItemModel(
-        quizId = quizId,
-        quizTitle = quizTitle,
-        quizDescription = quizDescription,
-        totalQuestions = totalQuestions,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        categories = categories.map { it.toCategoryModel() } as ArrayList<DashboardCategoryModel>
-    )
-}
-
-fun DashboardCategoryDto.toCategoryModel(): DashboardCategoryModel {
-    return DashboardCategoryModel(
-        categoryId = categoryId,
-        categoryTitle = categoryTitle,
-        categoryType = categoryType,
-        accessMode = accessMode,
-        taskItems = taskItems.map { it.toTaskItemModel() } as ArrayList<DashboardTaskItemModel>
-    )
-}
-
-fun DashboardTaskItemDto.toTaskItemModel(): DashboardTaskItemModel {
-    return DashboardTaskItemModel(
-        itemId = itemId,
-        itemTitle = itemTitle,
-        itemSubtitle = itemSubtitle,
-        itemButtonLabel = itemButtonLabel,
-        accessMode = accessMode,
-        itemType = itemType,
-        /*quizAttempt = quizAttempt?.toQuizAttemptModel(),
-        leaderboard = ArrayList(leaderboard)*/
-    )
-}
-
-fun QuizAttemptDto.toQuizAttemptModel(): QuizAttemptModel {
-    return QuizAttemptModel(
-        totalQuestions = totalQuestions,
-        correctAnswers = correctAnswers,
-        wrongAnswers = wrongAnswers,
-        score = score
-    )
-}
-
-//----- File: dashboard/data/model/DashboardDto.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.model
-
-import com.google.gson.annotations.SerializedName
-
-data class DashboardDto(
-    @SerializedName("type")
-    val type: String?,
-    @SerializedName("message")
-    val message: String?,
-    @SerializedName("data")
-    var data: DashboardDataDto? = DashboardDataDto(),
-)
-
-data class DashboardDataDto(
-    @SerializedName("access_token" )
-    var accessToken: String? = null,
-    @SerializedName("quizzes")
-    var data: ArrayList<DashboardQuizItemDto> = arrayListOf(),
-)
-
-data class DashboardQuizItemDto(
-    @SerializedName("quiz_id")
-    var quizId: String? = null,
-    @SerializedName("quiz_title")
-    var quizTitle: String? = null,
-    @SerializedName("quiz_description")
-    var quizDescription: String? = null,
-    @SerializedName("total_questions")
-    var totalQuestions: Int? = null,
-    @SerializedName("created_at")
-    var createdAt: String? = null,
-    @SerializedName("updated_at")
-    var updatedAt: String? = null,
-    @SerializedName("categories")
-    var categories: ArrayList<DashboardCategoryDto> = arrayListOf(),
-)
-
-data class DashboardCategoryDto(
-    @SerializedName("category_id")
-    var categoryId: String? = null,
-    @SerializedName("category_title")
-    var categoryTitle: String? = null,
-    @SerializedName("category_type")
-    var categoryType: String? = null,
-    @SerializedName("access_mode")
-    var accessMode: String? = null,
-    @SerializedName("task_items")
-    var taskItems: ArrayList<DashboardTaskItemDto> = arrayListOf(),
-)
-
-data class DashboardTaskItemDto(
-    @SerializedName("item_id")
-    var itemId: String? = null,
-    @SerializedName("item_title")
-    var itemTitle: String? = null,
-    @SerializedName("item_subtitle")
-    var itemSubtitle: String? = null,
-    @SerializedName("item_button_label")
-    var itemButtonLabel: String? = null,
-    @SerializedName("access_mode")
-    var accessMode: String? = null,
-    @SerializedName("item_type")
-    var itemType: String? = null,
-    /*@SerializedName("quiz_attempt")
-    var quizAttempt: QuizAttemptDto? = QuizAttemptDto(),
-    @SerializedName("leaderboard")
-    var leaderboard: ArrayList<String> = arrayListOf(),*/
-)
-
-data class QuizAttemptDto(
-    @SerializedName("total_questions")
-    val totalQuestions: Long? = 0L,
-    @SerializedName("correct_answers")
-    val correctAnswers: Long? = 0L,
-    @SerializedName("wrong_answers")
-    val wrongAnswers: Long? = 0L,
-    @SerializedName("score")
-    val score: Double? = 0.0,
-)
-
-//----- File: dashboard/data/model/DashboardRequest.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.model
-
-import com.google.gson.annotations.SerializedName
-
-data class DashboardRequest(
-    @SerializedName("user_auth_token")
-    val userAuthToken: String?,
-)
-
-//----- File: dashboard/data/repository/DashboardRepositoryImpl.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.data.repository
-
-import com.rzrasel.wordquiz.feature.dashboard.data.datasource.DashboardRemoteDataSource
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-import com.rzrasel.wordquiz.networkstate.NetworkState
-import com.rzrasel.wordquiz.feature.dashboard.api.DashboardApiService
-import com.rzrasel.wordquiz.feature.dashboard.domain.repository.DashboardRepository
-
-class DashboardRepositoryImpl(
-    private val remoteDataSource: DashboardRemoteDataSource
-) : DashboardRepository {
-    override suspend fun getDashboard(dashboardRequest: DashboardRequest): NetworkState<DashboardDto> {
-        return remoteDataSource.getDashboard(dashboardRequest)
-    }
-}
-
-//----- File: dashboard/di/DashboardModule.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.di
-
-import android.content.Context
-import com.rzrasel.wordquiz.feature.dashboard.api.DashboardApiService
-import com.rzrasel.wordquiz.feature.dashboard.data.datasource.DashboardRemoteDataSource
-import com.rzrasel.wordquiz.feature.dashboard.data.datasource.DashboardRemoteDataSourceImpl
-import com.rzrasel.wordquiz.feature.dashboard.data.repository.DashboardRepositoryImpl
-import com.rzrasel.wordquiz.feature.dashboard.domain.repository.DashboardRepository
-import com.rzrasel.wordquiz.feature.dashboard.domain.usecase.DashboardUseCase
-import com.rzrasel.wordquiz.feature.dashboard.presentation.viewmodel.DashboardViewModel
-import com.rzrasel.wordquiz.network.NetConnectionInterceptor
-import com.rzrasel.wordquiz.network.RetrofitClient
-
-object DashboardModule {
-
-    fun provideViewModel(context: Context, userAuthToken: String = ""): DashboardViewModel {
-        return DashboardViewModel(
-            provideUseCase(
-                provideRepository(
-                    provideRemoteDataSource(
-                        provideApiService(context, userAuthToken)
-                    )
-                )
-            )
-        )
-    }
-
-    private fun provideApiService(context: Context, userAuthToken: String): DashboardApiService {
-        return RetrofitClient().buildApi(
-            context = context,
-            api = DashboardApiService::class.java,
-            netConnectionInterceptor = NetConnectionInterceptor(context),
-            authToken = userAuthToken
-        )
-    }
-
-    private fun provideRemoteDataSource(apiService: DashboardApiService): DashboardRemoteDataSource {
-        return DashboardRemoteDataSourceImpl(apiService)
-    }
-
-    private fun provideRepository(dataSource: DashboardRemoteDataSource): DashboardRepository {
-        return DashboardRepositoryImpl(dataSource)
-    }
-
-    private fun provideUseCase(repository: DashboardRepository): DashboardUseCase {
-        return DashboardUseCase(repository)
-    }
-}
-
-//----- File: dashboard/domain/mapper/DashboardDtoMapper.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.domain.mapper
-
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardCategoryDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDataDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardQuizItemDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardTaskItemDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.QuizAttemptDto
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardCategoryModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardDataModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardQuizItemModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardTaskItemModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.QuizAttemptModel
-
-//Mapper (Model → DTO) (Model To DTO)
-
-fun DashboardModel.toDashboardDto(): DashboardDto {
-    return DashboardDto(
-        type = type,
-        message = message,
-        data = data?.toDataDto()
-    )
-}
-
-fun DashboardDataModel.toDataDto(): DashboardDataDto {
-    return DashboardDataDto(
-        accessToken = accessToken,
-        data = data.map { it.toDataListDto() } as ArrayList<DashboardQuizItemDto>
-    )
-}
-
-fun DashboardQuizItemModel.toDataListDto(): DashboardQuizItemDto {
-    return DashboardQuizItemDto(
-        quizId = quizId,
-        quizTitle = quizTitle,
-        quizDescription = quizDescription,
-        totalQuestions = totalQuestions,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        categories = categories.map { it.toCategoryDto() } as ArrayList<DashboardCategoryDto>
-    )
-}
-
-fun DashboardCategoryModel.toCategoryDto(): DashboardCategoryDto {
-    return DashboardCategoryDto(
-        categoryId = categoryId,
-        categoryTitle = categoryTitle,
-        categoryType = categoryType,
-        accessMode = accessMode,
-        taskItems = taskItems.map { it.toTaskItemDto() } as ArrayList<DashboardTaskItemDto>
-    )
-}
-
-fun DashboardTaskItemModel.toTaskItemDto(): DashboardTaskItemDto {
-    return DashboardTaskItemDto(
-        itemId = itemId,
-        itemTitle = itemTitle,
-        itemSubtitle = itemSubtitle,
-        itemButtonLabel = itemButtonLabel,
-        accessMode = accessMode,
-        itemType = itemType,
-        /*quizAttempt = quizAttempt?.toQuizAttemptDto(),
-        leaderboard = ArrayList(leaderboard)*/
-    )
-}
-
-fun QuizAttemptModel.toQuizAttemptDto(): QuizAttemptDto {
-    return QuizAttemptDto(
-        totalQuestions = totalQuestions,
-        correctAnswers = correctAnswers,
-        wrongAnswers = wrongAnswers,
-        score = score
-    )
-}
-
-//----- File: dashboard/domain/model/DashboardModel.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.domain.model
-
-import com.google.gson.annotations.SerializedName
-
-data class DashboardModel(
-    @SerializedName("type")
-    val type: String?,
-    @SerializedName("message")
-    val message: String?,
-    @SerializedName("data")
-    var data: DashboardDataModel? = DashboardDataModel(),
-)
-
-data class DashboardDataModel(
-    @SerializedName("access_token" )
-    var accessToken: String? = null,
-    @SerializedName("quizzes")
-    var data: ArrayList<DashboardQuizItemModel> = arrayListOf(),
-)
-
-data class DashboardQuizItemModel(
-    @SerializedName("quiz_id")
-    var quizId: String? = null,
-    @SerializedName("quiz_title")
-    var quizTitle: String? = null,
-    @SerializedName("quiz_description")
-    var quizDescription: String? = null,
-    @SerializedName("total_questions")
-    var totalQuestions: Int? = null,
-    @SerializedName("created_at")
-    var createdAt: String? = null,
-    @SerializedName("updated_at")
-    var updatedAt: String? = null,
-    @SerializedName("categories")
-    var categories: ArrayList<DashboardCategoryModel> = arrayListOf(),
-)
-
-data class DashboardCategoryModel(
-    @SerializedName("category_id")
-    var categoryId: String? = null,
-    @SerializedName("category_title")
-    var categoryTitle: String? = null,
-    @SerializedName("category_type")
-    var categoryType: String? = null,
-    @SerializedName("access_mode")
-    var accessMode: String? = null,
-    @SerializedName("task_items")
-    var taskItems: ArrayList<DashboardTaskItemModel> = arrayListOf(),
-)
-
-data class DashboardTaskItemModel(
-    @SerializedName("item_id")
-    var itemId: String? = null,
-    @SerializedName("item_title")
-    var itemTitle: String? = null,
-    @SerializedName("item_subtitle")
-    var itemSubtitle: String? = null,
-    @SerializedName("item_button_label")
-    var itemButtonLabel: String? = null,
-    @SerializedName("access_mode")
-    var accessMode: String? = null,
-    @SerializedName("item_type")
-    var itemType: String? = null,
-    /*@SerializedName("quiz_attempt")
-    var quizAttempt: QuizAttemptModel? = QuizAttemptModel(),
-    @SerializedName("leaderboard")
-    var leaderboard: ArrayList<String> = arrayListOf(),*/
-)
-
-data class QuizAttemptModel(
-    @SerializedName("total_questions")
-    val totalQuestions: Long? = 0L,
-    @SerializedName("correct_answers")
-    val correctAnswers: Long? = 0L,
-    @SerializedName("wrong_answers")
-    val wrongAnswers: Long? = 0L,
-    @SerializedName("score")
-    val score: Double? = 0.0,
-)
-
-
-//----- File: dashboard/domain/repository/DashboardRepository.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.domain.repository
-
-import com.rzrasel.wordquiz.networkstate.NetworkState
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardDto
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-
-interface DashboardRepository {
-    suspend fun getDashboard(dashboardRequest: DashboardRequest): NetworkState<DashboardDto>
-}
-
-//----- File: dashboard/domain/usecase/DashboardUseCase.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.domain.usecase
-
-import com.rzrasel.wordquiz.feature.dashboard.data.mapper.toDashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.data.model.DashboardRequest
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.repository.DashboardRepository
-import com.rzrasel.wordquiz.networkstate.NetworkState
-
-class DashboardUseCase(private val repository: DashboardRepository) {
-    suspend fun execute(userAuthToken: String?): NetworkState<DashboardModel> {
-        val userAuthTokenVal: String = userAuthToken ?: ""
-        val dashboardRequest = DashboardRequest(
-            userAuthToken = userAuthTokenVal.trim(),
-        )
-        return when (val remoteUser = repository.getDashboard(dashboardRequest)) {
-            is NetworkState.Loading -> NetworkState.Loading()
-            is NetworkState.Error -> NetworkState.Error(remoteUser.message)
-            is NetworkState.Success -> {
-                remoteUser.data?.let {
-                    NetworkState.Success(it.toDashboardModel())
-                } ?: NetworkState.Error("Null data")
-            }
-        }
-    }
-}
-
-
-//----- File: dashboard/presentation/components/composables/DashboardDefaultHeaderLayout.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.rzrasel.wordquiz.presentation.components.components.CustomCheckBox
-
-@Composable
-fun DashboardDefaultHeaderLayout(title: String = "") {
-    var isChecked by remember { mutableStateOf(false) }
-
-    Column {
-        Text(
-            text = title,
-        )
-        CustomCheckBox(
-            text = "I agree with the terms & condition I agree with the terms & condition I agree with the terms & condition I agree with the terms & condition I agree with the terms & condition",
-            isChecked = isChecked,
-            onCheckedChange = {
-                isChecked = it
-            },
-        )
-        /*NormalCheckBox(
-            modifier = Modifier.fillMaxWidth(),
-            label = "Test And assign it to parent with PointerEventPass.Initial with no consume call and will result as",
-            state = checkedState,
-            onStateChange = {
-                checkedState = !checkedState
-            }
-        )*/
-    }
-}
-
-//----- File: dashboard/presentation/components/composables/DashboardLazyColumn.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables
-
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.rzrasel.wordquiz.core.enumtype.CategoryType
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardCategoryModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardTaskItemModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
-
-@Composable
-fun DashboardLazyColumn(
-    userModel: UserModel,
-    dashboardModel: DashboardModel,
-    onClickTaskItem: (DashboardCategoryModel, DashboardTaskItemModel, UserTaskItemModel)-> Unit,
-) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        state = listState,
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        dashboardModel.data?.data?.forEach{ quizItem ->
-            items(quizItem.categories, key = { category -> category.categoryId!! }) { category ->
-                val categoryType: CategoryType = CategoryType.find(category.categoryType)
-                val categoryTitle = category.categoryTitle ?: ""
-                if (categoryType == CategoryType.DEFAULT) {
-                    DashboardDefaultHeaderLayout(categoryTitle)
-                } else {
-                    DashboardTaskCategoryHeaderLayout(categoryTitle)
-                }
-                Column(
-                    modifier = Modifier
-                        .wrapContentHeight(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    category.taskItems.forEach { item ->
-                        val itemTitle = item.itemTitle ?: ""
-                        val itemSubtitle = item.itemSubtitle ?: ""
-                        val itemButtonLabel = item.itemButtonLabel ?: ""
-                        if(categoryType == CategoryType.LIVE_QUIZ || categoryType == CategoryType.REGULAR_QUIZ || categoryType == CategoryType.PRACTICE || categoryType == CategoryType.READING) {
-                            category.categoryId?.let {
-                                item.itemId?.let { it1 ->
-                                    TaskRegularItemBodyLayout(
-                                        taskCategoryModel = category,
-                                        taskItemModel = item,
-                                        userModel = userModel,
-                                        categoryId = it,
-                                        itemId = it1,
-                                        itemTitle,
-                                        itemSubtitle,
-                                        itemButtonLabel,
-                                        onClickTaskItem = onClickTaskItem,
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        /*items(dashboardModel.taskCategory, key = { category -> category.categoryId }) { category ->
-            val categoryType: CategoryType = CategoryType.find(category.categoryType)
-            val categoryTitle = category.categoryTitle ?: ""
-            if (categoryType == CategoryType.DEFAULT) {
-                DashboardDefaultHeaderLayout(categoryTitle)
-            } else {
-                DashboardTaskCategoryHeaderLayout(categoryTitle)
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                category.taskItems.forEach { item ->
-                    val itemTitle = item.itemTitle ?: ""
-                    val itemSubtitle = item.itemSubtitle ?: ""
-                    val itemButtonLabel = item.itemButtonLabel ?: ""
-                    if(categoryType == CategoryType.LIVE_QUIZ || categoryType == CategoryType.REGULAR_QUIZ || categoryType == CategoryType.PRACTICE || categoryType == CategoryType.READING) {
-                        TaskRegularItemBodyLayout(
-                            taskCategoryModel = category,
-                            taskItemModel = item,
-                            userModel = userModel,
-                            categoryId = category.categoryId,
-                            itemId = item.itemId,
-                            itemTitle,
-                            itemSubtitle,
-                            itemButtonLabel,
-                            onClickTaskItem = onClickTaskItem,
-                        )
-                    }
-                }
-            }
-        }*/
-    }
-}
-
-@Composable
-fun TaskItemBodyLayout(title: String = "") {
-    Text(
-        text = title,
-        modifier = Modifier
-            .padding(0.dp)
-            .fillMaxWidth(),
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Normal,
-    )
-}
-
-@Composable
-fun DashboardLazyColumnOld1(dashboardLayoutData: ArrayList<DashboardLayoutData<*>>) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        state = listState,
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        items(
-            dashboardLayoutData,
-            key = { category -> category.id },
-        ) { category ->
-            category.header
-            /*Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-            ) {
-                if (category.body.isNotEmpty()) {
-                    category.body.forEach {
-                        it
-                    }
-                }
-            }*/
-        }
-    }
-}
-
-data class DashboardLayoutData<T>(
-    val id: String,
-    val header: T,
-    val body: ArrayList<T> = arrayListOf(),
-)
-
-@Composable
-fun DashboardLazyColumnOld1(dashboardModel: DashboardModel) {
-    val dashboardLayout: ArrayList<DashboardLayoutData<*>> = ArrayList()
-    var layout: DashboardLayoutData<*> = DashboardLayoutData(
-        id = "default_header_layout",
-        header = DashboardDefaultHeaderLayout(),
-        body = arrayListOf()
-    )
-    dashboardLayout.add(layout)
-    dashboardLayout.forEach { item ->
-        item.header
-    }
-}
-
-//----- File: dashboard/presentation/components/composables/DashboardTaskCategoryHeaderLayout.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-@Composable
-fun DashboardTaskCategoryHeaderLayout(title: String = "") {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
-        Text(
-            text = title,
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxWidth(),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-    }
-}
-
-//----- File: dashboard/presentation/components/composables/LazyColumnTest.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables
-
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-
-@Composable
-fun LazyColumnTest(dashboardModel: DashboardModel) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        state = listState,
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        /*items(dashboardModel.taskCategory, key = { category -> category.categoryId }) { category ->
-            category.categoryTitle?.let { categoryTitle ->
-                Text(
-                    text = categoryTitle,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .fillMaxWidth(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-            ) {
-                category.taskItems.forEach { item ->
-                    item.itemTitle?.let { itemTitle ->
-                        Text(
-                            text = itemTitle,
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .fillMaxWidth(),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        )
-                    }
-                }
-            }
-        }*/
-    }
-}
-
-@Composable
-fun LazyColumnTestOld4(dashboardModel: DashboardModel) {
-    val listState = rememberLazyListState()
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        /*dashboardModel.taskCategory.forEach{ category ->
-            category.categoryTitle?.let { categoryTitle ->
-                Text(
-                    text = categoryTitle,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .fillMaxWidth(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-            ) {
-                category.taskItems.forEach { item ->
-                    item.itemTitle?.let { itemTitle ->
-                        Text(
-                            text = itemTitle,
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .fillMaxWidth(),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        )
-                    }
-                }
-            }
-        }*/
-    }
-}
-
-@Composable
-fun LazyColumnTestOld3(dashboardModel: DashboardModel) {
-    val listState = rememberLazyListState()
-    val scrollState = rememberScrollState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        /*dashboardModel.taskCategory.forEach{ category ->
-            category.categoryTitle?.let { categoryTitle ->
-                Text(
-                    text = categoryTitle,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .fillMaxWidth(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(scrollState)
-                    .height(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(category.taskItems, key = { item -> item.itemId }) { item ->
-                    item.itemTitle?.let { itemTitle ->
-                        Text(
-                            text = itemTitle,
-                            modifier = Modifier
-                                .padding(0.dp)
-                                .fillMaxWidth(),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        )
-                    }
-                }
-            }
-        }*/
-        /*repeat(1000) {
-            Text(text = "Hello $it")
-        }*/
-    }
-}
-
-@Composable
-fun LazyColumnTestOld2(dashboardModel: DashboardModel) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        modifier = Modifier
-            .width(600.dp),
-        state = listState,
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        /*itemsIndexed(
-            dashboardModel.taskCategory
-        ) { index, category ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                category.categoryTitle?.let { categoryTitle ->
-                    Text(
-                        text = categoryTitle,
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .fillMaxWidth(),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        itemsIndexed(category.taskItems) { index, item ->
-                            item.itemTitle?.let { itemTitle ->
-                                Text(
-                                    text = itemTitle,
-                                    modifier = Modifier
-                                        .padding(0.dp)
-                                        .fillMaxWidth(),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Normal,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
-    }
-}
-
-@Composable
-fun LazyColumnTestOld01(dashboardModel: DashboardModel) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        state = listState,
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        /*items(dashboardModel.taskCategory) { category ->
-            category.categoryTitle?.let { categoryTitle ->
-                Text(
-                    text = categoryTitle,
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .fillMaxWidth(),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(category.taskItems, key = { item -> item.itemId }) { item ->
-                        item.itemTitle?.let { itemTitle ->
-                            Text(
-                                text = itemTitle,
-                                modifier = Modifier
-                                    .padding(0.dp)
-                                    .fillMaxWidth(),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal,
-                            )
-                        }
-                    }
-                }
-            }
-        }*/
-        /*//val dashboardModel: DashboardModel = (viewModel.uiState as DashboardUiState.Success).dashboardModel
-        val dashboardModel: DashboardModel? = viewModel.dashboardModel.value
-        if (dashboardModel != null) {
-            items(dashboardModel.items) { item ->
-                item.title?.let {
-                    Text(
-                        text = it,
-                        modifier = Modifier
-                            .padding(8.dp)       // Add padding around each item
-                            .fillMaxWidth(),     // Make each item fill the available width
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-        }*/
-    }
-}
-
-/*
-// Iterate over the list of users
-items(users, key = { user -> user.id }) { user ->
-// Display each user using the UserItem composable
-UserItem(user)
-}*/
-/*
-https://www.droidcon.com/2023/01/23/nested-scroll-with-jetpack-compose/
-https://stackoverflow.com/questions/75190976/how-to-achieve-multiple-header-and-body-elements-list-for-a-lazycolumn-in-compos
-https://blog.kotlin-academy.com/nested-lazycolumn-in-jetpack-compose-79cc5d56c603
-*/
-
-//----- File: dashboard/presentation/components/composables/TaskRegularItemBodyLayout.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
-import com.rzrasel.wordquiz.presentation.components.components.ButtonComposable
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardCategoryModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardTaskItemModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
-
-@Composable
-fun TaskRegularItemBodyLayout(
-    taskCategoryModel: DashboardCategoryModel,
-    taskItemModel: DashboardTaskItemModel,
-    userModel: UserModel,
-    categoryId: String = "",
-    itemId: String = "",
-    title: String = "",
-    subtitle: String = "",
-    itemButtonLabel: String = "",
-    onClickTaskItem: (DashboardCategoryModel, DashboardTaskItemModel, UserTaskItemModel)-> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
-        Card(
-            modifier = Modifier
-                .padding(1.dp)
-                //.background(Color.Transparent)
-                .background(Color("#ffffff".toColorInt()))
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(10.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Color("#ffffff".toColorInt()),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .clip(
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .padding(8.dp),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color("#ffffff".toColorInt())),
-                ) {
-                    Text(
-                        text = title,
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .fillMaxWidth(),
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(1.0f, true)
-                                .padding(end = 6.dp),
-                        ) {
-                            Text(
-                                text = subtitle,
-                                modifier = Modifier
-                                    .padding(0.dp)
-                                    .fillMaxWidth(),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal,
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .wrapContentWidth(),
-                        ) {
-                            ButtonComposable(
-                                modifier = Modifier
-                                    .background(Color("#ffffff".toColorInt()))
-                                    .wrapContentWidth(),
-                                backgroundColor = Color.White,
-                                contentColor = Color(0xFF172644),
-                                cornerRadius = 6.dp,
-                                borderStroke = 0.dp,
-                                borderStrokeColor = Color.Transparent,
-                                labelModifier = Modifier
-                                    .wrapContentWidth(),
-                                text = itemButtonLabel,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12,
-                                onClick = {
-                                    val userTaskItem = UserTaskItemModel(
-                                        userAuthToken = userModel.userAuthToken ?: "",
-                                        categoryId = categoryId,
-                                        categoryType = taskCategoryModel.categoryType ?: "",
-                                        itemId = itemId,
-                                        accessMode = taskItemModel.accessMode ?: "",
-                                    )
-                                    onClickTaskItem(taskCategoryModel, taskItemModel, userTaskItem)
-                                },
-                            )
-                            /*NormalOutlinedButton(
-                                modifier = Modifier
-                                    .wrapContentWidth(),
-                                roundedCorner = 6,
-                                borderStroke = 1.dp,
-                                borderStrokeColor = Color.Red,
-                                label = "Test",
-                                onClick = {}
-                            )*/
-                            /*ButtonComposable(
-                                modifier = Modifier
-                                    .background(Color("#ffffff".toColorInt()))
-                                    .wrapContentWidth(),
-                                backgroundColor = Color.White,
-                                contentColor = Color(0xFF172644),
-                                cornerRadius = 6.dp,
-                                borderStroke = 0.dp,
-                                borderStrokeColor = Color.Transparent,
-                                labelModifier = Modifier
-                                    .wrapContentWidth(),
-                                text = itemButtonLabel,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 12,
-                                onClick = {
-                                    val userTaskItem = UserTaskItemModel(
-                                        userAuthToken = userModel.userAuthToken ?: "",
-                                        categoryId = categoryId,
-                                        categoryType = taskCategoryModel.categoryType,
-                                        itemId = itemId,
-                                        accessMode = taskItemModel.accessMode,
-                                    )
-                                    onClickTaskItem(taskCategoryModel, taskItemModel, userTaskItem)
-                                },
-                            )*/
-                            /*NormalOutlinedButton(
-                                modifier = Modifier
-                                    .wrapContentWidth(),
-                                roundedCorner = 6,
-                                borderStroke = 1.dp,
-                                borderStrokeColor = Color.Red,
-                                label = "Test",
-                                onClick = {}
-                            )*/
-                        }
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-    }
-}
-
-//----- File: dashboard/presentation/screen/AppDashboardScreen.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.screen
-
-import android.app.Application
-import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.rzrasel.wordquiz.feature.dashboard.di.DashboardModule
-import com.rzrasel.wordquiz.feature.dashboard.presentation.state.DashboardUiState
-import com.rzrasel.wordquiz.presentation.components.dialog.LoadingDialog
-import com.rzrasel.wordquiz.presentation.screens.data.UserModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
-
-@Composable
-fun AppDashboardScreen(
-    application: Application,
-    userModel: UserModel = UserModel(""),
-    onNavigateToFlatReading: (UserTaskItemModel) -> Unit,
-    onNavigateToTaskItem: (UserTaskItemModel) -> Unit,
-) {
-    val context = LocalContext.current
-    val viewModel = remember {
-        DashboardModule.provideViewModel(
-            context = application.applicationContext,
-            userAuthToken = userModel.userAuthToken ?: ""
-        )
-    }
-
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    var showLoadingDialog by remember { mutableStateOf(false) }
-
-    // Handle initial load
-    LaunchedEffect(Unit) {
-        if (viewModel.dashboardModel == null) {
-            viewModel.getDashboard(userModel.userAuthToken)
-        }
-    }
-
-    // Handle UI state changes
-    when (uiState) {
-        DashboardUiState.Idle -> {
-            // Initial state
-        }
-        is DashboardUiState.Loading -> {
-            // Only show loading dialog for initial load, not for refresh
-            if (!isRefreshing) {
-                showLoadingDialog = true
-            }
-        }
-        is DashboardUiState.Success -> {
-            showLoadingDialog = false
-            val dashboardModel = (uiState as DashboardUiState.Success).dashboardModel
-            dashboardModel.data?.accessToken?.let { token ->
-                userModel.userAuthToken = token
-            }
-
-            DashboardScreen(
-                viewModel = viewModel,
-                userModel = userModel,
-                onNavigateToFlatReading = onNavigateToFlatReading,
-                onNavigateToTaskItem = onNavigateToTaskItem
-            )
-        }
-        is DashboardUiState.Error -> {
-            showLoadingDialog = false
-            val message = (uiState as DashboardUiState.Error).message
-            if (!isRefreshing) {
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            }
-            DashboardErrorScreen(
-                viewModel = viewModel,
-                userModel = userModel,
-            )
-        }
-    }
-
-    if (showLoadingDialog) {
-        LoadingDialog(
-            message = "Please wait...",
-            onDismiss = { showLoadingDialog = false }
-        )
-    }
-}
-
-
-//----- File: dashboard/presentation/screen/DashboardErrorScreen.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.screen
-
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.rzrasel.wordquiz.feature.dashboard.presentation.state.DashboardUiState
-import com.rzrasel.wordquiz.feature.dashboard.presentation.viewmodel.DashboardViewModel
-import com.rzrasel.wordquiz.presentation.components.layout.DefaultScaffold
-import com.rzrasel.wordquiz.presentation.screens.data.UserModel
-import com.rzrasel.wordquiz.ui.theme.AppTheme
-
-@Composable
-fun DashboardErrorScreen(
-    viewModel: DashboardViewModel,
-    userModel: UserModel,
-) {
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(swipeRefreshState.isRefreshing) {
-        if (swipeRefreshState.isRefreshing) {
-            viewModel.refreshDashboard(userModel.userAuthToken)
-        }
-    }
-
-    DefaultScaffold {
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = { viewModel.refreshDashboard(userModel.userAuthToken) },
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = AppTheme.dimens.paddingLarge)
-                    .padding(bottom = AppTheme.dimens.paddingExtraLarge)
-            ) {
-                Text(
-                    text = (uiState as DashboardUiState.Error).message,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-        }
-    }
-}
-
-//----- File: dashboard/presentation/screen/DashboardScreen.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.screen
-
-import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.rzrasel.wordquiz.core.enumtype.CategoryType
-import com.rzrasel.wordquiz.feature.dashboard.presentation.components.composables.DashboardLazyColumn
-import com.rzrasel.wordquiz.feature.dashboard.presentation.state.DashboardNavigateScreenState
-import com.rzrasel.wordquiz.feature.dashboard.presentation.state.DashboardUiState
-import com.rzrasel.wordquiz.feature.dashboard.presentation.viewmodel.DashboardViewModel
-import com.rzrasel.wordquiz.navigation.NavigationRouteHelper
-import com.rzrasel.wordquiz.presentation.components.layout.DefaultScaffold
-import com.rzrasel.wordquiz.presentation.screens.data.UserModel
-import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
-import com.rzrasel.wordquiz.ui.theme.AppTheme
-
-@Composable
-fun DashboardScreen(
-    viewModel: DashboardViewModel,
-    userModel: UserModel,
-    onNavigateToFlatReading: (UserTaskItemModel) -> Unit,
-    onNavigateToTaskItem: (UserTaskItemModel) -> Unit,
-) {
-    val context = LocalContext.current
-    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    var clickedUserTaskItem by remember {
-        mutableStateOf(
-            UserTaskItemModel(
-                userAuthToken = userModel.userAuthToken ?: "",
-                categoryId = "",
-                categoryType = "",
-                itemId = "",
-                accessMode = "",
-            )
-        )
-    }
-
-    var dashboardScreenState by remember {
-        mutableStateOf<DashboardNavigateScreenState>(DashboardNavigateScreenState.Idle)
-    }
-
-    // Handle navigation events
-    when (dashboardScreenState) {
-        is DashboardNavigateScreenState.FlatReading -> {
-            NavigationRouteHelper(
-                shouldNavigate = { true },
-                destination = { onNavigateToFlatReading(clickedUserTaskItem) }
-            )
-            dashboardScreenState = DashboardNavigateScreenState.Idle
-        }
-        is DashboardNavigateScreenState.FlatPractice -> {
-            NavigationRouteHelper(
-                shouldNavigate = { true },
-                destination = { onNavigateToTaskItem(clickedUserTaskItem) }
-            )
-            dashboardScreenState = DashboardNavigateScreenState.Idle
-        }
-        else -> Unit // Do nothing for idle state
-    }
-
-    DefaultScaffold {
-        SwipeRefresh(
-            state = swipeRefreshState,
-            onRefresh = { viewModel.refreshDashboard(userModel.userAuthToken) },
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = AppTheme.dimens.paddingLarge)
-                    .padding(bottom = AppTheme.dimens.paddingExtraLarge)
-            ) {
-                when (uiState) {
-                    is DashboardUiState.Success -> {
-                        viewModel.dashboardModel?.let { dashboardModel ->
-                            DashboardLazyColumn(
-                                userModel = userModel,
-                                dashboardModel = dashboardModel,
-                                onClickTaskItem = { taskCategoryModel, taskItemModel, userTaskItem ->
-                                    clickedUserTaskItem = userTaskItem
-                                    when (CategoryType.find(taskCategoryModel.categoryType)) {
-                                        CategoryType.READING -> {
-                                            dashboardScreenState = DashboardNavigateScreenState.FlatReading(true)
-                                        }
-                                        CategoryType.PRACTICE -> {
-                                            dashboardScreenState = DashboardNavigateScreenState.FlatPractice(true)
-                                        }
-                                        else -> {
-                                            Toast.makeText(context, "Coming soon", Toast.LENGTH_LONG).show()
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-                    else -> {
-                        // Show loading or idle state if needed
-                    }
-                }
-            }
-        }
-    }
-}
-
-//----- File: dashboard/presentation/state/DashboardNavigateScreenState.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.state
-
-sealed class DashboardNavigateScreenState {
-    data object Idle: DashboardNavigateScreenState()
-    data class FlatReading(val isNavigate: Boolean = false): DashboardNavigateScreenState()
-    data class FlatPractice(val isNavigate: Boolean = false): DashboardNavigateScreenState()
-}
-
-//----- File: dashboard/presentation/state/DashboardUiState.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.state
-
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-
-sealed class DashboardUiState {
-    data object Idle: DashboardUiState()
-    data object Loading: DashboardUiState()
-    data class Success(val dashboardModel: DashboardModel) : DashboardUiState()
-    data class Error(val message: String): DashboardUiState()
-}
-
-//----- File: dashboard/presentation/viewmodel/DashboardViewModel.kt -----
-
-package com.rzrasel.wordquiz.feature.dashboard.presentation.viewmodel
-
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.rz.logwriter.LogWriter
-import com.rzrasel.wordquiz.feature.dashboard.domain.model.DashboardModel
-import com.rzrasel.wordquiz.feature.dashboard.domain.usecase.DashboardUseCase
-import com.rzrasel.wordquiz.feature.dashboard.presentation.state.DashboardUiState
-import com.rzrasel.wordquiz.networkstate.NetworkState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-
-class DashboardViewModel(
-    private val useCase: DashboardUseCase
-) : ViewModel() {
-    private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Idle)
-    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
-
-    private val _dashboardModel = mutableStateOf<DashboardModel?>(null)
-    val dashboardModel: DashboardModel? get() = _dashboardModel.value
-
-    private val _isRefreshing = MutableStateFlow(false)
-    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
-
-    private var isInitialLoad = false
-
-    fun getDashboard(userAuthToken: String? = null, forceRefresh: Boolean = false) {
-        if (!isInitialLoad || forceRefresh) {
-            viewModelScope.launch(Dispatchers.IO) {
-                _isRefreshing.value = true
-                _uiState.value = DashboardUiState.Loading
-
-                when (val result = useCase.execute(userAuthToken)) {
-                    is NetworkState.Success -> {
-                        LogWriter.log("Success Data ${result.data}")
-                        _dashboardModel.value = result.data
-                        result.data?.let {
-                            _uiState.value = DashboardUiState.Success(it)
-                            isInitialLoad = true
-                        } ?: run {
-                            _uiState.value = DashboardUiState.Error("Null data")
-                        }
-                    }
-                    is NetworkState.Error -> {
-                        _uiState.value = DashboardUiState.Error(result.message ?: "Unknown error")
-                    }
-                    is NetworkState.Loading -> {
-                        // Handle loading if needed
-                    }
-                }
-                _isRefreshing.value = false
-            }
-        }
-    }
-
-    fun refreshDashboard(userAuthToken: String? = null) {
-        getDashboard(userAuthToken, true)
-    }
-}
-
 //----- File: factory/ViewModelFactory.kt -----
 
 package com.rzrasel.wordquiz.factory
 
-class ViewModelFactory {
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.rzrasel.wordquiz.feature.flatpractice.di.FlatPracticeModule
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel.FlatPracticeViewModel
+
+class ViewModelFactory(
+    private val context: Context,
+    private val userAuthToken: String = ""
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(FlatPracticeViewModel::class.java)) {
+            return FlatPracticeModule.provideViewModel(context, userAuthToken) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }
 
 /*
@@ -1602,257 +46,1632 @@ class ViewModelFactory(private val repository: BaseRepository): ViewModelProvide
 }*/
 
 
-//----- File: network/NetConnectionInterceptor.kt -----
+//----- File: flatpractice/api/FlatPracticeApiService.kt -----
 
-package com.rzrasel.wordquiz.network
+package com.rzrasel.wordquiz.feature.flatpractice.api
 
-import android.content.Context
-import android.net.ConnectivityManager
-import okhttp3.Interceptor
-import okhttp3.Response
-import java.io.IOException
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
 
-class NetConnectionInterceptor(context: Context): Interceptor {
-    private val context = context.applicationContext
+interface FlatPracticeApiService {
+    @POST("get-questions/")
+    suspend fun getFlatPractice(
+        @Body flatPracticeRequest: FlatPracticeRequest
+    ): Response<FlatPracticeDto>
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        if(!isAvailable()) {
-            throw IOException("Make sure your internet connection is available")
-        }
-        return chain.proceed(chain.request())
-    }
+    @POST("get-questions/")
+    suspend fun getFlatPracticeNext(
+        @Body flatPracticeRequest: FlatPracticeRequest
+    ): Response<FlatPracticeDto>
 
-    private fun isAvailable(): Boolean {
-        /*val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        connectivityManager.activeNetworkInfo.also {
-            return it != null && it.isConnected
-        }*/
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network =connectivityManager.activeNetwork
-        return network != null
-    }
-    //https://dev.to/theplebdev/using-retrofit-interceptors-to-check-network-connection-in-android-and-testing-it-1kl1
+    @POST("submit-answer/")
+    suspend fun getFlatPracticeSubmitAnswer(
+        @Body flatPracticeRequest: FlatPracticeRequest
+    ): Response<FlatPracticeDto>
 }
 
-//----- File: network/RetrofitClient.kt -----
+//----- File: flatpractice/data/datasource/FlatPracticeRemoteDataSource.kt -----
 
-package com.rzrasel.wordquiz.network
+package com.rzrasel.wordquiz.feature.flatpractice.data.datasource
+
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.networkstate.NetworkState
+
+interface FlatPracticeRemoteDataSource {
+    suspend fun getFlatPractice(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto>
+    suspend fun getFlatPracticeNext(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto>
+}
+
+//----- File: flatpractice/data/datasource/FlatPracticeRemoteDataSourceImpl.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.data.datasource
+
+import com.rzrasel.wordquiz.feature.flatpractice.api.FlatPracticeApiService
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.networkstate.NetworkState
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+
+class FlatPracticeRemoteDataSourceImpl(
+    private val apiService: FlatPracticeApiService
+) : FlatPracticeRemoteDataSource {
+
+    override suspend fun getFlatPractice(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto> {
+        return handleApiCall { apiService.getFlatPractice(flatPracticeRequest) }
+    }
+
+    override suspend fun getFlatPracticeNext(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto> {
+        return handleApiCall { apiService.getFlatPracticeNext(flatPracticeRequest) }
+    }
+
+    private suspend fun handleApiCall(
+        apiCall: suspend () -> retrofit2.Response<FlatPracticeDto>
+    ): NetworkState<FlatPracticeDto> {
+        return try {
+            val response = apiCall()
+            if (response.isSuccessful) {
+                NetworkState.Success(response.body())
+            } else {
+                NetworkState.Error("HTTP error: ${response.code()} - ${response.message()}")
+            }
+        } catch (e: SocketTimeoutException) {
+            NetworkState.Error("Request timeout. Please check your connection.")
+        } catch (e: UnknownHostException) {
+            NetworkState.Error("No internet connection.")
+        } catch (e: IOException) {
+            NetworkState.Error("Network error: ${e.message ?: "Please check your connection"}")
+        } catch (e: HttpException) {
+            NetworkState.Error("HTTP error: ${e.message ?: "Unknown error"}")
+        } catch (e: Exception) {
+            NetworkState.Error("Unexpected error: ${e.message ?: "Something went wrong"}")
+        }
+    }
+}
+
+
+//----- File: flatpractice/data/mapper/FlatPracticeModelMapper.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.data.mapper
+
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeAnswerItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeDataModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeQuestionItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeAnswerItemDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDataDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeQuestionItemDto
+
+//Mapper (DTO → Model) (DTO To Model)
+
+fun FlatPracticeDto.toModel(): FlatPracticeModel {
+    return FlatPracticeModel(
+        type = type,
+        message = message,
+        data = data?.toModel()
+    )
+}
+
+fun FlatPracticeDataDto.toModel(): FlatPracticeDataModel {
+    return FlatPracticeDataModel(
+        nextQuestionIndex = nextQuestionIndex,
+        isLastQuestion = isLastQuestion,
+        questionSet = ArrayList(questionSet?.map { it.toModel() } ?: emptyList())
+    )
+}
+
+fun FlatPracticeQuestionItemDto.toModel(): FlatPracticeQuestionItemModel {
+    return FlatPracticeQuestionItemModel(
+        questionId = questionId,
+        question = question,
+        answerSet = answerSet.map { it.toModel() }
+    )
+}
+
+fun FlatPracticeAnswerItemDto.toModel(): FlatPracticeAnswerItemModel {
+    return FlatPracticeAnswerItemModel(
+        answerId = answerId,
+        answer = answer,
+        isTure = isTure
+    )
+}
+
+//----- File: flatpractice/data/remote/FlatPracticeDto.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.data.remote
+
+import com.google.gson.annotations.SerializedName
+
+data class FlatPracticeDto(
+    @SerializedName("type")
+    val type: String = "error",
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("data")
+    var data: FlatPracticeDataDto? = FlatPracticeDataDto(),
+)
+
+data class FlatPracticeDataDto(
+    @SerializedName("next_question_index")
+    var nextQuestionIndex: Int = 0,
+    @SerializedName("is_last_question")
+    var isLastQuestion: Boolean? = null,
+    @SerializedName("question")
+    var questionSet: ArrayList<FlatPracticeQuestionItemDto>? = arrayListOf(),
+)
+
+data class FlatPracticeQuestionItemDto(
+    @SerializedName("question_id")
+    val questionId: String? = null,
+    @SerializedName("question")
+    val question: String? = null,
+    @SerializedName("answer_set")
+    val answerSet: List<FlatPracticeAnswerItemDto> = listOf(),
+)
+
+data class FlatPracticeAnswerItemDto(
+    @SerializedName("answer_id")
+    val answerId: String? = null,
+    @SerializedName("answer")
+    val answer: String? = null,
+    @SerializedName("is_true")
+    val isTure: Boolean = false,
+)
+
+//----- File: flatpractice/data/remote/FlatPracticeRequest.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.data.remote
+
+import com.google.gson.annotations.SerializedName
+
+data class FlatPracticeRequest(
+    @SerializedName("user_auth_token")
+    var userAuthToken: String? = "",
+    @SerializedName("is_login")
+    var isLogin: Boolean = false,
+    @SerializedName("category_id")
+    val categoryId: String,
+    @SerializedName("item_id")
+    val itemId: String,
+    @SerializedName("current_question_index")
+    var currentQuestionIndex: Int = 1,
+    @SerializedName("question_set")
+    val questionSet: ArrayList<FlatPracticeQuestionSetSubmitted> = arrayListOf(),
+)
+
+data class FlatPracticeQuestionSetSubmitted(
+    @SerializedName("question_id")
+    val questionId: String,
+    @SerializedName("question")
+    val question: String,
+    var answerSet: ArrayList<FlatPracticeAnswerSetSubmitted> = arrayListOf(),
+)
+
+data class FlatPracticeAnswerSetSubmitted(
+    @SerializedName("answer_id")
+    val answerId: String,
+    @SerializedName("answer")
+    val answer: String,
+    @SerializedName("is_ture")
+    val isTure: Boolean = false,
+)
+
+//----- File: flatpractice/data/repository/FlatPracticeRepositoryImpl.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.data.repository
+
+import com.rzrasel.wordquiz.feature.flatpractice.data.datasource.FlatPracticeRemoteDataSource
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.feature.flatpractice.domain.repository.FlatPracticeRepository
+import com.rzrasel.wordquiz.networkstate.NetworkState
+
+class FlatPracticeRepositoryImpl(private val remoteDataSource: FlatPracticeRemoteDataSource):
+    FlatPracticeRepository {
+    override suspend fun getFlatPractice(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto> {
+        return remoteDataSource.getFlatPractice(flatPracticeRequest)
+    }
+
+    override suspend fun getFlatPracticeNext(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto> {
+        return remoteDataSource.getFlatPracticeNext(flatPracticeRequest)
+    }
+}
+
+//----- File: flatpractice/di/FlatPracticeModule.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.di
 
 import android.content.Context
-import android.provider.SyncStateContract.Constants
-import androidx.compose.ui.unit.Constraints
-import com.rzrasel.wordquiz.BuildConfig
-import com.rzrasel.wordquiz.core.utils.AppConstants
-import com.rzrasel.wordquiz.core.utils.BuildInfo
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
+import com.rzrasel.wordquiz.feature.flatpractice.data.repository.FlatPracticeRepositoryImpl
+import com.rzrasel.wordquiz.feature.flatpractice.api.FlatPracticeApiService
+import com.rzrasel.wordquiz.feature.flatpractice.data.datasource.FlatPracticeRemoteDataSource
+import com.rzrasel.wordquiz.feature.flatpractice.data.datasource.FlatPracticeRemoteDataSourceImpl
+import com.rzrasel.wordquiz.feature.flatpractice.domain.repository.FlatPracticeRepository
+import com.rzrasel.wordquiz.feature.flatpractice.domain.usecase.FlatPracticeUseCase
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel.FlatPracticeViewModel
+import com.rzrasel.wordquiz.network.NetConnectionInterceptor
+import com.rzrasel.wordquiz.network.RetrofitClient
 
-class RetrofitClient {
+object FlatPracticeModule {
+    private fun provideApiService(context: Context, userAuthToken: String = ""): FlatPracticeApiService {
+        val netConnInterceptor = NetConnectionInterceptor(context)
+        return RetrofitClient().buildApi(
+            context = context,
+            api = FlatPracticeApiService::class.java,
+            netConnectionInterceptor = netConnInterceptor,
+            authToken = userAuthToken
+        )
+    }
+
+    private fun provideRemoteDataSource(apiService: FlatPracticeApiService): FlatPracticeRemoteDataSource {
+        return FlatPracticeRemoteDataSourceImpl(apiService)
+    }
+
+    private fun provideRepository(remoteDataSource: FlatPracticeRemoteDataSource): FlatPracticeRepository {
+        return FlatPracticeRepositoryImpl(remoteDataSource)
+    }
+
+    private fun provideUseCase(repository: FlatPracticeRepository): FlatPracticeUseCase {
+        return FlatPracticeUseCase(repository)
+    }
+
+    fun provideViewModel(context: Context, userAuthToken: String = ""): FlatPracticeViewModel {
+        val apiService = provideApiService(context, userAuthToken)
+        val remoteDataSource = provideRemoteDataSource(apiService)
+        val repository = provideRepository(remoteDataSource)
+        val useCase = provideUseCase(repository)
+        //return FlatPracticeViewModel(useCase)
+        return FlatPracticeViewModel(useCase)
+    }
+}
+
+//----- File: flatpractice/domain/mapper/FlatPracticeDtoMapper.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.domain.mapper
+
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeAnswerItemDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDataDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeQuestionItemDto
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeAnswerItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeDataModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeQuestionItemModel
+
+//Mapper (Model → DTO) (Model To DTO)
+
+fun FlatPracticeModel.toDto(): FlatPracticeDto {
+    return FlatPracticeDto(
+        type = type,
+        message = message,
+        data = data?.toDto()
+    )
+}
+
+fun FlatPracticeDataModel.toDto(): FlatPracticeDataDto {
+    return FlatPracticeDataDto(
+        nextQuestionIndex = nextQuestionIndex,
+        isLastQuestion = isLastQuestion,
+        questionSet = ArrayList(questionSet?.map { it.toDto() } ?: emptyList())
+    )
+}
+
+fun FlatPracticeQuestionItemModel.toDto(): FlatPracticeQuestionItemDto {
+    return FlatPracticeQuestionItemDto(
+        questionId = questionId,
+        question = question,
+        answerSet = answerSet.map { it.toDto() }
+    )
+}
+
+fun FlatPracticeAnswerItemModel.toDto(): FlatPracticeAnswerItemDto {
+    return FlatPracticeAnswerItemDto(
+        answerId = answerId,
+        answer = answer,
+        isTure = isTure
+    )
+}
+
+//----- File: flatpractice/domain/model/FlatPracticeModel.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.domain.model
+
+import com.google.gson.annotations.SerializedName
+
+data class FlatPracticeModel(
+    @SerializedName("type")
+    val type: String = "error",
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("data")
+    var data: FlatPracticeDataModel? = FlatPracticeDataModel(),
+)
+
+data class FlatPracticeDataModel(
+    @SerializedName("next_question_index")
+    var nextQuestionIndex: Int = 0,
+    @SerializedName("is_last_question")
+    var isLastQuestion: Boolean? = null,
+    @SerializedName("question")
+    var questionSet: ArrayList<FlatPracticeQuestionItemModel>? = arrayListOf(),
+)
+
+data class FlatPracticeQuestionItemModel(
+    @SerializedName("question_id")
+    val questionId: String? = null,
+    @SerializedName("question")
+    val question: String? = null,
+    @SerializedName("answer_set")
+    var answerSet: List<FlatPracticeAnswerItemModel> = listOf(),
+)
+
+data class FlatPracticeAnswerItemModel(
+    @SerializedName("answer_id")
+    val answerId: String? = null,
+    @SerializedName("answer")
+    val answer: String? = null,
+    @SerializedName("is_true")
+    val isTure: Boolean = false,
+    var isSelected: Boolean = false,
+)
+
+//----- File: flatpractice/domain/model/FlatPracticeSubmitModel.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.domain.model
+
+import com.google.gson.annotations.SerializedName
+import com.rz.logwriter.DebugLog
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+
+class FlatPracticeSubmitModel(
+    @SerializedName("user_auth_token")
+    var userAuthToken: String = "",
+    @SerializedName("is_login")
+    var isLogin: Boolean = false,
+    @SerializedName("category_id")
+    var categoryId: String = "",
+    @SerializedName("item_id")
+    var itemId: String = "",
+    @SerializedName("current_question_index")
+    var currentQuestionIndex: Int = 1,
+    @SerializedName("start_fresh")
+    var startFresh: Boolean = false,
+    @SerializedName("answers")
+    var questionSet: ArrayList<FlatPracticeSubmitQuestionItemModel> = arrayListOf()
+) {
     companion object {
-        private const val CONNECT_TIMEOUT = 30L
-        private const val READ_TIMEOUT = 30L
-        private const val WRITE_TIMEOUT = 30L
-    }
-
-    fun <Api> buildApi(
-        context: Context,
-        api: Class<Api>,
-        netConnectionInterceptor: NetConnectionInterceptor,
-        authToken: String? = null
-    ): Api {
-        val baseUrl: String = AppConstants.Http.BASE_URL
-
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(createOkHttpClient(context, netConnectionInterceptor, authToken))
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(api)
-    }
-
-    private fun createOkHttpClient(
-        context: Context,
-        netConnectionInterceptor: NetConnectionInterceptor,
-        authToken: String?
-    ): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(netConnectionInterceptor)
-            .addInterceptor { chain ->
-                val request = chain.request().newBuilder().apply {
-                    authToken?.takeIf { it.isNotEmpty() }?.let {
-                        addHeader("Authorization", "Bearer $it")
-                    }
-                }.build()
-                chain.proceed(request)
+        fun mapToSubmitModel(flatPracticeRequest: FlatPracticeRequest): FlatPracticeSubmitModel {
+            //return FlatPracticeSubmitModel()
+            val flatPracticeSubmitModel: FlatPracticeSubmitModel = FlatPracticeSubmitModel()
+            flatPracticeSubmitModel.apply {
+                userAuthToken = flatPracticeRequest.userAuthToken ?: ""
+                isLogin = flatPracticeRequest.isLogin
+                categoryId = flatPracticeRequest.categoryId
+                itemId = flatPracticeRequest.itemId
+                currentQuestionIndex = flatPracticeRequest.currentQuestionIndex
+                startFresh = false
             }
-            .apply {
-                if (BuildInfo.isDebugging(context)) {
-                    addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    })
+            //
+            val questionArrayList: ArrayList<FlatPracticeSubmitQuestionItemModel> = arrayListOf()
+            //
+            flatPracticeRequest.questionSet.forEach { question ->
+                //DebugLog.Log("${question.questionId} question")
+                val submitQuestionItemModel = FlatPracticeSubmitQuestionItemModel()
+                submitQuestionItemModel.questionId = question.questionId
+                val answerSet: ArrayList<String> = arrayListOf()
+                question.answerSet.forEach { answer ->
+                    //DebugLog.Log(answer.answerId)
+                    if (answer.isTure) {
+                        //DebugLog.Log("${answer.answerId} is selected")
+                        answerSet.add(answer.answerId)
+                    }
+                }
+                submitQuestionItemModel.answerSet = answerSet
+                questionArrayList.add(submitQuestionItemModel)
+                //flatPracticeSubmitModel.questionSet = submitQuestionItemModel
+            }
+            flatPracticeSubmitModel.questionSet = questionArrayList
+            //
+            return flatPracticeSubmitModel
+        }
+    }
+}
+
+class FlatPracticeSubmitQuestionItemModel(
+    @SerializedName("question_id")
+    var questionId: String = "",
+    @SerializedName("selected_option_ids")
+    var answerSet: ArrayList<String> = arrayListOf()
+)
+
+class FlatPracticeSubmitAnswerItemModel(
+    @SerializedName("question_id")
+    var questionId: Int? = null,
+    @SerializedName("selected_option_ids")
+    var selectedOptionIds: ArrayList<String> = arrayListOf()
+)
+
+//----- File: flatpractice/domain/repository/FlatPracticeRepository.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.domain.repository
+
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeDto
+import com.rzrasel.wordquiz.networkstate.NetworkState
+
+interface FlatPracticeRepository {
+    suspend fun getFlatPractice(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto>
+    suspend fun getFlatPracticeNext(flatPracticeRequest: FlatPracticeRequest): NetworkState<FlatPracticeDto>
+}
+
+//----- File: flatpractice/domain/usecase/FlatPracticeUseCase.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.domain.usecase
+
+import com.rz.logwriter.LogWriter
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.feature.flatpractice.data.mapper.toModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.repository.FlatPracticeRepository
+import com.rzrasel.wordquiz.networkstate.NetworkState
+
+class FlatPracticeUseCase(private val repository: FlatPracticeRepository) {
+    suspend fun execute(
+        userAuthToken: String?,
+        categoryId: String,
+        itemId: String,
+        nextQuestionIndex: Int = 1
+    ): NetworkState<FlatPracticeModel> {
+        val userAuthTokenVal = userAuthToken ?: ""
+        LogWriter.Log("User auth token: $userAuthTokenVal")
+        val request = FlatPracticeRequest(
+            userAuthToken = userAuthTokenVal.trim(),
+            categoryId = categoryId,
+            itemId = itemId,
+            currentQuestionIndex = nextQuestionIndex
+        )
+        return when(val result = repository.getFlatPractice(request)) {
+            is NetworkState.Success -> NetworkState.Success(result.data?.toModel())
+            is NetworkState.Error -> NetworkState.Error(result.message)
+            is NetworkState.Loading -> NetworkState.Loading(null)
+        }
+    }
+
+    suspend fun executeNext(request: FlatPracticeRequest): NetworkState<FlatPracticeModel> {
+        return when(val result = repository.getFlatPracticeNext(request)) {
+            is NetworkState.Success -> NetworkState.Success(result.data?.toModel())
+            is NetworkState.Error -> NetworkState.Error(result.message)
+            is NetworkState.Loading -> NetworkState.Loading(null)
+        }
+    }
+}
+
+//----- File: flatpractice/presentation/components/composables/FlatPracticeButtonView.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.components.composables
+
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
+import com.rzrasel.wordquiz.presentation.components.components.ButtonComposable
+
+@Composable
+fun FlatPracticeButtonView(
+    currentIndex: MutableState<Int>,
+    totalQuestion: Int,
+    isSingleQuestionView: Boolean = true,
+    onClickSubmit: (Int)-> Unit,
+) {
+    val context: Context = LocalContext.current
+    if(isSingleQuestionView) {
+        FlatPracticeSingleQuestionViewButtons(
+            currentIndex = currentIndex,
+            totalQuestion = totalQuestion,
+            onClickSubmit = onClickSubmit,
+        )
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Spacer(modifier = Modifier.size(10.dp))
+            ButtonComposable(
+                backgroundColor = Color("#239cbc".toColorInt()),
+                contentColor = Color("#e9fcff".toColorInt()),
+                fontWeight = FontWeight.Bold,
+                cornerRadius = 6.dp,
+                text = "Submit",
+                onClick = {
+                    //Toast.makeText(context, "Go for Submit", Toast.LENGTH_LONG).show()
+                    onClickSubmit(totalQuestion - 1)
+                }
+            )
+        }
+    }
+}
+
+//----- File: flatpractice/presentation/components/composables/FlatPracticeQuestionView.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.components.composables
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rzrasel.wordquiz.presentation.components.components.RoundedCornerChip
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel.FlatPracticeViewModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeQuestionItemModel
+import com.rzrasel.wordquiz.presentation.components.components.CustomCheckBox
+
+@Composable
+fun FlatPracticeQuestionView(questionIndex: Int, question: FlatPracticeQuestionItemModel, viewModel: FlatPracticeViewModel = viewModel()) {
+    /*var isChecked by remember { mutableStateOf(false) }
+    //val isCheckedList: List<Boolean> = listOf(false, false, false, false)
+    val isCheckedList: List<Boolean> = listOf()
+    question.answerSet.forEach {
+        isCheckedList.add(false)
+    }
+    //var mutableStateOfCheckedList by remember { mutableStateOf(isCheckedList) }
+    //val mutableStateOfCheckedList = remember { mutableStateListOf(isCheckedList) }
+    val mutableStateOfCheckedList = remember { mutableStateListOf(*isCheckedList.toTypedArray()) }*/
+    //
+    val mutableStateOfCheckedList = remember { mutableStateListOf<Boolean>() }
+    repeat(question.answerSet.size) {
+        mutableStateOfCheckedList.add(false)
+    }
+    //val mutableStateOfCheckedList = MutableStateFlow<FlatPracticeQuestionSetModel>(question)
+    //val mcqState by viewModel.mcqQuestionState.collectAsState()
+    //
+    Text(
+        text = question.question!!,
+        fontWeight = FontWeight.Bold,
+    )
+    Spacer(Modifier.height(16.dp))
+    RoundedCornerChip(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color("#f3f3f8".toColorInt()))
+            .padding(0.dp),
+        contentModifier = Modifier
+            .fillMaxWidth()
+            .background(Color("#f3f3f8".toColorInt()))
+            .padding(8.dp),
+        cornerRadius = 6,
+        //backgroundColor = Color.Blue,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(),
+        ) {
+            /*question.answerSet.forEachIndexed { index, item ->
+                CustomCheckBox(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = item.answer,
+                    textColor = Color("#232323".toColorInt()),
+                    checkedColor = Color("#ff239cbc".toColorInt()),
+                    borderCheckedColor = Color("#ff239cbc".toColorInt()),
+                    borderUncheckedColor = Color("#ffde7b73".toColorInt()),
+                    isChecked = mutableStateOfCheckedList[index],
+                    onCheckedChange = {
+                        mutableStateOfCheckedList[index] = it
+                    },
+                )
+            }*/
+            question.answerSet.forEachIndexed { index, option ->
+                mutableStateOfCheckedList[index] = option.isSelected
+                CustomCheckBox(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = option.answer ?: "",
+                    textColor = Color("#232323".toColorInt()),
+                    checkedColor = Color("#ff239cbc".toColorInt()),
+                    borderCheckedColor = Color("#ff239cbc".toColorInt()),
+                    borderUncheckedColor = Color("#ffde7b73".toColorInt()),
+                    //isChecked = option.isSelected,
+                    isChecked = mutableStateOfCheckedList[index],
+                    onCheckedChange = {
+                        //option.isSelected = it
+                        mutableStateOfCheckedList[index] = it
+                        //Log.i("DEBUG_LOG", "onCheckedChange 1 ${question.toString()}")
+                        viewModel.toggleOption(questionIndex, index)
+                        //Log.i("DEBUG_LOG", "onCheckedChange 2 ${question.toString()}")
+                    },
+                )
+            }
+        }
+    }
+}
+
+//----- File: flatpractice/presentation/components/composables/FlatPracticeSingleQuestionViewButtons.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.components.composables
+
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
+import com.rzrasel.wordquiz.presentation.components.components.ButtonComposable
+
+@Composable
+fun FlatPracticeSingleQuestionViewButtons(
+    currentIndex: MutableState<Int>,
+    totalQuestion: Int,
+    onClickSubmit: (Int)-> Unit,
+) {
+    val context: Context = LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        if(currentIndex.value > 0) {
+            ButtonComposable(
+                backgroundColor = Color("#de7b73".toColorInt()),
+                contentColor = Color("#ffffff".toColorInt()),
+                fontWeight = FontWeight.Bold,
+                cornerRadius = 6.dp,
+                text = "Previous",
+                onClick = {
+                    val previousIndex = currentIndex.value - 1
+                    if (previousIndex < 0) {
+                        Toast.makeText(context, "Go for previous", Toast.LENGTH_LONG).show()
+                    } else {
+                        currentIndex.value = previousIndex
+                    }
+                }
+            )
+        } else {
+            Spacer(modifier = Modifier.size(10.dp))
+        }
+        if(currentIndex.value < totalQuestion - 1) {
+            ButtonComposable(
+                backgroundColor = Color("#239cbc".toColorInt()),
+                contentColor = Color("#e9fcff".toColorInt()),
+                fontWeight = FontWeight.Bold,
+                cornerRadius = 6.dp,
+                text = "Next",
+                onClick = {
+                    val nextIndex = currentIndex.value + 1
+                    if (nextIndex >= totalQuestion) {
+                        Toast.makeText(context, "Go for next", Toast.LENGTH_LONG).show()
+                    } else {
+                        currentIndex.value = nextIndex
+                    }
+                    //Toast.makeText(context, "Coming soon $nextIndex - ${flatReadingModel.questionSet.size}", Toast.LENGTH_LONG).show()
+                }
+            )
+        } else {
+            ButtonComposable(
+                backgroundColor = Color("#239cbc".toColorInt()),
+                contentColor = Color("#e9fcff".toColorInt()),
+                fontWeight = FontWeight.Bold,
+                cornerRadius = 6.dp,
+                text = "Submit",
+                onClick = {
+                    /*val nextIndex = currentIndex.value + 1
+                    if (nextIndex >= totalQuestion) {
+                        Toast.makeText(context, "Go for submit", Toast.LENGTH_LONG).show()
+                    } else {
+                        currentIndex.value = nextIndex
+                    }*/
+                    //Toast.makeText(context, "Coming soon $nextIndex - ${flatReadingModel.questionSet.size}", Toast.LENGTH_LONG).show()
+                    onClickSubmit(currentIndex.value)
+                }
+            )
+        }
+    }
+}
+
+//----- File: flatpractice/presentation/screen/AppFlatPracticeScreen.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.screen
+
+import android.app.Application
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.rz.logwriter.DebugLog
+import com.rzrasel.wordquiz.feature.flatpractice.di.FlatPracticeModule
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeSubmitModel
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.state.FlatPracticeUiState
+import com.rzrasel.wordquiz.navigation.NavigationRouteHelper
+import com.rzrasel.wordquiz.presentation.components.dialog.LoadingDialog
+import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
+
+@Composable
+fun AppFlatPracticeScreen(
+    application: Application,
+    userTaskItem: UserTaskItemModel = UserTaskItemModel(
+        userAuthToken = "",
+        categoryId = "",
+        itemId = ""
+    ),
+    onClickBackButton: () -> Unit,
+    onNavigateSubmitScreen: (FlatPracticeSubmitModel) -> Unit,
+) {
+    val context = LocalContext.current
+    val viewModel = remember {
+        FlatPracticeModule.provideViewModel(context, userTaskItem.userAuthToken)
+    }
+    val uiState by viewModel.uiState.collectAsState()
+    var showLoadingDialog by remember { mutableStateOf(false) }
+
+    when (uiState) {
+        is FlatPracticeUiState.Idle -> {
+            viewModel.getFlatPracticeInitial(
+                userAuthToken = userTaskItem.userAuthToken,
+                categoryId = userTaskItem.categoryId,
+                itemId = userTaskItem.itemId,
+            )
+        }
+        is FlatPracticeUiState.SubmitToScreen -> {
+            val submitModel = (uiState as FlatPracticeUiState.SubmitToScreen).submitModel
+            DebugLog.Log("Submit state")
+            NavigationRouteHelper(
+                shouldNavigate = { true },
+                destination = { onNavigateSubmitScreen(submitModel) }
+            )
+        }
+        is FlatPracticeUiState.Success -> {
+            showLoadingDialog = false
+            val flatPracticeModel = (uiState as FlatPracticeUiState.Success).flatPracticeModel
+            DebugLog.Log(flatPracticeModel.toString())
+            FlatPracticeScreen(
+                application = application,
+                viewModel = viewModel,
+                userTaskItem = userTaskItem,
+                flatPracticeModel = flatPracticeModel,
+                onClickBackButton = onClickBackButton,
+            )
+        }
+        else -> {
+            showLoadingDialog = when (uiState) {
+                is FlatPracticeUiState.Loading -> true
+                else -> false
+            }
+            when (uiState) {
+                is FlatPracticeUiState.Error -> {
+                    val message = (uiState as FlatPracticeUiState.Error).message
+                    DebugLog.Log(message)
+                    FlatPracticeErrorScreen(
+                        application = application,
+                        viewModel = viewModel,
+                        userTaskItem = userTaskItem,
+                        onClickBackButton = onClickBackButton,
+                    )
+                } else -> {}
+            }
+        }
+    }
+
+    if (showLoadingDialog) {
+        LoadingDialog("Please wait...") {
+            showLoadingDialog = !showLoadingDialog
+        }
+    }
+}
+
+//----- File: flatpractice/presentation/screen/FlatPracticeErrorScreen.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.screen
+
+import android.app.Application
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.rzrasel.wordquiz.core.utils.BuildInfo
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.state.FlatPracticeUiState
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel.FlatPracticeViewModel
+import com.rzrasel.wordquiz.presentation.components.components.AppTopAppBar
+import com.rzrasel.wordquiz.presentation.components.layout.DefaultScaffold
+import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
+import com.rzrasel.wordquiz.ui.theme.AppTheme
+
+@Composable
+fun FlatPracticeErrorScreen(
+    application: Application,
+    viewModel: FlatPracticeViewModel,
+    userTaskItem: UserTaskItemModel = UserTaskItemModel(
+        userAuthToken = "",
+        categoryId = "",
+        itemId = ""
+    ),
+    onClickBackButton: () -> Unit,
+) {
+    val context = LocalContext.current
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(swipeRefreshState.isRefreshing) {
+        if (swipeRefreshState.isRefreshing) {
+            viewModel.refreshFlatPractice(userTaskItem)
+        }
+    }
+
+    DefaultScaffold(
+        topBar = {
+            AppTopAppBar(
+                title = "Practice and Memorize",
+                onClick = { onClickBackButton() }
+            )
+        }
+    ) {
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = { viewModel.refreshFlatPractice(userTaskItem) },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = AppTheme.dimens.paddingLarge)
+                    .padding(bottom = AppTheme.dimens.paddingExtraLarge)
+            ) {
+                when (uiState) {
+                    is FlatPracticeUiState.Error -> {
+                        if (BuildInfo.isDebugging(context)) {
+                            Text(
+                                text = (uiState as FlatPracticeUiState.Error).message,
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                        Text(
+                            text = "⬇\uFE0F Swipe down to refresh",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                    else -> {
+                        // Handle other states if needed
+                    }
                 }
             }
-            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .build()
-    }
-}
-
-/*class RetrofitClient {
-    fun <Api> buildApi(
-        context: Context,
-        api: Class<Api>,
-        netConnectionInterceptor: NetConnectionInterceptor,
-        authToken: String? = null
-    ): Api {
-        val baseUrl: String = AppConstants.Http.BASE_URL
-
-        val okHttpClient = OkHttpClient.Builder()
-            .addInterceptor(netConnectionInterceptor)
-            .build()
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .client(okHttpClient)
-            .client(
-                OkHttpClient.Builder()
-                    .addInterceptor { chain ->
-                        chain.proceed(chain.request().newBuilder().also { chainIt ->
-                            authToken.let {
-                                if(it != null) {
-                                    if(it.isNotEmpty()) {
-                                        chainIt.addHeader("Authorization", "Bearer $it")
-                                    }
-                                }
-                            }
-                        }.build())
-                    }.also { client ->
-                        //if(BuildConfig.DEBUG) {
-                        if(BuildInfo.isDebugging(context)) {
-                            val logging = HttpLoggingInterceptor()
-                            logging.setLevel(HttpLoggingInterceptor.Level.HEADERS)
-                            logging.setLevel(HttpLoggingInterceptor.Level.BODY)
-                            client.addInterceptor(logging)
-                        }
-                    }.build()
-            )
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(api)
-    }
-}*/
-
-//https://medium.com/@1550707241489/how-to-add-headers-to-retrofit-android-kotlin-450da34d3c3a
-//https://medium.com/@manoj.cs.iu/dynamic-header-in-retrofit-2-2c351d5ad2ac
-/*
-private fun okHttpClient(apiKey: ApiKey) = OkHttpClient().newBuilder()
-.addInterceptor(
-    object : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val request: Request = chain.request()
-                .newBuilder()
-                .header("accept", "application/json")
-                .header("Authorization", "${apiKey.value}")
-                .build()
-            return chain.proceed(request)
         }
     }
-)
-fun getUnsafeOkHttpClient(): OkHttpClient {
-    val interceptor = HttpLoggingInterceptor()
-    interceptor.level = HttpLoggingInterceptor.Level.HEADERS
-    interceptor.level = HttpLoggingInterceptor.Level.BODY
-    val builder = OkHttpClient.Builder()
-    builder.addInterceptor(interceptor)
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .addInterceptor(SupportInterceptor())
-            .authenticator(SupportInterceptor())
-    return builder.build()
 }
-*/
-/*
-class ApiInstance {
-    companion object {
-        private val retrofitBuilder: Retrofit.Builder =
-            Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+
+//----- File: flatpractice/presentation/screen/FlatPracticeScreen.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.screen
+
+import android.app.Application
+import android.content.Context
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.rzrasel.wordquiz.core.enumtype.RemoteResponseType
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeAnswerSetSubmitted
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeQuestionSetSubmitted
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.components.composables.FlatPracticeButtonView
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.components.composables.FlatPracticeQuestionView
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.state.FlatPracticeUiEvent
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel.FlatPracticeViewModel
+import com.rzrasel.wordquiz.presentation.components.components.AppTopAppBar
+import com.rzrasel.wordquiz.presentation.components.layout.DefaultScaffold
+import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
+import com.rzrasel.wordquiz.ui.theme.AppTheme
+
+@Composable
+fun FlatPracticeScreen(
+    application: Application,
+    viewModel: FlatPracticeViewModel,
+    flatPracticeModel: FlatPracticeModel,
+    userTaskItem: UserTaskItemModel = UserTaskItemModel(
+        userAuthToken = "",
+        categoryId = "",
+        itemId = ""
+    ),
+    onClickBackButton: () -> Unit,
+) {
+    val context: Context = LocalContext.current
+    val remQuestionIndex: MutableState<Int> = remember { mutableIntStateOf(0) }
+    val mcqQuestionState by viewModel.mcqQuestionState.collectAsState()
+
+    DefaultScaffold(
+        topBar = {
+            AppTopAppBar(
+                title = "Practice and Memorize",
+                onClick = { onClickBackButton() }
+            )
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 64.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = AppTheme.dimens.paddingLarge)
+                    .padding(bottom = AppTheme.dimens.paddingExtraLarge)
+            ) {
+                val responseTypeValue: String = mcqQuestionState.type
+                val responseType: RemoteResponseType = RemoteResponseType.find(responseTypeValue)
+
+                when (responseType) {
+                    RemoteResponseType.ERROR -> {
+                        Text(text = "Error loading questions")
+                    }
+                    else -> {
+                        val questionSet = mcqQuestionState.data?.questionSet ?: emptyList()
+                        if (questionSet.isEmpty()) {
+                            Text(text = "No questions available")
+                        } else {
+                            val currentIndex = remQuestionIndex.value.coerceIn(0, questionSet.size - 1)
+                            questionSet.getOrNull(currentIndex)?.let { questionItem ->
+                                FlatPracticeQuestionView(currentIndex, questionItem, viewModel)
+                                Spacer(Modifier.height(16.dp))
+
+                                FlatPracticeButtonView(
+                                    currentIndex = remQuestionIndex,
+                                    totalQuestion = questionSet.size,
+                                    isSingleQuestionView = true,
+                                    onClickSubmit = { index ->
+                                        val submittedQuestions = arrayListOf<FlatPracticeQuestionSetSubmitted>()
+                                        questionSet.forEach { question ->
+                                            val answers = arrayListOf<FlatPracticeAnswerSetSubmitted>()
+                                            question.answerSet.forEach { item ->
+                                                answers.add(
+                                                    FlatPracticeAnswerSetSubmitted(
+                                                        answerId = item.answerId ?: "",
+                                                        answer = item.answer ?: "",
+                                                        isTure = item.isSelected,
+                                                    )
+                                                )
+                                            }
+                                            submittedQuestions.add(
+                                                FlatPracticeQuestionSetSubmitted(
+                                                    questionId = question.questionId ?: "",
+                                                    question = question.question ?: "",
+                                                    answerSet = answers,
+                                                )
+                                            )
+                                        }
+                                        val nextQuestionIndex = flatPracticeModel.data?.nextQuestionIndex ?: 1
+                                        userTaskItem.currentQuestionIndex = nextQuestionIndex
+                                        val request = FlatPracticeRequest(
+                                            userAuthToken = userTaskItem.userAuthToken,
+                                            categoryId = userTaskItem.categoryId,
+                                            itemId = userTaskItem.itemId,
+                                            currentQuestionIndex = nextQuestionIndex,
+                                            questionSet = submittedQuestions,
+                                        )
+                                        viewModel.onUiEvent(FlatPracticeUiEvent.Submit(request))
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+//----- File: flatpractice/presentation/state/FlatPracticeUiEvent.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.state
+
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+
+sealed class FlatPracticeUiEvent {
+    data object SubmitPrevious: FlatPracticeUiEvent()
+    data object SubmitNext: FlatPracticeUiEvent()
+    data class Submit(val flatPracticeRequest: FlatPracticeRequest): FlatPracticeUiEvent()
+}
+
+//----- File: flatpractice/presentation/state/FlatPracticeUiState.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.state
+
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeSubmitModel
+
+sealed class FlatPracticeUiState {
+    data object Idle: FlatPracticeUiState()
+    data object Loading: FlatPracticeUiState()
+    data object Submit: FlatPracticeUiState()
+    data class SubmitToScreen(val submitModel: FlatPracticeSubmitModel): FlatPracticeUiState()
+    data class Success(val flatPracticeModel: FlatPracticeModel) : FlatPracticeUiState()
+    data class Error(val message: String): FlatPracticeUiState()
+    data class Result(val message: String): FlatPracticeUiState()
+}
+
+//----- File: flatpractice/presentation/viewmodel/FlatPracticeViewModel.kt -----
+
+package com.rzrasel.wordquiz.feature.flatpractice.presentation.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.rz.logwriter.DebugLog
+import com.rzrasel.wordquiz.core.enumtype.RemoteResponseType
+import com.rzrasel.wordquiz.feature.flatpractice.data.remote.FlatPracticeRequest
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeAnswerItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeQuestionItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeSubmitModel
+import com.rzrasel.wordquiz.feature.flatpractice.domain.usecase.FlatPracticeUseCase
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.state.FlatPracticeUiEvent
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.state.FlatPracticeUiState
+import com.rzrasel.wordquiz.networkstate.NetworkState
+import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+
+class FlatPracticeViewModel(
+    private val flatPracticeUseCase: FlatPracticeUseCase
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<FlatPracticeUiState>(FlatPracticeUiState.Idle)
+    val uiState: StateFlow<FlatPracticeUiState> = _uiState
+
+    private val _mcqQuestionState = MutableStateFlow<FlatPracticeModel>(
+        FlatPracticeModel(
+            type = RemoteResponseType.ERROR.name.lowercase(),
+            message = "Initializing...",
+            data = null
+        )
+    )
+    val mcqQuestionState: StateFlow<FlatPracticeModel> = _mcqQuestionState
+
+    private val _mcqSubmitQuestionSet = MutableStateFlow<FlatPracticeSubmitModel>(FlatPracticeSubmitModel())
+    val mcqSubmitQuestionSet: StateFlow<FlatPracticeSubmitModel> = _mcqSubmitQuestionSet
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun getFlatPracticeInitial(userAuthToken: String?, categoryId: String, itemId: String, nextQuestionId: Int = 1) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = FlatPracticeUiState.Loading
+            try {
+                when (val result = flatPracticeUseCase.execute(userAuthToken, categoryId, itemId, nextQuestionId)) {
+                    is NetworkState.Success -> {
+                        result.data?.let {
+                            _mcqQuestionState.value = it.copy(
+                                type = it.type.ifEmpty { RemoteResponseType.SUCCESS.name.lowercase() },
+                                message = it.message ?: "Success"
+                            )
+                            _uiState.value = FlatPracticeUiState.Success(it)
+                        } ?: run {
+                            handleError("No data received")
+                        }
+                    }
+                    is NetworkState.Error -> {
+                        handleError(result.message ?: "Unknown error")
+                    }
+                    is NetworkState.Loading -> {
+                        // Handle loading if needed
+                    }
+                }
+            } catch (e: Exception) {
+                handleError(e.message ?: "Network error")
+            } finally {
+                _isRefreshing.value = false
+            }
+        }
     }
 
-    private val retrofit:Retrofit = builder.build()
+    private fun handleError(message: String) {
+        _mcqQuestionState.value = FlatPracticeModel(
+            type = RemoteResponseType.ERROR.name.lowercase(),
+            message = message
+        )
+        _uiState.value = FlatPracticeUiState.Error(message)
+    }
 
-    private val httpClient: OkHttpClient.Builder
-            = OkHttpClient.Builder()
+    fun onUiEvent(event: FlatPracticeUiEvent) {
+        when (event) {
+            is FlatPracticeUiEvent.Submit -> {
+                val flatPracticeRequest: FlatPracticeRequest = event.flatPracticeRequest
+                /*flatPracticeRequest.questionSet.forEach { question ->
+                    DebugLog.Log("${question.questionId} question")
+                    question.answerSet.forEach { answer ->
+                        //DebugLog.Log(answer.answerId)
+                        if(answer.isTure) {
+                            DebugLog.Log("${answer.answerId} is selected")
+                        }
+                    }
+                }*/
+                //
+                getFlatPracticeNext(flatPracticeRequest)
+            }
+            else -> {
+                // Handle other events
+            }
+        }
+    }
 
-    fun <T> createService(serviceClass: Class<T>): T {
-        return retrofit.create(serviceClass)
+    fun toggleOption(index: Int, optionIndex: Int) {
+        val currentState = _mcqQuestionState.value
+        val data = currentState.data ?: return
+        val questionSet = data.questionSet ?: return
+        if (index >= questionSet.size) return
+
+        val question = questionSet[index]
+        val answerSet = question.answerSet ?: return
+        if (optionIndex >= answerSet.size) return
+
+        val updatedOptions = answerSet.mapIndexed { point, option ->
+            if (point == optionIndex) option.copy(isSelected = !option.isSelected) else option
+        }
+
+        val updatedQuestionSet = ArrayList(questionSet).apply {
+            set(index, question.copy(answerSet = updatedOptions))
+        }
+
+        _mcqQuestionState.value = currentState.copy(
+            data = data.copy(
+                questionSet = updatedQuestionSet
+            )
+        )
+    }
+
+    private fun getFlatPracticeNext(request: FlatPracticeRequest, isNewWindow: Boolean = true) {
+        if(isNewWindow) {
+            val flatPracticeSubmitModel: FlatPracticeSubmitModel = FlatPracticeSubmitModel.mapToSubmitModel(request)
+            DebugLog.Log(flatPracticeSubmitModel.toString())
+            _mcqSubmitQuestionSet.value = flatPracticeSubmitModel
+            _uiState.value = FlatPracticeUiState.SubmitToScreen(flatPracticeSubmitModel)
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = FlatPracticeUiState.Loading
+            when (val result = flatPracticeUseCase.executeNext(request)) {
+                is NetworkState.Success -> {
+                    result.data?.let {
+                        _mcqQuestionState.value = it
+                        _uiState.value = FlatPracticeUiState.Success(it)
+                    } ?: run {
+                        handleError("Null data")
+                    }
+                }
+                is NetworkState.Error -> {
+                    handleError(result.message ?: "Unknown error")
+                }
+                is NetworkState.Loading -> {
+                    // Handle loading if needed
+                }
+            }
+        }
+    }
+
+    fun refreshFlatPractice(userTaskItem: UserTaskItemModel) {
+        _isRefreshing.value = true
+        getFlatPracticeInitial(
+            userAuthToken = userTaskItem.userAuthToken,
+            categoryId = userTaskItem.categoryId,
+            itemId = userTaskItem.itemId,
+            nextQuestionId = userTaskItem.currentQuestionIndex
+        )
+    }
+
+    fun submitPractice() {
+        viewModelScope.launch {
+            _uiState.value = FlatPracticeUiState.SubmitToScreen(_mcqSubmitQuestionSet.value)
+        }
     }
 }
 
-val service: UserService = ApiInstance.createService(UserService::class.java)
-*/
+
+//----- File: navigation/AppNavigation.kt -----
+
+package com.rzrasel.wordquiz.navigation
+
+import android.app.Application
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.rzrasel.wordquiz.core.enumtype.AccessMode
+import com.rzrasel.wordquiz.core.enumtype.CategoryType
+import com.rzrasel.wordquiz.feature.dashboard.presentation.screen.AppDashboardScreen
+import com.rzrasel.wordquiz.feature.flatpractice.domain.model.FlatPracticeSubmitModel
+import com.rzrasel.wordquiz.presentation.screens.data.UserModel
+import com.rzrasel.wordquiz.presentation.screens.data.UserTaskItemModel
+import com.rzrasel.wordquiz.feature.flatpractice.presentation.screen.AppFlatPracticeScreen
+import com.rzrasel.wordquiz.feature.flatpracticesubmit.presentation.screen.AppFlatPracticeSubmitScreen
+import com.rzrasel.wordquiz.presentation.screens.flatreading.AppFlatReadingScreen
+import com.rzrasel.wordquiz.presentation.screens.login.AppLoginScreen
+import com.rzrasel.wordquiz.presentation.screens.registration.AppRegistrationScreen
+import com.rzrasel.wordquiz.presentation.screens.splash.SplashScreen
+
+@Composable
+fun AppNavigation(application: Application, navController: NavHostController) {
+    //val navController = rememberNavController()
+    var userModel: UserModel? = UserModel("")
+    NavHost(navController = navController, startDestination =  NavigationRoute.SplashScreen) {
+        composable<NavigationRoute.SplashScreen> {
+            NavigateToSplashScreen(navController)
+        }
+        composable<NavigationRoute.LoginScreen> {
+            NavigateToLoginScreen(application, navController)
+        }
+        composable<NavigationRoute.RegistrationScreen> {
+            NavigateToRegistrationScreen(application, navController)
+        }
+        composable<NavigationRoute.DashboardScreen> { backStackEntry ->
+            NavigateToDashboardScreen(application, navController, backStackEntry)
+        }
+        composable<NavigationRoute.FlatReadingScreen> { backStackEntry ->
+            NavigateToFlatReadingScreen(application, navController, backStackEntry)
+        }
+        composable<NavigationRoute.FlatPracticeScreen> { backStackEntry ->
+            NavigateToFlatPracticeScreen(application, navController, backStackEntry)
+        }
+        composable<NavigationRoute.FlatPracticeSubmitScreen> { backStackEntry ->
+            NavigateToFlatPracticeSubmitScreen(application, navController, backStackEntry)
+        }
+        composable<NavigationRoute.TaskItemScreen> { backStackEntry ->
+            NavigateToTaskItemScreen(application, navController, backStackEntry)
+        }
+    }
+}
+
+// SplashScreen Route
+@Composable
+fun NavigateToSplashScreen(navController: NavHostController) {
+    return SplashScreen(
+        onNavigateToLoginScreen = {
+            navController.navigate(NavigationRoute.LoginScreen) {
+                popUpTo(0)
+            }
+        }
+    )
+}
+
+// LoginScreen Route
+@Composable
+fun NavigateToLoginScreen(application: Application, navController: NavHostController) {
+    return AppLoginScreen(
+        application = application,
+        onNavigateToRegistrationScreen = {
+            navController.navigate(NavigationRoute.RegistrationScreen) {
+                popUpTo(0)
+            }
+        },
+        onNavigateToDashboardScreen = { userModel ->
+            val userAuthToken = userModel.userAuthToken ?: ""
+            navController.navigate(NavigationRoute.DashboardScreen(userAuthToken)) {
+                popUpTo(0)
+            }
+        }
+    )
+}
+
+// RegistrationScreen Route
+@Composable
+fun NavigateToRegistrationScreen(application: Application, navController: NavHostController) {
+    return AppRegistrationScreen(
+        application = application,
+        onNavigateToLoginScreen = {
+            navController.navigate(NavigationRoute.LoginScreen) {
+                popUpTo(0)
+            }
+        }
+    )
+}
+
+// DashboardScreen Route
+@Composable
+fun NavigateToDashboardScreen(application: Application, navController: NavHostController, backStackEntry: NavBackStackEntry) {
+    val userData = requireNotNull(backStackEntry.toRoute<NavigationRoute.DashboardScreen>())
+    return AppDashboardScreen(
+        application = application,
+        userModel = UserModel(userAuthToken = userData.userAuthToken),
+        onNavigateToFlatReading = { userTaskItem ->
+            navController.navigate(
+                NavigationRoute.FlatReadingScreen(
+                    userAuthToken = userTaskItem.userAuthToken,
+                    categoryId = userTaskItem.categoryId,
+                    itemId = userTaskItem.itemId
+                )
+            )
+        },
+        onNavigateToTaskItem = { userTaskItem ->
+            navController.navigate(
+                NavigationRoute.TaskItemScreen(
+                    userAuthToken = userTaskItem.userAuthToken,
+                    categoryId = userTaskItem.categoryId,
+                    categoryType = userTaskItem.categoryType,
+                    itemId = userTaskItem.itemId,
+                    accessMode = userTaskItem.accessMode
+                )
+            )
+        }
+    )
+}
+
+// FlatReadingScreen Route
+@Composable
+fun NavigateToFlatReadingScreen(application: Application, navController: NavHostController, backStackEntry: NavBackStackEntry) {
+    val userTaskItem = requireNotNull(backStackEntry.toRoute<NavigationRoute.FlatReadingScreen>())
+    return AppFlatReadingScreen(
+            application = application,
+            userTaskItem = UserTaskItemModel(
+                userAuthToken = userTaskItem.userAuthToken,
+                categoryId = userTaskItem.categoryId,
+                itemId = userTaskItem.itemId
+            ),
+            onClickBackButton = {
+                navController.popBackStack()
+            }
+        )
+}
+
+// FlatPracticeScreen Route
+@Composable
+fun NavigateToFlatPracticeScreen(application: Application, navController: NavHostController, backStackEntry: NavBackStackEntry) {
+    val userTaskItem = requireNotNull(backStackEntry.toRoute<NavigationRoute.FlatPracticeScreen>())
+    return AppFlatPracticeScreen(
+        application = application,
+        userTaskItem = UserTaskItemModel(
+            userAuthToken = userTaskItem.userAuthToken,
+            categoryId = userTaskItem.categoryId,
+            itemId = userTaskItem.itemId
+        ),
+        onClickBackButton = {
+            navController.popBackStack()
+        },
+        onNavigateSubmitScreen = { practiceSubmitModel ->
+            navController.navigate(
+                NavigationRoute.FlatPracticeSubmitScreen(
+                    userAuthToken = practiceSubmitModel.userAuthToken,
+                    categoryId = practiceSubmitModel.categoryId,
+                    itemId = practiceSubmitModel.itemId,
+                )
+            )
+        },
+    )
+}
+
+@Composable
+fun NavigateToFlatPracticeSubmitScreen(application: Application, navController: NavHostController, backStackEntry: NavBackStackEntry) {
+    val practiceSubmitModel = requireNotNull(backStackEntry.toRoute<NavigationRoute.FlatPracticeSubmitScreen>())
+    return AppFlatPracticeSubmitScreen(
+        application = application,
+        practiceSubmitModel = FlatPracticeSubmitModel(
+        ),
+        onClickBackButton = {
+            navController.popBackStack()
+        },
+    )
+}
+
+// TaskItemScreen Route
+@Composable
+fun NavigateToTaskItemScreen(application: Application, navController: NavHostController, backStackEntry: NavBackStackEntry) {
+    val userTaskItem = requireNotNull(backStackEntry.toRoute<NavigationRoute.TaskItemScreen>())
+    return NavigateRouteToTaskItemScreen(
+        application = application,
+        navController = navController,
+        userTaskItemModel = UserTaskItemModel(
+            userAuthToken = userTaskItem.userAuthToken,
+            categoryId = userTaskItem.categoryId,
+            categoryType = userTaskItem.categoryType,
+            itemId = userTaskItem.itemId,
+            accessMode = userTaskItem.accessMode
+        )
+    )
+}
+
+@Composable
+fun NavigateRouteToTaskItemScreen(
+    application: Application,
+    navController: NavHostController,
+    userTaskItemModel: UserTaskItemModel,
+) {
+    val accessMode: AccessMode = AccessMode.find(userTaskItemModel.accessMode)
+    val categoryType: CategoryType = CategoryType.find(userTaskItemModel.categoryType)
+    //
+    when(categoryType) {
+        CategoryType.READING -> {
+            AppFlatReadingScreen(
+                application = application,
+                userTaskItem = userTaskItemModel,
+                onClickBackButton = {
+                    //navController.navigateUp()
+                    navController.popBackStack()
+                },
+            )
+        } CategoryType.PRACTICE -> {
+            AppFlatPracticeScreen(
+                application = application,
+                userTaskItem = userTaskItemModel,
+                onClickBackButton = {
+                    navController.navigateUp()
+                },
+                onNavigateSubmitScreen = {},
+            )
+        } else -> {}
+    }
+}
+
+//----- File: navigation/NavigationRoute.kt -----
+
+package com.rzrasel.wordquiz.navigation
+
+import kotlinx.serialization.Serializable
+
+object NavigationRoute {
+    @Serializable
+    object SplashScreen
+    @Serializable
+    object LoginScreen
+    @Serializable
+    object RegistrationScreen
+    /*@Serializable
+    object DashboardScreen*/
+    @Serializable
+    data class DashboardScreen(val userAuthToken: String)
+    /*@Serializable
+    data class DashboardScreen(val userModel: UserModel)*/
+    @Serializable
+    data class FlatReadingScreen(val userAuthToken: String, val categoryId: String, val itemId: String)
+    @Serializable
+    data class FlatPracticeScreen(val userAuthToken: String, val categoryId: String, val itemId: String)
+    @Serializable
+    data class FlatPracticeSubmitScreen(val userAuthToken: String, val categoryId: String, val itemId: String)
+    @Serializable
+    data class TaskItemScreen(val userAuthToken: String, val categoryId: String, val categoryType: String, val itemId: String, val accessMode: String)
+    @Serializable
+    data class DefeatWinScreen(val userAuthToken: String, val categoryId: String, val itemId: String, val lastQuestionId: String)
+    @Serializable
+    object PopBackStackUp
+}
 
 /*
-
-
-https://medium.com/@KaushalVasava/retrofit-in-android-5a28c8e988ce
-
-https://medium.com/@ramadan123sayed/a-deep-dive-into-mvvm-with-jetpack-compose-3b1e9deaa843
-
-https://github.com/rzrasel/kotlin-mvvm-repository-factory-login-one-tutorial
+https://pl-coding.com/2024/10/02/official-type-safe-navigation-with-compose/
+https://github.com/philipplackner/ComposeNavigationCustomTypes
 */
 
-//----- File: networkstate/NetworkState.kt -----
+@Serializable
+sealed class Screens {
+    @Serializable
+    object Auth {
+        @Serializable
+        object EmailSignUp
 
-package com.rzrasel.wordquiz.networkstate
+        @Serializable
+        object EmailLogIn
+    }
 
-sealed class NetworkState<T>(val data: T? = null, val message: String? = null) {
-    class Success<T>(data: T?): NetworkState<T>(data)
-    class Loading<T>(data: T? = null): NetworkState<T>(data)
-    class Error<T>(message: String?, data: T? = null): NetworkState<T>(data, message)
+    @Serializable
+    object App {
+        @Serializable
+        data class Home(
+            val name: String = "default",
+        )
+    }
 }
-/*
-enum class DayOfWeek(val dayNumber: Int) {
-  MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4),
-  FRIDAY(5), SATURDAY(6), SUNDAY(7)
+
+//----- File: navigation/NavigationRouteHelper.kt -----
+
+package com.rzrasel.wordquiz.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+
+@Composable
+fun NavigationRouteHelper(
+    shouldNavigate: ()-> Boolean,
+    destination: ()-> Unit
+) {
+    LaunchedEffect(key1 = shouldNavigate()) {
+        if(shouldNavigate()) {
+            destination()
+        }
+    }
 }
 
 
-*/
 
 
 
 
-
-- stop reload again when back to dashboard screen
-- stop reload again when back from other scree to dashboard screen
-- stop reload again background to foreground to dashboard screen
-- stop show showLoadingDialog when back to dashboard screen
-
-*** manual dependency injection
-*** provide import statements
-*** code refactor if better options
-*** Don't change class name if not needed
-*** Don't change unwanted codebase
-*** Provide Full Codebase
-*** read full document properly
-
-
-Version - 1.0.0
 
 - give full directory structure first
 - convert in mvvm clean architecture
-- restructure refactor directory structure as mvvm clean architecture
-- code 
+- restructure refactor directory structure as mvvm clean architecture code
 - use manual dependency injection
-- use mapper directory for data mapper, mapper for both data and domain
-- don't make data mapper a mapper class it just data and domain model class extension
+
+- FlatPracticeUiState is Submit navigate to AppFlatPracticeSubmitScreen screen
+navigate to AppFlatPracticeSubmitScreen screen NavigateToFlatPracticeSubmitScreen using FlatPracticeSubmitModel data model with NavigationRoute FlatPracticeSubmitScreen
+- how to convert FlatPracticeSubmitModel to NavigationRoute FlatPracticeSubmitScreen data
+- FlatPracticeSubmitModel convert json string and pass in NavigationRoute FlatPracticeSubmitScreen
+
 - use NetConnectionInterceptor, RetrofitClient, NetworkState for global project
-- manual dependency injection di use DashboardModule
+- manual dependency injection di use FlatPracticeModule
 
 *** manual dependency injection
 *** provide import statements

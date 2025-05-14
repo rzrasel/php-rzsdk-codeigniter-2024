@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent direct access to sensitive files
+    <FilesMatch "^(config\.php|\.htaccess)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    # Redirect all requests to index.php if the file doesn't exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>

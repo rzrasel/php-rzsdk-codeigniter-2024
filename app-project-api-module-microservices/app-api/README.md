@@ -1,0 +1,369 @@
+//----- File: app-api/.htaccess -----
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent direct access to sensitive files
+    <FilesMatch "^(config\.php|\.htaccess)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+    
+    # Redirect all requests to index.php if the file doesn't exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+
+//----- File: app-api/app/config/config.php -----
+
+<?php
+define("DB_TYPE", "mysql"); // Set "sqlite" for SQLite or "mysql" for MySQL
+define("DB_HOST", "localhost");
+define("DB_NAME", "test_db");
+define("DB_USER", "root");
+define("DB_PASS", "");
+
+// SQLite Configuration (for SQLite database)
+define("DB_SQLITE_PATH", __DIR__ . "/database.db");
+
+defined("BASE_URL") or define("BASE_URL", "http://localhost/app-api/");
+// Default Controller and Action
+define("DEFAULT_CONTROLLER", "HomeController");
+define("DEFAULT_ACTION", "index");
+
+// Error Reporting
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+?>
+
+//----- File: app-api/app/controllers/home-controller.php -----
+
+<?php
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class HomeController extends BaseController {
+
+    public function index() {
+        echo "Welcome to the HomeController!";
+    }
+
+    public function show($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/app/controllers/user-email-controller.php -----
+
+<?php
+use App\Microservice\Core\Utils\Data\Response\ResponseData;
+use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
+use App\Microservice\Presentation\Controller\Use\Email\UserEmailController;
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class UserEmailController extends BaseController {
+
+    public function index() {
+        if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+            http_response_code(200);
+            $responseData = new ResponseData("Only POST method is allowed", ResponseStatus::ERROR, null);
+            echo $responseData->toJson();
+            exit;
+        }
+
+        if(empty($_POST)) {
+            $rawData = file_get_contents("php://input");
+            $inputData = json_decode($rawData, true);
+            if(!empty($inputData)) {
+                $_POST = $inputData;
+            }
+        }
+        $controller = new UserEmailController();
+        $response = $controller->executeController($_POST);
+        echo $response->toJson();
+    }
+
+    public function show($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/app/core/base-controller.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+?>
+<?php
+class BaseController {
+    protected $model;
+
+    public function __construct($modelName = null) {
+        if ($modelName) {
+            $this->loadModel($modelName);
+        }
+    }
+
+    public function loadModel($modelName) {
+        $modelClass = "models/" . $modelName . ".php";
+        if (class_exists($modelClass)) {
+            $this->model = new $modelClass();
+        }
+    }
+
+    // Render JSON response for API requests
+    public function renderJson($data) {
+        header("Content-Type: application/json");
+        echo json_encode($data);
+    }
+
+    // Render HTML view for standard web pages
+    public function renderHtml($view, $data) {
+        extract($data);
+        require "app/views/{$view}.php";
+    }
+}
+?>
+
+//----- File: app-api/app/core/base-model.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+use App\Core\Database;
+?>
+<?php
+class BaseModel {
+    protected $db;
+
+    public function __construct() {
+        $this->db = Database::connect();
+    }
+}
+
+//----- File: app-api/app/core/database.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+use PDO;
+?>
+<?php
+class Database {
+    public static function connect() {
+        $dbType = DB_TYPE;
+        $dbConnection = null;
+
+        /*try {
+            if ($dbType === 'mysql') {
+                $dbConnection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+            } elseif ($dbType === 'sqlite') {
+                $dbConnection = new PDO("sqlite:" . DB_SQLITE_PATH);
+            }
+            $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\Exception $e) {
+            die("Database connection failed: " . $e->getMessage());
+        }*/
+
+        return $dbConnection;
+    }
+}
+?>
+
+//----- File: app-api/app/core/router.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+class Router {
+    private $url;
+    private $controller;
+    private $method;
+    private $params = [];
+
+    public function __construct($url) {
+        $this->url = $url;
+        $this->parseUrl();
+    }
+
+    private function parseUrl() {
+        $url = trim($this->url, '/');
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $parts = explode('/', $url);
+        echo "<pre>" . print_r($parts, true) . "</pre> " . __LINE__;
+
+        // Get controller
+        $this->controller = isset($parts[0]) && !empty($parts[0]) ?
+            ucfirst(strtolower($parts[0])) . 'Controller' :
+            DEFAULT_CONTROLLER . 'Controller';
+        //echo $this->controller;
+
+        // Get method
+        $this->method = isset($parts[1]) && !empty($parts[1]) ?
+            strtolower($parts[1]) :
+            'index';
+
+        // Get params
+        $this->params = array_slice($parts, 2);
+    }
+
+    public function dispatch() {
+        $controllerClass = 'App\\Controllers\\' . $this->controller;
+
+        if (class_exists($controllerClass)) {
+            $controller = new $controllerClass();
+
+            // Check if method exists
+            if (method_exists($controller, $this->method)) {
+                // Call the method with parameters
+                call_user_func_array([$controller, $this->method], $this->params);
+            } else {
+                // Method not found
+                $this->jsonResponse(['error' => 'Method not found'], 404);
+            }
+        } else {
+            // Controller not found
+            $this->jsonResponse(['error' => 'Controller not found'], 404);
+        }
+    }
+
+    private function jsonResponse($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+}
+?>
+<?php
+/*class Router {
+    public static function route($url) {
+        // Clean and split URL into segments
+        $segments = explode("/", trim($url, "/"));
+
+        // Default controller and action
+        // Get controller from URL, if not use default controller
+        $controller = isset($_GET["controller"]) ? ucfirst(strtolower($_GET["controller"])) . "Controller" : DEFAULT_CONTROLLER;
+        echo $controller;
+
+        // Get the method, default to index if not set
+        $method = isset($_GET["method"]) ? $_GET["method"] : "index";
+
+        // Get parameters from URL
+        $params = isset($_GET["params"]) ? explode("/", $_GET["params"]) : [];
+
+        // Check if the controller exists
+        if (class_exists($controller)) {
+            $controllerInstance = new $controller();
+
+            // Check if the method exists
+            if (method_exists($controllerInstance, $method)) {
+                // Call the method with parameters
+                call_user_func_array([$controllerInstance, $method], $params);
+            } else {
+                echo "Method '$method' not found in controller '$controller'.";
+            }
+        } else {
+            echo "Controller '$controller' not found.";
+        }
+    }
+}*/
+?>
+
+//----- File: app-api/home-controller.php -----
+
+<?php
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class HomeController extends BaseController {
+
+    public function index() {
+        echo "Welcome to the HomeController!";
+    }
+
+    public function showBy($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/index.php -----
+
+<?php
+require_once("include.php");
+/*echo BASE_URL;
+echo "<br />";*/
+?>
+<?php
+require_once "app/config/config.php";
+//require_once "app/core/base-controller.php";
+//require_once "app/core/base-model.php";
+//require_once "app/core/database.php";
+//require_once "app/core/router.php";
+?>
+<?php
+//require_once "app/controllers/home-controller.php";
+/*require_once "app/controllers/UserController.php";
+require_once "app/controllers/ContactController.php";
+require_once "app/models/UserModel.php";
+require_once "app/models/ContactModel.php";*/
+?>
+<?php
+use RzSDK\URL\SiteUrl;
+use App\Core\Router;
+?>
+<?php
+// Get the current URL
+/*$url = $_SERVER["REQUEST_URI"];
+echo $url;*/
+$fullUrl = SiteUrl::getFullUrl();
+
+// Call the router to handle the URL
+$router = new Router($fullUrl);
+$router->dispatch();
+/*$homeController = new HomeController();
+$homeController->showBy(1);*/
+?>
+
+
+
+
+- make simple mvm php project
+- mvm can use/handle api request also
+- url translate like url/user, url/user/edit/13, url/contact, url/contact/add/13 etc
+- dynamically access controller and model using url translate
+- dynamically controller and model like class_exists, method_exists
+- use base controller, base model, base database
+- support multiple database like mysql, sqlite etc
+- use url for controller and model data like: 1) url/user = user controller 2) url/user/edit/13 = user controller, update user id = 13
+- $url controller and model data not case-sensitive
+- provide proper .htaccess
+- support both api request and html view data
+- default controller and model is home
+- default controller get from config file
+
+*** refactor and optimize code if needed
+*** don't break code consistency
+*** must be code consistency
+*** code or directory refactor if needed
+*** code or directory refactor if better options
+*** Don't change class name if not needed
+*** Don't change unwanted codebase
+*** provide full code
+*** Provide Full Codebase
+*** read full document properly

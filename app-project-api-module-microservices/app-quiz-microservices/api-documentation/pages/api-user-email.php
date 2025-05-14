@@ -26,6 +26,7 @@ $baseUrl = dirname($baseUrl);
             <a href="#success-response">Success</a>
             <a href="#error-405">Error 405</a>
             <a href="#error-409">Error 409</a>
+            <a href="#select-output">Select Output</a>
             <a href="#error-codes">Error Codes</a>
             <a href="#notes">Notes</a>
         </div>
@@ -37,12 +38,7 @@ $baseUrl = dirname($baseUrl);
 
         <section id="overview" class="api-section">
             <h2>Overview</h2>
-            <p>This endpoint registers or updates a user's email in the system.</p>
-            <ul>
-                <li><strong>Method:</strong> POST</li>
-                <li><strong>Authorization:</strong> None</li>
-                <li><strong>Content-Type:</strong> application/json</li>
-            </ul>
+            <p>This API registers or updates a user's email address. Supports <code>insert</code> and <code>select</code> operations.</p>
         </section>
 
         <section id="request-body" class="api-section">
@@ -51,59 +47,104 @@ $baseUrl = dirname($baseUrl);
   "user_id": "989898",
   "user_email": "email@rzrasel.com",
   "email_provider": "user",
-  "is_primary": "false",
+  "is_primary": "true",
   "verification_code": "",
   "action_type": "insert"
 }</pre>
         </section>
 
         <section id="success-response" class="api-section">
-            <h2>Success Response <span class="status-code">200 OK</span></h2>
+            <h2>Success Response <span class="status-code">201 Created</span></h2>
             <pre>{
-  "message": "'email@rzrasel.com' email already exists.",
-  "status": "error",
+  "message": "User email created successfully.",
+  "status": "success",
+  "status_code": 201,
   "data": {
     "user_id": "989898",
-    "id": "174653866244413319",
+    "id": "174663959427574745",
     "user_email": "email@rzrasel.com",
     "email_provider": "user",
-    "is_primary": "false",
+    "is_primary": false,
     "last_verification_sent_at": null,
     "verification_code_expiry": null,
     "verification_status": "pending",
     "status": "active"
-  },
-  "status_code": 200
+  }
 }</pre>
         </section>
 
         <section id="error-405" class="api-section">
-            <h2>Error Response: Method Not Allowed <span class="status-code">405 ERROR</span></h2>
+            <h2>Error: Method Not Allowed <span class="status-code">405</span></h2>
             <pre>{
   "message": "Only POST method is allowed",
   "status": "error",
-  "data": null,
-  "status_code": 405
+  "status_code": 405,
+  "data": null
 }</pre>
         </section>
 
         <section id="error-409" class="api-section">
-            <h2>Error Response: Duplicate Email <span class="status-code">409 ERROR</span></h2>
+            <h2>Error: Duplicate Email <span class="status-code">409</span></h2>
             <pre>{
   "message": "'email@rzrasel.com' email already exists.",
   "status": "error",
+  "status_code": 409,
   "data": {
     "user_id": "989898",
-    "id": "174653870819244893",
-    "user_email": "email@rzrasel.com",
+    "id": "174663961172292734",
+    "user_email": "email1@rzrasel.com",
     "email_provider": "user",
-    "is_primary": "false",
+    "is_primary": true,
     "last_verification_sent_at": null,
     "verification_code_expiry": null,
     "verification_status": "pending",
     "status": "active"
-  },
-  "status_code": 409
+  }
+}</pre>
+        </section>
+
+        <section id="select-output" class="api-section">
+            <h2>Select Operation Output</h2>
+            <p>Request:</p>
+            <pre>{
+  "user_id": "989898",
+  "user_email": "email@rzrasel.com",
+  "email_provider": "user",
+  "is_primary": "false",
+  "verification_code": "",
+  "status": "active",
+  "action_type": "select",
+  "columns": ["user_id", "status"]
+}</pre>
+            <p>Response:</p>
+            <pre>{
+  "message": "User email selected successfully.",
+  "status": "success",
+  "status_code": 200,
+  "data": [
+    {
+      "user_id": "989898",
+      "id": "174662444594497923",
+      "user_email": "email@rzrasel.com",
+      "email_provider": "user",
+      "is_primary": "",
+      "last_verification_sent_at": null,
+      "verification_code_expiry": null,
+      "verification_status": "pending",
+      "status": "active"
+    },
+    {
+      "user_id": "989898",
+      "id": "174663959427574745",
+      "user_email": "email1@rzrasel.com",
+      "email_provider": "user",
+      "is_primary": "",
+      "last_verification_sent_at": null,
+      "verification_code_expiry": null,
+      "verification_status": "pending",
+      "status": "active"
+    }
+  ]
 }</pre>
         </section>
 
@@ -117,22 +158,10 @@ $baseUrl = dirname($baseUrl);
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>400</td>
-                    <td>Bad Request – Invalid or missing parameters</td>
-                </tr>
-                <tr>
-                    <td>405</td>
-                    <td>Method Not Allowed – Only POST is accepted</td>
-                </tr>
-                <tr>
-                    <td>409</td>
-                    <td>Conflict – Email already exists</td>
-                </tr>
-                <tr>
-                    <td>500</td>
-                    <td>Internal Server Error – Unexpected issue</td>
-                </tr>
+                <tr><td>400</td><td>Bad Request – Missing/Invalid params</td></tr>
+                <tr><td>405</td><td>Method Not Allowed – Only POST allowed</td></tr>
+                <tr><td>409</td><td>Conflict – Email already exists</td></tr>
+                <tr><td>500</td><td>Internal Server Error</td></tr>
                 </tbody>
             </table>
         </section>
@@ -140,14 +169,13 @@ $baseUrl = dirname($baseUrl);
         <section id="notes" class="api-section">
             <h2>Notes</h2>
             <ul>
-                <li>This API only supports the <code>POST</code> method.</li>
-                <li><code>user_email</code> must be unique within the system.</li>
-                <li><code>is_primary</code> can be set to <code>true</code> for the user's primary email.</li>
-                <li>No authentication header is required for this API.</li>
+                <li><code>POST</code> method only</li>
+                <li>Email must be unique</li>
+                <li><code>is_primary</code> can be set to true</li>
+                <li>No authorization required</li>
             </ul>
         </section>
 
-        <!-- Go to Top Button -->
         <a href="#top" class="go-top">↑ Top</a>
     </div>
 </div>

@@ -31,6 +31,7 @@ class Autoloader extends AutoloaderHelper{
         $directories = $autoloaderConfig->getDirectories();
         $this->directories = is_array($directories) ? $directories : [$directories];
         $this->isFileWrite = $autoloaderConfig->getIsFileWrite();
+        //echo "<pre>" . print_r($this->directories, true) . "</pre>";
         //echo "{$this->isFileWrite}";
         //$this->scanDirectories();
         $this->autoloaderConfig = $autoloaderConfig;
@@ -58,11 +59,15 @@ class Autoloader extends AutoloaderHelper{
                 return;
             }
         }
-        $fileName = parent::getClassToFilePath($class, $this->directories, $this->autoloaderConfig, ".php");
+        //echo "<pre>" . print_r($this->directories, true) . "</pre>";
+        $fileNameList = parent::getClassToFilePath($class, $this->directories, $this->autoloaderConfig, ".php");
+        //echo "<pre>" . print_r($fileNameList, true) . "</pre>";
         //echo "{$this->isFileWrite}";
-        if($fileName) {
+        if(!empty($fileNameList)) {
             //echo $fileName;
-            require_once($fileName);
+            foreach ($fileNameList as $fileName) {
+                require_once($fileName);
+            }
         }
     }
 
@@ -73,6 +78,7 @@ class Autoloader extends AutoloaderHelper{
             $results = $directoryScanner->scanDirectory($directory);
             $dirList = array_merge($dirList, $results);
         }
+        echo "<pre>" . print_r($dirList, true) . "</pre>";
     }
 
     public function directoryFile($directories) {}

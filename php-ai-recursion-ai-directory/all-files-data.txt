@@ -1,434 +1,342 @@
-//----- File: api-documentation/assets/css/style.css -----
+//----- File: app-api/.htaccess -----
 
-body {
-    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f4f7fa;
-    margin: 0;
-    padding: 0;
-    color: #333;
-    display: flex;
-    flex-direction: row;
-    min-height: 100vh;
-    scroll-behavior: smooth;
-}
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Prevent direct access to sensitive files
+    <FilesMatch "^(config\.php|\.htaccess)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+    
+    # Redirect all requests to index.php if the file doesn't exist
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
 
-.container {
-    display: flex;
-    flex-grow: 1;
-    max-width: 100%;
-    padding: 20px;
-}
+//----- File: app-api/app/config/config.php -----
 
-.anchor-menu {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 30px;
-    margin-top: 10px;
-}
+<?php
+define("DB_TYPE", "mysql"); // Set "sqlite" for SQLite or "mysql" for MySQL
+define("DB_HOST", "localhost");
+define("DB_NAME", "test_db");
+define("DB_USER", "root");
+define("DB_PASS", "");
 
-.anchor-menu a {
-    text-decoration: none;
-    padding: 10px 16px;
-    background-color: #e6f0ff;
-    color: #0056b3;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid #cce0ff;
-}
+// SQLite Configuration (for SQLite database)
+define("DB_SQLITE_PATH", __DIR__ . "/database.db");
 
-.anchor-menu a:hover {
-    background-color: #cce0ff;
-    color: #003d80;
-    transform: translateY(-1px);
-}
+defined("BASE_URL") or define("BASE_URL", "http://localhost/app-api/");
+// Default Controller and Action
+define("DEFAULT_CONTROLLER", "HomeController");
+define("DEFAULT_ACTION", "index");
 
-.go-top {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #0056b3;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 14px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    z-index: 999;
-}
+// Error Reporting
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+?>
 
-.go-top:hover {
-    background-color: #003d80;
-    transform: translateY(-2px);
-}
+//----- File: app-api/app/controllers/home-controller.php -----
 
-.left-navigation {
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    z-index: 100;
-    overflow-y: auto;
-}
+<?php
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class HomeController extends BaseController {
 
-.left-side-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.left-nav-link {
-    text-decoration: none;
-    color: #0066cc;
-    background-color: #eef6ff;
-    padding: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    border-left: 5px solid #0066cc;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.left-nav-link:hover {
-    background-color: #dceeff;
-    color: #004080;
-    transform: translateX(5px);
-}
-
-.content {
-    margin-left: 270px;
-    padding: 20px;
-    flex-grow: 1;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-h1 {
-    font-size: 28px;
-    color: #0052cc;
-    margin-bottom: 20px;
-}
-
-h2 {
-    font-size: 22px;
-    margin-bottom: 10px;
-    border-left: 4px solid #0052cc;
-    padding-left: 10px;
-    color: #222;
-}
-
-.api-section {
-    background: #fdfdfd;
-    border: 1px solid #e1e4e8;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 25px;
-}
-
-code {
-    background: #f0f0f0;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    color: #d6336c;
-    font-size: 14px;
-}
-
-pre {
-    background: #f6f8fa;
-    padding: 15px;
-    border-radius: 6px;
-    overflow-x: auto;
-    white-space: pre-wrap;
-    font-size: 14px;
-    color: #212529;
-    font-family: 'Courier New', Courier, monospace;
-    line-height: 1.5;
-    border: 1px solid #eaecef;
-}
-
-.method-tag {
-    display: inline-block;
-    background-color: #28a745;
-    color: white;
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 4px;
-    margin-left: 10px;
-    font-weight: 600;
-}
-
-.status-code {
-    display: inline-block;
-    background-color: #007bff;
-    color: white;
-    font-size: 12px;
-    padding: 3px 10px;
-    border-radius: 4px;
-    margin-left: 10px;
-    font-weight: 600;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
-}
-
-ul {
-    padding-left: 20px;
-}
-
-ul li {
-    margin-bottom: 8px;
-    line-height: 1.6;
-}
-
-@media (max-width: 768px) {
-    .left-navigation {
-        width: 100%;
-        position: relative;
-        height: auto;
-        margin-bottom: 20px;
+    public function index() {
+        echo "Welcome to the HomeController!";
     }
 
-    .content {
-        margin-left: 0;
+    public function show($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/app/controllers/user-email-controller.php -----
+
+<?php
+use App\Microservice\Core\Utils\Data\Response\ResponseData;
+use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
+use App\Microservice\Presentation\Controller\Use\Email\UserEmailController;
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class UserEmailController extends BaseController {
+
+    public function index() {
+        if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+            http_response_code(200);
+            $responseData = new ResponseData("Only POST method is allowed", ResponseStatus::ERROR, null);
+            echo $responseData->toJson();
+            exit;
+        }
+
+        if(empty($_POST)) {
+            $rawData = file_get_contents("php://input");
+            $inputData = json_decode($rawData, true);
+            if(!empty($inputData)) {
+                $_POST = $inputData;
+            }
+        }
+        $controller = new UserEmailController();
+        $response = $controller->executeController($_POST);
+        echo $response->toJson();
     }
 
-    .container {
-        flex-direction: column;
+    public function show($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/app/core/base-controller.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+?>
+<?php
+class BaseController {
+    protected $model;
+
+    public function __construct($modelName = null) {
+        if ($modelName) {
+            $this->loadModel($modelName);
+        }
+    }
+
+    public function loadModel($modelName) {
+        $modelClass = "models/" . $modelName . ".php";
+        if (class_exists($modelClass)) {
+            $this->model = new $modelClass();
+        }
+    }
+
+    // Render JSON response for API requests
+    public function renderJson($data) {
+        header("Content-Type: application/json");
+        echo json_encode($data);
+    }
+
+    // Render HTML view for standard web pages
+    public function renderHtml($view, $data) {
+        extract($data);
+        require "app/views/{$view}.php";
+    }
+}
+?>
+
+//----- File: app-api/app/core/base-model.php -----
+
+<?php
+namespace App\Core;
+?>
+<?php
+use App\Core\Database;
+?>
+<?php
+class BaseModel {
+    protected $db;
+
+    public function __construct() {
+        $this->db = Database::connect();
     }
 }
 
+//----- File: app-api/app/core/database.php -----
 
-//----- File: api-documentation/include.php -----
+<?php
+namespace App\Core;
+?>
+<?php
+use PDO;
+?>
+<?php
+class Database {
+    public static function connect() {
+        $dbType = DB_TYPE;
+        $dbConnection = null;
+
+        /*try {
+            if ($dbType === 'mysql') {
+                $dbConnection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+            } elseif ($dbType === 'sqlite') {
+                $dbConnection = new PDO("sqlite:" . DB_SQLITE_PATH);
+            }
+            $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\Exception $e) {
+            die("Database connection failed: " . $e->getMessage());
+        }*/
+
+        return $dbConnection;
+    }
+}
+?>
+
+//----- File: app-api/app/core/router.php -----
 
 <?php
-namespace RzSDK\Include\Import;
+namespace App\Core;
 ?>
 <?php
-$workingDir = __DIR__;
-$workingDirName = basename($workingDir);
-defined("CONST_STARTING_PATH") or define("CONST_STARTING_PATH", $workingDir);
-defined("CONST_WORKING_DIR_NAME") or define("CONST_WORKING_DIR_NAME", $workingDirName);
+class Router {
+    private $url;
+    private $controller;
+    private $method;
+    private $params = [];
+
+    public function __construct($url) {
+        $this->url = $url;
+        $this->parseUrl();
+    }
+
+    private function parseUrl() {
+        $url = trim($this->url, '/');
+        $url = filter_var($url, FILTER_SANITIZE_URL);
+        $parts = explode('/', $url);
+        echo "<pre>" . print_r($parts, true) . "</pre> " . __LINE__;
+
+        // Get controller
+        $this->controller = isset($parts[0]) && !empty($parts[0]) ?
+            ucfirst(strtolower($parts[0])) . 'Controller' :
+            DEFAULT_CONTROLLER . 'Controller';
+        //echo $this->controller;
+
+        // Get method
+        $this->method = isset($parts[1]) && !empty($parts[1]) ?
+            strtolower($parts[1]) :
+            'index';
+
+        // Get params
+        $this->params = array_slice($parts, 2);
+    }
+
+    public function dispatch() {
+        $controllerClass = 'App\\Controllers\\' . $this->controller;
+
+        if (class_exists($controllerClass)) {
+            $controller = new $controllerClass();
+
+            // Check if method exists
+            if (method_exists($controller, $this->method)) {
+                // Call the method with parameters
+                call_user_func_array([$controller, $this->method], $this->params);
+            } else {
+                // Method not found
+                $this->jsonResponse(['error' => 'Method not found'], 404);
+            }
+        } else {
+            // Controller not found
+            $this->jsonResponse(['error' => 'Controller not found'], 404);
+        }
+    }
+
+    private function jsonResponse($data, $statusCode = 200) {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit;
+    }
+}
 ?>
 <?php
-require_once("../../include.php");
-?>
-<?php
-//echo "==================================Quiz";
+/*class Router {
+    public static function route($url) {
+        // Clean and split URL into segments
+        $segments = explode("/", trim($url, "/"));
+
+        // Default controller and action
+        // Get controller from URL, if not use default controller
+        $controller = isset($_GET["controller"]) ? ucfirst(strtolower($_GET["controller"])) . "Controller" : DEFAULT_CONTROLLER;
+        echo $controller;
+
+        // Get the method, default to index if not set
+        $method = isset($_GET["method"]) ? $_GET["method"] : "index";
+
+        // Get parameters from URL
+        $params = isset($_GET["params"]) ? explode("/", $_GET["params"]) : [];
+
+        // Check if the controller exists
+        if (class_exists($controller)) {
+            $controllerInstance = new $controller();
+
+            // Check if the method exists
+            if (method_exists($controllerInstance, $method)) {
+                // Call the method with parameters
+                call_user_func_array([$controllerInstance, $method], $params);
+            } else {
+                echo "Method '$method' not found in controller '$controller'.";
+            }
+        } else {
+            echo "Controller '$controller' not found.";
+        }
+    }
+}*/
 ?>
 
-//----- File: api-documentation/pages/api-user-password.php -----
+//----- File: app-api/home-controller.php -----
+
+<?php
+use \App\Core\BaseController;
+?>
+<?php
+?>
+<?php
+class HomeController extends BaseController {
+
+    public function index() {
+        echo "Welcome to the HomeController!";
+    }
+
+    public function showBy($id) {
+        echo "Displaying data for ID: " . $id;
+    }
+}
+?>
+
+//----- File: app-api/index.php -----
 
 <?php
 require_once("include.php");
-global $baseUrl;
-$baseUrl = dirname($baseUrl);
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Password API Documentation</title>
-    <link rel="stylesheet" href="<?= $baseUrl; ?>/assets/css/style.css">
-</head>
-<body>
-<div class="container" id="top">
-    <div class="left-navigation">
-        <?php require_once("../utility/left-side-menu.php"); ?>
-    </div>
-    <div class="content">
-        <h1>🔑 User Password API Documentation</h1>
-
-        <div class="anchor-menu">
-            <a href="#endpoint">Endpoint</a>
-            <a href="#overview">Overview</a>
-            <a href="#request-body">Request</a>
-            <a href="#success-response">Success</a>
-            <a href="#error-405">Error 405</a>
-            <a href="#error-409">Error 409</a>
-            <a href="#error-codes">Error Codes</a>
-            <a href="#notes">Notes</a>
-        </div>
-
-        <section id="endpoint" class="api-section">
-            <h2>API Endpoint <span class="method-tag">POST</span></h2>
-            <code><?= dirname($baseUrl) . "/app-microservice-user-email/"; ?></code>
-        </section>
-
-        <section id="overview" class="api-section">
-            <h2>Overview</h2>
-            <p>This endpoint registers or updates a user's email in the system.</p>
-            <ul>
-                <li><strong>Method:</strong> POST</li>
-                <li><strong>Authorization:</strong> None</li>
-                <li><strong>Content-Type:</strong> application/json</li>
-            </ul>
-        </section>
-
-        <section id="request-body" class="api-section">
-            <h2>Request Body</h2>
-            <pre>{
-  "user_id": "989898",
-  "user_email": "email@rzrasel.com",
-  "email_provider": "user",
-  "is_primary": "false",
-  "verification_code": "",
-  "action_type": "create"
-}</pre>
-        </section>
-
-        <section id="success-response" class="api-section">
-            <h2>Success Response <span class="status-code">200 OK</span></h2>
-            <pre>{
-  "message": "'email@rzrasel.com' email already exists.",
-  "status": "error",
-  "data": {
-    "user_id": "989898",
-    "id": "174653866244413319",
-    "user_email": "email@rzrasel.com",
-    "email_provider": "user",
-    "is_primary": "false",
-    "last_verification_sent_at": null,
-    "verification_code_expiry": null,
-    "verification_status": "pending",
-    "status": "active"
-  },
-  "status_code": 200
-}</pre>
-        </section>
-
-        <section id="error-405" class="api-section">
-            <h2>Error Response: Method Not Allowed <span class="status-code">405 ERROR</span></h2>
-            <pre>{
-  "message": "Only POST method is allowed",
-  "status": "error",
-  "data": null,
-  "status_code": 405
-}</pre>
-        </section>
-
-        <section id="error-409" class="api-section">
-            <h2>Error Response: Duplicate Email <span class="status-code">409 ERROR</span></h2>
-            <pre>{
-  "message": "'email@rzrasel.com' email already exists.",
-  "status": "error",
-  "data": {
-    "user_id": "989898",
-    "id": "174653870819244893",
-    "user_email": "email@rzrasel.com",
-    "email_provider": "user",
-    "is_primary": "false",
-    "last_verification_sent_at": null,
-    "verification_code_expiry": null,
-    "verification_status": "pending",
-    "status": "active"
-  },
-  "status_code": 409
-}</pre>
-        </section>
-
-        <section id="error-codes" class="api-section">
-            <h2>Error Codes</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>Status Code</th>
-                    <th>Description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>400</td>
-                    <td>Bad Request – Invalid or missing parameters</td>
-                </tr>
-                <tr>
-                    <td>405</td>
-                    <td>Method Not Allowed – Only POST is accepted</td>
-                </tr>
-                <tr>
-                    <td>409</td>
-                    <td>Conflict – Email already exists</td>
-                </tr>
-                <tr>
-                    <td>500</td>
-                    <td>Internal Server Error – Unexpected issue</td>
-                </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section id="notes" class="api-section">
-            <h2>Notes</h2>
-            <ul>
-                <li>This API only supports the <code>POST</code> method.</li>
-                <li><code>user_email</code> must be unique within the system.</li>
-                <li><code>is_primary</code> can be set to <code>true</code> for the user's primary email.</li>
-                <li>No authentication header is required for this API.</li>
-            </ul>
-        </section>
-
-        <!-- Go to Top Button -->
-        <a href="#top" class="go-top">↑ Top</a>
-    </div>
-</div>
-</body>
-</html>
-
-//----- File: api-documentation/pages/include.php -----
-
-<?php
-namespace RzSDK\Include\Import;
+/*echo BASE_URL;
+echo "<br />";*/
 ?>
 <?php
-$workingDir = __DIR__;
-$workingDirName = basename($workingDir);
-defined("CONST_STARTING_PATH") or define("CONST_STARTING_PATH", $workingDir);
-defined("CONST_WORKING_DIR_NAME") or define("CONST_WORKING_DIR_NAME", $workingDirName);
+require_once "app/config/config.php";
+//require_once "app/core/base-controller.php";
+//require_once "app/core/base-model.php";
+//require_once "app/core/database.php";
+//require_once "app/core/router.php";
 ?>
 <?php
-require_once("../../../include.php");
+//require_once "app/controllers/home-controller.php";
+/*require_once "app/controllers/UserController.php";
+require_once "app/controllers/ContactController.php";
+require_once "app/models/UserModel.php";
+require_once "app/models/ContactModel.php";*/
 ?>
 <?php
-//echo "==================================Quiz";
+use RzSDK\URL\SiteUrl;
+use App\Core\Router;
 ?>
+<?php
+// Get the current URL
+/*$url = $_SERVER["REQUEST_URI"];
+echo $url;*/
+$fullUrl = SiteUrl::getFullUrl();
 
-//----- File: api-documentation/utility/left-side-menu.php -----
-
-<?php
-global $baseUrl;
+// Call the router to handle the URL
+$router = new Router($fullUrl);
+$router->dispatch();
+/*$homeController = new HomeController();
+$homeController->showBy(1);*/
 ?>
-<nav class="left-side-nav">
-    <a href="<?= $baseUrl; ?>" class="left-nav-link">🏠 Home</a>
-    <a href="<?= "$baseUrl/pages/api-language.php"; ?>" class="left-nav-link">🌐 Language API</a>
-    <a href="<?= "$baseUrl/pages/api-user-email.php"; ?>" class="left-nav-link">📧 User E-mail API</a>
-    <a href="<?= "$baseUrl/pages/api-user-password.php"; ?>" class="left-nav-link">🔑 User Password API</a>
-    <!-- Add more links as needed -->
-</nav>
 

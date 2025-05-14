@@ -21,117 +21,274 @@ class UserEmailRepositoryImpl implements UserEmailRepository {
     }
 
     public function create(UserEmailEntity $userEmail): ResponseData {
-        $tempUserEmailEntity = UserEmailEntity::mapToEntityColumn();
-        $useEmailTableName = self::$useEmailTableName;
-        //
-        $colUserId = $tempUserEmailEntity->user_id;
-        $colUserIdValue = $userEmail->user_id;
-        $colEmail = $tempUserEmailEntity->email;
-        $colEmailNameValue = $userEmail->email;
-        $colIsPrimary = $tempUserEmailEntity->is_primary;
-        $colIsPrimaryValue = $userEmail->is_primary;
-        //
-        $sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colEmail} = '{$colEmailNameValue}';";
-        $dbResult = $this->dbConn->query($sqlQuery, SqliteFetchType::FETCH_OBJ);
-        //print_r($dbResult);
-        if(!empty($dbResult)) {
-            return $this->getResponse(
-                "'{$userEmail->email}' email already exists.",
-                ResponseStatus::ERROR,
-                $userEmail,
-                409,
-            );
-        }
-        //
-        $sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}';";
-        $dbResult = $this->dbConn->query($sqlQuery, SqliteFetchType::FETCH_OBJ);
-        //print_r($dbResult);
-        if(empty($dbResult)) {
-            $userEmail->is_primary = true;
-        } else {
-            //echo gettype($userEmailEntity->is_primary);
-            if($userEmail->is_primary) {
-                $sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}' AND {$colIsPrimary} = true;";
-                //echo $sqlQuery;
-                //$sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}';";
-                //echo $sqlQuery;
-                $dbResult = $this->dbConn->query($sqlQuery);
-                //print_r($dbResult);
-                if(!empty($dbResult)) {
-                    $entityDataList = UserEmailMapper::mapDbToEntity($dbResult);
-                    //print_r($entityDataList);
-                    if(!empty($entityDataList)) {
-                        $entityData = $entityDataList[0];
-                        $entityData->is_primary = false;
-                        $entityData->modified_date = date("Y-m-d H:i:s");
-                        $entityData->modified_by = $userEmail->modified_by;
-                        $this->updatePrimaryEmail($entityData);
+        try {
+            $entityColumns = UserEmailEntity::mapToEntityColumn();
+            $tempUserEmailEntity = UserEmailEntity::mapToEntityColumn();
+            $useEmailTableName = self::$useEmailTableName;
+            //
+            $isExists = $this->isEmailExists($userEmail, array(
+                $entityColumns->email,
+            ));
+            if($isExists->data) {
+                $isExists->data = $userEmail;
+                return $isExists;
+            }
+            $colUserId = $tempUserEmailEntity->user_id;
+            $colUserIdValue = $userEmail->user_id;
+            $colEmail = $tempUserEmailEntity->email;
+            $colEmailNameValue = $userEmail->email;
+            $colIsPrimary = $tempUserEmailEntity->is_primary;
+            $colIsPrimaryValue = $userEmail->is_primary;
+            //
+            //
+            $sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}';";
+            $dbResult = $this->dbConn->query($sqlQuery, SqliteFetchType::FETCH_OBJ);
+            //print_r($dbResult);
+            if (empty($dbResult)) {
+                $userEmail->is_primary = true;
+            } else {
+                //echo gettype($userEmailEntity->is_primary);
+                if ($userEmail->is_primary) {
+                    $sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}' AND {$colIsPrimary} = true;";
+                    //echo $sqlQuery;
+                    //$sqlQuery = "SELECT * FROM {$useEmailTableName} WHERE {$colUserId} = '{$colUserIdValue}';";
+                    //echo $sqlQuery;
+                    $dbResult = $this->dbConn->query($sqlQuery);
+                    //print_r($dbResult);
+                    if (!empty($dbResult)) {
+                        $entityDataList = UserEmailMapper::mapDbToEntity($dbResult);
+                        //print_r($entityDataList);
+                        if (!empty($entityDataList)) {
+                            $entityData = $entityDataList[0];
+                            $entityData->is_primary = false;
+                            $entityData->modified_date = date("Y-m-d H:i:s");
+                            $entityData->modified_by = $userEmail->modified_by;
+                            $this->updatePrimaryEmail($entityData);
+                        }
                     }
                 }
             }
+            $userEmail->is_primary = false;
+            if ($userEmail->is_primary || strtolower($userEmail->is_primary) == "true") {
+                $userEmail->is_primary = true;
+            }
+            //
+            $dataVarListWithKey = $tempUserEmailEntity->getVarListWithKey();
+            $columns = "";
+            $values = "";
+            foreach ($dataVarListWithKey as $value) {
+                $columns .= "$value, ";
+                $values .= ":$value, ";
+            }
+            $columns = trim(trim($columns), ",");
+            $values = trim(trim($values), ",");
+            $sqlQuery = "INSERT INTO {$useEmailTableName} ($columns) VALUES ($values)";
+            $params = [];
+            $dataList = $userEmail->getVarListWithKey();
+            foreach ($dataList as $key => $value) {
+                $params[":$key"] = $value;
+            }
+            //print_r($userEmailEntity);
+            //print_r($params);
+            $this->dbConn->execute($sqlQuery, $params);
+            return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmail, 201);
+        } catch (\Exception $e) {
+            return new ResponseData(
+                "Failed to create email: " . $e->getMessage(),
+                ResponseStatus::ERROR,
+                $userEmail,
+                500
+            );
         }
-        $userEmail->is_primary = false;
-        if($userEmail->is_primary || strtolower($userEmail->is_primary) == "true") {
-            $userEmail->is_primary = true;
-        }
-        //
-        $dataVarListWithKey = $tempUserEmailEntity->getVarListWithKey();
-        $columns = "";
-        $values = "";
-        foreach($dataVarListWithKey as $value) {
-            $columns .= "$value, ";
-            $values .= ":$value, ";
-        }
-        $columns = trim(trim($columns), ",");
-        $values = trim(trim($values), ",");
-        $sqlQuery = "INSERT INTO {$useEmailTableName} ($columns) VALUES ($values)";
-        $params = [];
-        $dataList = $userEmail->getVarListWithKey();
-        foreach($dataList as $key => $value) {
-            $params[":$key"] = $value;
-        }
-        //print_r($userEmailEntity);
-        //print_r($params);
-        $this->dbConn->execute($sqlQuery, $params);
-        return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmail, 201);
     }
 
     public function select(UserEmailEntity $userEmail, array $columns): ResponseData {
-        $useEmailTableName = self::$useEmailTableName;
-        $columns = array_map(function ($item) {
-            if ($item === "user_email") return "email";
-            if ($item === "email_provider") return "provider";
-            return $item;
-        }, $columns);
-        //print_r($columns);
-        $varList = $userEmail->getVarList();
+        try {
+            $useEmailTableName = self::$useEmailTableName;
+            $columns = array_map(function ($item) {
+                if ($item === "user_email") return "email";
+                if ($item === "email_provider") return "provider";
+                return $item;
+            }, $columns);
+            //print_r($columns);
+            $varList = $userEmail->getVarList();
+            $whereParts = array();
+            foreach ($columns as $key) {
+                if (in_array($key, $varList)) {
+                    $value = $userEmail->{$key};
+                    $whereParts[] = "$key = '{$value}'";
+                }
+            }
+            $whereClause = implode(' AND ', $whereParts);
+            $whereStatement = "WHERE $whereClause;";
+            if (empty($whereStatement)) {
+                $whereStatement = ";";
+            }
+            $sqlQuery = trim("SELECT * FROM {$useEmailTableName} $whereStatement");
+            $dbResult = $this->dbConn->query($sqlQuery);
+            $entityDataList = array();
+            if (!empty($dbResult)) {
+                $entityDataList = UserEmailMapper::mapDbToEntity($dbResult);
+            } else {
+                return new ResponseData("User email not found.", ResponseStatus::ERROR, $entityDataList, 404);
+            }
+            if (empty($entityDataList)) {
+                return new ResponseData("User email not found", ResponseStatus::ERROR, $entityDataList, 404);
+            }
+            return new ResponseData("User email selected successfully.", ResponseStatus::SUCCESS, $entityDataList, 200);
+        } catch (\Exception $e) {
+            return new ResponseData(
+                "Failed to retrieve emails: " . $e->getMessage(),
+                ResponseStatus::ERROR,
+                $userEmail,
+                500
+            );
+        }
+    }
+
+    public function update(UserEmailEntity $userEmail, array $whereColumns): ResponseData {
+        if(empty($whereColumns)) {
+            return new ResponseData("User email updated error.", ResponseStatus::ERROR, $userEmail, 500);
+        }
+        try {
+            $entityColumns = UserEmailEntity::mapToEntityColumn();
+            $varListWithKey = $entityColumns->getVarListWithKey();
+            //
+            unset($varListWithKey[$entityColumns->created_date]);
+            unset($varListWithKey[$entityColumns->created_by]);
+            //
+            $notUpdateColumns = array(
+                $entityColumns->user_id,
+                $entityColumns->id,
+                $entityColumns->email,
+            );
+            //
+            $params = array();
+            $setParts = array();
+            $whereParts = array();
+            foreach ($varListWithKey as $key => $value) {
+                $params[":$key"] = $value;
+                if (!in_array($key, $notUpdateColumns)) {
+                    $setParts[] = "$key = :$key";
+                }
+                if (in_array($key, $whereColumns)) {
+                    $whereParts[] = "$key = :$key";
+                }
+            }
+            //
+            $setClause = implode(', ', $setParts);
+            $whereClause = implode(' AND ', $whereParts);
+            //
+            $sqlQuery = "UPDATE " . self::$useEmailTableName . "
+                    SET {$setClause}
+                    WHERE {$whereClause};";
+            //print_r($sqlQuery);
+            $this->dbConn->execute($sqlQuery, $params);
+            //
+            return new ResponseData("User email updated successfully.", ResponseStatus::SUCCESS, $userEmail, 200);
+        } catch (\Exception $e) {
+            return new ResponseData(
+                "Failed to update primary email: " . $e->getMessage(),
+                ResponseStatus::ERROR,
+                $userEmail,
+                500
+            );
+        }
+    }
+
+    public function updatePrimaryEmail(UserEmailEntity $userEmail): ResponseData {
+        $entityColumns = UserEmailEntity::mapToEntityColumn();
+        return $this->update($userEmail, array(
+            $entityColumns->user_id,
+            $entityColumns->email,
+        ));
+        /*try {
+            $entityColumns = UserEmailEntity::mapToEntityColumn();
+            //
+            $params = array();
+            $setParts = array(
+                $entityColumns->is_primary,
+                $entityColumns->modified_date,
+                $entityColumns->modified_by,
+            );
+            $whereParts = array(
+                $entityColumns->user_id,
+                $entityColumns->email,
+            );
+            foreach($setParts as $key) {
+                $params[":$key"] = $userEmail->{$key};
+                $setParts[] = "$key = :$key";
+            }
+            foreach($whereParts as $key) {
+                $params[":$key"] = $userEmail->{$key};
+                $whereParts[] = "$key = :$key";
+            }
+            $setClause = implode(', ', $setParts);
+            $whereClause = implode(' AND ', $whereParts);
+            //
+            $sql = "UPDATE " . self::$useEmailTableName . " 
+                    SET {$setClause}
+                    WHERE {$whereClause};";
+
+            $this->dbConn->execute($sql, $params);
+
+            return new ResponseData(
+                "Primary email updated successfully",
+                ResponseStatus::SUCCESS,
+                $userEmail
+            );
+        } catch (\Exception $e) {
+            return new ResponseData(
+                "Failed to update primary email: " . $e->getMessage(),
+                ResponseStatus::ERROR,
+                $userEmail,
+                500
+            );
+        }*/
+    }
+
+    private function unsetPrimaryEmails(string $userId): void {
+        $entityColumns = UserEmailEntity::mapToEntityColumn();
+        $sql = "UPDATE " . self::$useEmailTableName . " 
+                SET {$entityColumns->is_primary} = false 
+                WHERE {$entityColumns->user_id} = :user_id 
+                AND {$entityColumns->is_primary} = true";
+        $this->dbConn->execute($sql, [":user_id" => $userId]);
+    }
+
+    public function isEmailExists(UserEmailEntity $userEmail, array $whereColumns): ResponseData {
+        $retValue = false;
+        if (empty($whereColumns)) {
+            return new ResponseData("User email where columns empty", ResponseStatus::ERROR, $retValue, 409);
+        }
+        $entityColumns = UserEmailEntity::mapToEntityColumn();
+        $varListWithKey = $entityColumns->getVarListWithKey();
+        //
         $whereParts = array();
-        foreach ($columns as $key) {
-            if(in_array($key, $varList)) {
-                $value = $userEmail->{$key};
-                $whereParts[] = "$key = '{$value}'";
+        foreach ($whereColumns as $key) {
+            if(array_key_exists($key, $varListWithKey)) {
+                $whereParts[] = "$key = '{$userEmail->{$key}}'";
             }
         }
         $whereClause = implode(' AND ', $whereParts);
-        $whereStatement = "WHERE $whereClause;";
-        if(empty($whereStatement)) {
-            $whereStatement = ";";
+        //
+        $sqlQuery = "SELECT * FROM " . self::$useEmailTableName . "
+                    WHERE $whereClause;";
+        //print_r($sqlQuery);
+        $dbResult = $this->dbConn->query($sqlQuery, SqliteFetchType::FETCH_OBJ);
+        //print_r($dbResult);
+        if (!empty($dbResult)) {
+            $retValue = true;
+            return new ResponseData("User email '{$userEmail->email}' already exists", ResponseStatus::ERROR, $retValue, 409);
         }
-        $sqlQuery = trim("SELECT * FROM {$useEmailTableName} $whereStatement");
-        $dbResult = $this->dbConn->query($sqlQuery);
-        $entityDataList = array();
-        if(!empty($dbResult)) {
-            $entityDataList = UserEmailMapper::mapDbToEntity($dbResult);
-        } else {
-            return new ResponseData("User email not found.", ResponseStatus::ERROR, $entityDataList, 404);
-        }
-        if(empty($entityDataList)) {
-            return new ResponseData("Password not found", ResponseStatus::ERROR, $entityDataList, 404);
-        }
-        return new ResponseData("User email selected successfully.", ResponseStatus::SUCCESS, $entityDataList, 200);
+        return new ResponseData("User email not exists", ResponseStatus::ERROR, $retValue, 200);
     }
 
-    public function updatePrimaryEmail(UserEmailEntity $userEmail) {
+    public function getResponse($message, ResponseStatus $status, $responseData, $statusCode = 200) {
+        return new ResponseData($message, $status, $responseData, $statusCode);
+    }
+
+    public function updatePrimaryEmailV(UserEmailEntity $userEmail) {
         $tempUserEmailEntity = UserEmailEntity::mapToEntityColumn();
         $useEmailTableName = self::$useEmailTableName;
         //
@@ -158,10 +315,6 @@ class UserEmailRepositoryImpl implements UserEmailRepository {
         //print_r($params);
         $this->dbConn->execute($sqlQuery, $params);
         return new ResponseData("User email updated successfully.", ResponseStatus::SUCCESS, $userEmail);
-    }
-
-    public function getResponse($message, ResponseStatus $status, $responseData, $statusCode = 200) {
-        return new ResponseData($message, $status, $responseData, $statusCode);
     }
 
     /*public function save(CompositeKeyModel $compositeKey): void {

@@ -50,3 +50,4 @@ error json output:
 - add goto top button
 - don't break code consistency
 - provide full code
+- especially provide api-user-email.php full code

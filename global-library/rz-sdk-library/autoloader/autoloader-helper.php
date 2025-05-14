@@ -25,15 +25,20 @@ class AutoloaderHelper {
         }
         //echo "<pre>" . print_r($dirList, true) . "</pre>";
         //echo "isFileWrite: {$isFileWrite}";
-        $fileName = $this->getFileList($className, $dirList, $fileExtension);
+        $fileNameList = $this->getFileList($className, $dirList, $fileExtension);
+        //echo "<pre>" . print_r($fileNameList, true) . "</pre>" . __LINE__;
         /*echo "{$fileName} - " . __LINE__;
         echo "<br />";*/
-        if($fileName && $autoloaderConfig->getIsFileWrite()) {
-            $this->writeCachePath($autoloaderConfig, $fileName, $className);
+        if($fileNameList && $autoloaderConfig->getIsFileWrite()) {
+            foreach($fileNameList as $fileName) {
+                $this->writeCachePath($autoloaderConfig, $fileName, $className);
+            }
         }
-        return $fileName;
+        return $fileNameList;
+        //return array($fileNameList[0]);
     }
     public function getFileList($className, $directories, $fileExtension = ".php") {
+        $retFileList = [];
         $fileList = [];
         $classToFileNameList = (new ConvertCaseToFileName())->toFileName($className);
         //echo "<pre>" . print_r($classToFileNameList, true) . "</pre>";
@@ -41,11 +46,14 @@ class AutoloaderHelper {
         foreach($classToFileNameList as $item) {
             $fileName = $item . $fileExtension;
             $fileList[] = $fileName;
-            //echo $fileName;
+            //echo $fileName . " - " . __LINE__;
             if(file_exists($fileName)) {
                 /*echo "Exists: $fileName";
                 echo "<br />";*/
-                return $fileName;
+                //return $fileName;
+                if(!in_array($fileName, $retFileList)) {
+                    $retFileList[] = $fileName;
+                }
             }
             foreach($directories as $directory) {
                 $fileName = $item . $fileExtension;
@@ -58,7 +66,10 @@ class AutoloaderHelper {
                 if(file_exists($filePath)) {
                     /*echo "Exists: $filePath - " . __LINE__;
                     echo "<br />";*/
-                    return $filePath;
+                    //return $filePath;
+                    if(!in_array($fileName, $retFileList)) {
+                        $retFileList[] = $filePath;
+                    }
                 }
             }
             $fileList[] = $fileName;
@@ -68,11 +79,14 @@ class AutoloaderHelper {
             if(file_exists($fileName)) {
                 /*echo "Exists: $fileName";
                 echo "<br />";*/
-                return $fileName;
+                //return $fileName;
+                if(!in_array($fileName, $retFileList)) {
+                    $retFileList[] = $fileName;
+                }
             }
         }
         //echo "<pre>" . print_r($fileList, true) . "</pre>";
-        return false;
+        return $retFileList;
     }
 
     public function writeCachePath(AutoloaderConfig $autoloaderConfig, $classFilePath, $className) {

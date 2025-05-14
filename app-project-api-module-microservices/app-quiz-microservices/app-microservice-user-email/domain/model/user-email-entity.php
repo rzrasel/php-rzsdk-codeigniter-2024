@@ -51,6 +51,15 @@ class UserEmailEntity {
     }
 
     public static function mapToEntityColumn() {
+        $selfInstant = new self();
+        $varList = $selfInstant->getVarList();
+        foreach ($varList as $key) {
+            $selfInstant->{$key} = $key;
+        }
+        return $selfInstant;
+    }
+
+    public static function mapToEntityColumnV() {
         return new self(
             "user_id",
             "id",

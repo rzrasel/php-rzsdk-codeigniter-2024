@@ -17,74 +17,76 @@ class UserEmailViewModel {
         $this->useCase = $useCase;
     }
 
-    public function executeViewModel(array $requestDataSet): ResponseData {
-        $actionType = EmailActionType::getByValue($requestDataSet["action_type"]);
-        if ($actionType == EmailActionType::INSERT) {
-            return $this->createEmail($requestDataSet);
-        } else if ($actionType == EmailActionType::SELECT) {
-            return $this->selectEmail($requestDataSet);
+    public function executeViewModel(array $request): ResponseData {
+        if (empty($request['action_type'])) {
+            return new ResponseData(
+                "Missing action_type",
+                ResponseStatus::ERROR,
+                null,
+                400
+            );
         }
-        return new ResponseData("Missing requested action type", ResponseStatus::ERROR, $requestDataSet, 404);
+
+        $actionType = EmailActionType::getByValue($request['action_type']);
+        if (!$actionType) {
+            return new ResponseData(
+                "Invalid action_type",
+                ResponseStatus::ERROR,
+                null,
+                400
+            );
+        }
+
+        return match ($actionType) {
+            EmailActionType::INSERT => $this->createEmail($request),
+            EmailActionType::SELECT => $this->selectEmail($request),
+            default => new ResponseData(
+                "Unsupported action type",
+                ResponseStatus::ERROR,
+                null,
+                400
+            )
+        };
     }
 
-    public function createEmail(array $requestDataSet): ResponseData {
-        $requiredFields = array(
+    private function createEmail(array $request): ResponseData {
+        $required = array(
             "user_id",
             "action_type",
         );
-        foreach ($requiredFields as $field) {
-            if (empty($requestDataSet[$field])) {
-                return new ResponseData("Missing required field: $field", ResponseStatus::ERROR, 400);
+        foreach ($required as $field) {
+            if (empty($request[$field])) {
+                return new ResponseData(
+                    "Missing required field: $field",
+                    ResponseStatus::ERROR,
+                    null,
+                    400
+                );
             }
         }
-        //
-        $userEmailRequestModel = new UserEmailInsertRequestModel();
-        $varList = $userEmailRequestModel->getVarList();
-        foreach ($varList as $key) {
-            if (array_key_exists($key, $requestDataSet)) {
-                $userEmailRequestModel->{$key} = $requestDataSet[$key];
-            }
-        }
-        //
-        //return new ResponseData("User email created successfully.", ResponseStatus::SUCCESS, $userEmailModel, 201);
-        return $this->useCase->createEmail($userEmailRequestModel);
+
+        $model = new UserEmailInsertRequestModel();
+        $this->mapRequestToModel($request, $model);
+        return $this->useCase->createEmail($model);
     }
 
-    public function selectEmail(array $requestDataSet): ResponseData {
-        $requiredFields = array(
-            "action_type",
-        );
-        foreach ($requiredFields as $field) {
-            if (empty($requestDataSet[$field])) {
-                return new ResponseData("Missing required field: $field", ResponseStatus::ERROR, 400);
+    private function selectEmail(array $request): ResponseData {
+        $model = new UserEmailSelectRequestModel();
+        $this->mapRequestToModel($request, $model);
+
+        if (isset($request['columns'])) {
+            $model->columns = $request['columns'];
+        }
+
+        return $this->useCase->selectEmail($model);
+    }
+
+    private function mapRequestToModel(array $request, object $model): void {
+        foreach ($model->getVarList() as $property) {
+            if (array_key_exists($property, $request)) {
+                $model->{$property} = $request[$property];
             }
         }
-        $userEmail = new UserEmailSelectRequestModel();
-        //
-        $dataVarList = $userEmail->getVarList();
-        foreach ($dataVarList as $key) {
-            if(array_key_exists($key, $requestDataSet)) {
-                $userEmail->{$key} = $requestDataSet[$key];
-            }
-        }
-        //
-        $columnRawData = $userEmail->columns;
-        if (!empty($columnRawData)) {
-            if (is_array($columnRawData)) {
-                $userEmail->columns = $columnRawData;
-            } else if (is_string($columnRawData)) {
-                $decoded = json_decode($columnRawData, true);
-                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                    $userEmail->columns = $decoded;
-                } else {
-                    // Treat as comma-separated string
-                    $userEmail->columns = array_map('trim', explode(',', $columnRawData));
-                }
-            }
-        }
-        //
-        //return new ResponseData("User email selected successfully.", ResponseStatus::SUCCESS, $requestDataSet, 200);
-        return $this->useCase->selectEmail($userEmail);
     }
 }
 ?>
