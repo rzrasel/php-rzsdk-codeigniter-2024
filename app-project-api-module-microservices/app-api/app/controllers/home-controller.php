@@ -1,4 +1,7 @@
 <?php
+namespace App\Api\Controllers;
+?>
+<?php
 use \App\Core\BaseController;
 ?>
 <?php

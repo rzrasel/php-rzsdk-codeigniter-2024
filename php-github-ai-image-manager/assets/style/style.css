@@ -1,0 +1,137 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f8;
+    color: #333;
+    line-height: 1.6;
+    height: 100%;
+}
+
+/* Layout */
+.main-body-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Navigation */
+.left-side-navbar {
+    width: 240px;
+    background-color: #1e293b;
+    padding: 20px 0;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.left-side-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.left-side-menu-item {
+    margin-bottom: 0px;
+}
+
+.left-side-menu-link {
+    display: block;
+    padding: 12px 24px;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.left-side-menu-link:hover,
+.left-side-menu-link:focus {
+    background-color: #334155;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Main Content Area */
+.body-container {
+    flex: 1;
+    padding: 40px;
+}
+
+/* Page Header */
+.body-page-header h2 {
+    font-size: 28px;
+    color: #1e293b;
+    margin-bottom: 30px;
+}
+
+/* Form */
+.body-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    max-width: 600px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9fafb;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="text"]:focus {
+    border-color: #3b82f6;
+    background-color: #ffffff;
+    outline: none;
+}
+
+/* Message Box */
+.message {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+/* Submit Button Aligned Right */
+.submit-container {
+    text-align: right;
+}
+
+.btn-submit {
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-submit:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}

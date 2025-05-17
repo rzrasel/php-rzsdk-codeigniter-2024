@@ -1,43 +1,19 @@
 <?php
+namespace App\Microservice\AI\Directory\Scanner;
+?>
+<?php
+require_once("scanner-module/scan-directory-files.php");
+?>
+<?php
+use App\Microservice\AI\Directory\Scanner\Module\ScanDirectoryFiles;
+?>
+<?php
 class DirectoryScanner {
-    public static function scanDirectoryFiles($dir, $is_real_path = false, $base_dir = null) {
-        if (empty($dir)) {
-            $dir = __DIR__;
-        }
-
-        if ($base_dir === null) {
-            $base_dir = realpath($dir);
-        }
-
-        $files = [];
-
-        if (!is_dir($dir)) {
-            return $files;
-        }
-
-        $items = scandir($dir);
-
-        foreach ($items as $item) {
-            if ($item === "." || $item === "..") {
-                continue;
-            }
-
-            $path = $dir . DIRECTORY_SEPARATOR . $item;
-
-            if (is_file($path)) {
-                $realPath = realpath($path);
-                $relativePath = ltrim(str_replace($base_dir, '', $realPath), DIRECTORY_SEPARATOR);
-                $files[] = $relativePath;
-            } elseif (is_dir($path)) {
-                $files = array_merge($files, self::scanDirectoryFiles($path, $is_real_path, $base_dir));
-            }
-        }
-
-        return $files;
-    }
+    use ScanDirectoryFiles;
 
     public static function makeDirectoryStructure(array $fileList, $isCheckBox = false, array $selectedFiles = []) {
         $tree = [];
+        //echo "<pre>" . print_r($fileList, true) . "</pre> " . __LINE__;
 
         foreach ($fileList as $filePath) {
             $parts = explode(DIRECTORY_SEPARATOR, $filePath);

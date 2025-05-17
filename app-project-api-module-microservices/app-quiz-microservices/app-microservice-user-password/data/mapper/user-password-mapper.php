@@ -11,7 +11,7 @@ use App\Microservice\Schema\Data\Model\User\Password\UserPasswordResponseModel;
 ?>
 <?php
 class UserPasswordMapper {
-    public static function getDataVarList(UserEmailRequestModel $requestDataModel) {
+    public static function getDataVarList(UserPasswordModel $requestDataModel) {
         return $requestDataModel->getVarList();
     }
 
@@ -99,3 +99,4 @@ class UserPasswordMapper {
         return $retVal;
     }
 }
+?>

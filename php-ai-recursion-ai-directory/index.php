@@ -1,7 +1,13 @@
 <?php
 require_once("utils/directory-scanner.php");
+require_once("utils/extract-path-util.php");
 require_once("utils/file-content-writer.php");
-
+?>
+<?php
+use App\Microservice\AI\Directory\Scanner\DirectoryScanner;
+use App\Microservice\AI\Directory\Scanner\Util\ExtractPathUtil;
+?>
+<?php
 $dirPath = "target-directory";
 $allFiles = [];
 $isCheckBox = true;

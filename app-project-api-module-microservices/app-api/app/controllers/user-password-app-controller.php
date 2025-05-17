@@ -1,13 +1,19 @@
 <?php
+namespace App\Api\Controllers;
+?>
+<?php
 use App\Microservice\Core\Utils\Data\Response\ResponseData;
 use App\Microservice\Core\Utils\Type\Response\ResponseStatus;
 use App\Microservice\Presentation\Controller\Use\Password\UserPasswordController;
 use \App\Core\BaseController;
 ?>
 <?php
-?>
-<?php
 class UserPasswordAppController extends BaseController {
+
+    public function __construct() {
+        parent::__construct();
+        $this->setPostInput();
+    }
 
     public function index() {
         header("Content-Type: application/json");
@@ -18,13 +24,6 @@ class UserPasswordAppController extends BaseController {
             exit;
         }
 
-        if(empty($_POST)) {
-            $rawData = file_get_contents("php://input");
-            $inputData = json_decode($rawData, true);
-            if(!empty($inputData)) {
-                $_POST = $inputData;
-            }
-        }
         $controller = new UserPasswordController();
         $response = $controller->executeController($_POST);
         echo $response->toJson();
@@ -32,6 +31,17 @@ class UserPasswordAppController extends BaseController {
 
     public function show($id) {
         echo "Displaying data for ID: " . $id;
+    }
+
+    public function setPostInput() {
+        header("Content-Type: application/json");
+        if(empty($_POST)) {
+            $rawData = file_get_contents("php://input");
+            $inputData = json_decode($rawData, true);
+            if(!empty($inputData)) {
+                $_POST = $inputData;
+            }
+        }
     }
 }
 ?>

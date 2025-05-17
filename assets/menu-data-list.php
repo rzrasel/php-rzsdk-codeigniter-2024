@@ -29,6 +29,12 @@ $dataList = array(
     ),
     array(
         "id" => "1.5",
+        "name" => "Project GitHub AI Image Manager",
+        "slug" => "php-github-ai-image-manager/",
+        "children" => array(),
+    ),
+    array(
+        "id" => "1.6",
         "name" => "APP Project API Module Microservices",
         "slug" => "app-project-api-module-microservices/",
         "children" => array(
@@ -53,7 +59,7 @@ $dataList = array(
         )
     ),
     array(
-        "id" => "1.6",
+        "id" => "1.7",
         "name" => "Electronics",
         "slug" => "http://localhost/php-rzsdk-codeigniter/",
         "children" => array(
