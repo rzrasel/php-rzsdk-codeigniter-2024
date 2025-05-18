@@ -2,54 +2,64 @@
 $basePath = "../";
 require_once("{$basePath}/utils/directory-scanner.php");
 require_once("{$basePath}/utils/directory-traverse-retrieve.php");
+require_once("{$basePath}/utils/directory-full-image-gallery.php");
 require_once("{$basePath}/utils/directory-file-rename.php");
-require_once("{$basePath}/utils/directory-compound-image-gallery.php");
-require_once("{$basePath}/utils/directory-array-item-remover.php");
-require_once("{$basePath}/utils/directory-array-item-pick-top-single-file.php");
+require_once("{$basePath}/utils/directory-file-rearrange.php");
 ?>
 <?php
 use App\Microservice\Utils\Directory\Scanner\DirectoryScanner;
 use App\Microservice\Utils\Directory\Traverse\DirectoryTraverseRetrieve;
-use App\Microservice\Utils\Directory\Image\Gallery\DirectoryCompoundImageGallery;
-use App\Microservice\Utils\Directory\Array\Item\Remover\DirectoryArrayItemRemover;
-use App\Microservice\Utils\Directory\Array\Item\Pick\Top\DirectoryArrayItemPickTopSingleFile;
+use App\Microservice\Utils\Directory\Image\Gallery\DirectoryFullImageGallery;
+use App\Microservice\Utils\Directory\File\Rearrange\DirectoryFileRearrange;
 ?>
 <?php
-function runWriteHtmlFile($fileData) {
-    //echo $fileData;
-    // Generate filename: index-YYYY-MM-DD-His[random4].html
+function runWriteHtmlFile($fileData, $fileName = "") {
+    $fileName = str_replace(['_', ' '], '-', $fileName);
+    $title = htmlspecialchars($fileName);
+    $title = str_replace(['-', '_'], ' ', $title);
+    $title = ucwords($title) . " - Image Gallery";
+    //
     $sampleHtmlPath = "../file-write/index-sample.html";
     $sampleHtmlContent = file_get_contents($sampleHtmlPath);
-    $sampleHtmlContent = str_replace("{sample-image-gallery-title-goes-here}", "Compound Image Gallery", $sampleHtmlContent);
+    $sampleHtmlContent = str_replace("{sample-image-gallery-title-goes-here}", $title, $sampleHtmlContent);
     $sampleHtmlContent = str_replace("{sample-image-gallery-html-goes-here}", $fileData, $sampleHtmlContent);
-    /*$timestamp = date("Y-m-d-His");
-    $random4 = str_pad(mt_rand(0, 9999), 4, "0", STR_PAD_LEFT);
-    $filename = "index-{$timestamp}-{$random4}.html";*/
-    $filename = "../file-write/compound-image-gallery.html";
+    //echo $fileData;
+    if(empty($fileName)) {
+        // Generate filename: index-YYYY-MM-DD-His[random4].html
+        $timestamp = date("Y-m-d-His");
+        $random4 = str_pad(mt_rand(0, 9999), 4, "0", STR_PAD_LEFT);
+        $filename = "index-{$timestamp}-{$random4}.html";
+        $filename = "../file-write/item-image-gallery.html";
+    } else {
+        $filename = "../file-write/item-gallery-{$fileName}.html";
+    }
     file_put_contents($filename, $sampleHtmlContent);
 }
 function runGenerateHtmlFile($requestData) {
     //echo "<pre>" . print_r($requestData) . "</pre>";
     $targetDirPath = $_POST["target_dir_path"];
     $acceptedFileExtension = $_POST["accepted_file_extension"];
-    $removeFileExtension = $_POST["remove_file_extension"];
+    $readingFileExtension = $_POST["reading_file_extension"];
     if(!empty($_POST["btn_generate_html_file"])) {
         $targetDirPath = "../" . $targetDirPath;
         $scannedDirectory = DirectoryScanner::scanDirectoryFiles($targetDirPath, 0, $acceptedFileExtension);
         //echo "<pre>" . print_r($scannedDirectory, true) . "</pre>";
         $directoryStructure = DirectoryTraverseRetrieve::traverseDirectoryRetrieve($scannedDirectory, "root", '', 0, 1, $acceptedFileExtension);
         //echo "<pre>" . print_r($directoryStructure, true) . "</pre>";
-        $filteredArray = DirectoryArrayItemRemover::traverseDirectoryRemove($directoryStructure, $removeFileExtension);
-        //echo "<pre>" . print_r($filteredArray, true) . "</pre>";
-        $topSingleFile = DirectoryArrayItemPickTopSingleFile::traverseDirectorySingleFile($filteredArray, $acceptedFileExtension);
-        //echo "<pre>" . print_r($topSingleFile, true) . "</pre>";
-        //$rearrangedData = DirectoryFileRearrange::traverseDirectoryRearrange($directoryStructure, $acceptedFileExtension, $readingFileExtension);
+        $rearrangedData = DirectoryFileRearrange::traverseDirectoryRearrange($directoryStructure, $acceptedFileExtension, $readingFileExtension);
         //echo "<pre>" . print_r($rearrangedData, true) . "</pre>";
-        //$fileData = DirectoryFileReader::traverseDirectoryRead($targetDirPath, $topSingleFile, $acceptedFileExtension, $readingFileExtension);
+        foreach ($rearrangedData as $fileItemData) {
+            $fileName = $fileItemData["label"];
+            //echo $fileItemData["label"];
+            //echo "<pre>" . print_r($fileItemData, true) . "</pre>";
+            $fileData = DirectoryFullImageGallery::traverseDirectoryRead($targetDirPath, $fileItemData, $acceptedFileExtension, $readingFileExtension);
+            //echo $fileData;
+            runWriteHtmlFile($fileData, $fileName);
+        }
+        //$fileData = DirectoryFullImageGallery::traverseDirectoryRead($targetDirPath, $rearrangedData, $acceptedFileExtension, $readingFileExtension);
         /*$newTargetDirPath = str_replace("../", "", $targetDirPath);
         $fileData = str_replace($targetDirPath, $newTargetDirPath, $fileData);*/
-        $galleryHtml = DirectoryCompoundImageGallery::traverseAndGenerateHtmlGallery($targetDirPath, $topSingleFile, $acceptedFileExtension);
-        runWriteHtmlFile($galleryHtml);
+        //runWriteHtmlFile($fileData);
         return "HTML file generation completed.";
     }
     return "";
@@ -71,28 +81,28 @@ if(!empty($_POST)){
     } else {
         $acceptedFileExtension = "";
     }
-    $removeFileExtension = $_POST["remove_file_extension"];
-    if(!empty($removeFileExtension)){
-        $removeFileExtension = preg_replace('/\s+/', '', $removeFileExtension);
-        $removeFileExtension = explode(",", $removeFileExtension);
-        $_POST["reading_file_extension"] = $removeFileExtension;
+    $readingFileExtension = $_POST["reading_file_extension"];
+    if(!empty($readingFileExtension)){
+        $readingFileExtension = preg_replace('/\s+/', '', $readingFileExtension);
+        $readingFileExtension = explode(",", $readingFileExtension);
+        $_POST["reading_file_extension"] = $readingFileExtension;
     } else {
-        $removeFileExtension = "";
+        $readingFileExtension = "";
     }
     $responseMessage = runGenerateHtmlFile($_POST);
     if(is_array($acceptedFileExtension)) {
         $acceptedFileExtension = implode(", ", $acceptedFileExtension);
     }
-    if(is_array($removeFileExtension)) {
-        $removeFileExtension = implode(", ", $removeFileExtension);
+    if(is_array($readingFileExtension)) {
+        $readingFileExtension = implode(", ", $readingFileExtension);
     }
 } else {
     $responseMessage = "";
     $targetDirPath = "file-write/images";
     $acceptedFileExtension = array("png", "jpg", "md");
-    $removeFileExtension = array("md");
+    $readingFileExtension = array("md");
     $acceptedFileExtension = implode(", ", $acceptedFileExtension);
-    $removeFileExtension = implode(", ", $removeFileExtension);
+    $readingFileExtension = implode(", ", $readingFileExtension);
     $filePrefix = "file-name";
 }
 ?>
@@ -133,7 +143,7 @@ if(!empty($_POST)){
 
         <!-- Page Header -->
         <header class="body-page-header">
-            <h2>Directory Scan and Generate HTML Compound Image Gallery</h2>
+            <h2>Directory Scan and Generate HTML Single Item Image Gallery</h2>
         </header>
 
         <!-- Page Content -->
@@ -161,8 +171,8 @@ if(!empty($_POST)){
 
                 <!-- Prefix Input -->
                 <div class="form-group">
-                    <label for="remove_file_extension">Remove File Extension (Comma Separated):</label>
-                    <input type="text" id="remove_file_extension" name="remove_file_extension" value="<?= $removeFileExtension ?>" placeholder="Enter file extension (comma separated: txt, md)">
+                    <label for="reading_file_extension">Reading File Extension (Comma Separated):</label>
+                    <input type="text" id="reading_file_extension" name="reading_file_extension" value="<?= $readingFileExtension ?>" placeholder="Enter file extension (comma separated: txt, md)">
                 </div>
 
                 <!-- Submit Button -->

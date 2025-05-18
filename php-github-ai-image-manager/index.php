@@ -22,6 +22,9 @@
             <li class="left-side-menu-item">
                 <a href="pages/directory-scan-and-generate-html-compound-image-gallery.php" class="left-side-menu-link">Scan And HTML Generate Compound Image Gallery</a>
             </li>
+            <li class="left-side-menu-item">
+                <a href="pages/directory-scan-and-generate-html-single-item-image-gallery.php" class="left-side-menu-link">Scan And HTML Generate Single Item Image Gallery</a>
+            </li>
         </ul>
     </nav>
 

@@ -2,26 +2,29 @@
 $basePath = "../";
 require_once("{$basePath}/utils/directory-scanner.php");
 require_once("{$basePath}/utils/directory-traverse-retrieve.php");
-require_once("{$basePath}/utils/directory-file-reader.php");
+require_once("{$basePath}/utils/directory-full-image-gallery.php");
 require_once("{$basePath}/utils/directory-file-rename.php");
 require_once("{$basePath}/utils/directory-file-rearrange.php");
 ?>
 <?php
 use App\Microservice\Utils\Directory\Scanner\DirectoryScanner;
 use App\Microservice\Utils\Directory\Traverse\DirectoryTraverseRetrieve;
-use App\Microservice\Utils\Directory\File\Reader\DirectoryFileReader;
+use App\Microservice\Utils\Directory\Image\Gallery\DirectoryFullImageGallery;
 use App\Microservice\Utils\Directory\File\Rearrange\DirectoryFileRearrange;
 ?>
 <?php
 function runWriteHtmlFile($fileData) {
-    $fileData = "<link rel=\"stylesheet\" href=\"assets/style/style.css\">" . $fileData;
     //echo $fileData;
     // Generate filename: index-YYYY-MM-DD-His[random4].html
-    $timestamp = date("Y-m-d-His");
+    /*$timestamp = date("Y-m-d-His");
     $random4 = str_pad(mt_rand(0, 9999), 4, "0", STR_PAD_LEFT);
-    $filename = "index-{$timestamp}-{$random4}.html";
+    $filename = "index-{$timestamp}-{$random4}.html";*/
+    $sampleHtmlPath = "../file-write/index-sample.html";
+    $sampleHtmlContent = file_get_contents($sampleHtmlPath);
+    $sampleHtmlContent = str_replace("{sample-image-gallery-title-goes-here}", "Full Image Gallery", $sampleHtmlContent);
+    $sampleHtmlContent = str_replace("{sample-image-gallery-html-goes-here}", $fileData, $sampleHtmlContent);
     $filename = "../file-write/full-image-gallery.html";
-    file_put_contents($filename, $fileData);
+    file_put_contents($filename, $sampleHtmlContent);
 }
 function runGenerateHtmlFile($requestData) {
     //echo "<pre>" . print_r($requestData) . "</pre>";
@@ -36,7 +39,7 @@ function runGenerateHtmlFile($requestData) {
         //echo "<pre>" . print_r($directoryStructure, true) . "</pre>";
         $rearrangedData = DirectoryFileRearrange::traverseDirectoryRearrange($directoryStructure, $acceptedFileExtension, $readingFileExtension);
         //echo "<pre>" . print_r($rearrangedData, true) . "</pre>";
-        $fileData = DirectoryFileReader::traverseDirectoryRead($targetDirPath, $rearrangedData, $acceptedFileExtension, $readingFileExtension);
+        $fileData = DirectoryFullImageGallery::traverseDirectoryRead($targetDirPath, $rearrangedData, $acceptedFileExtension, $readingFileExtension);
         /*$newTargetDirPath = str_replace("../", "", $targetDirPath);
         $fileData = str_replace($targetDirPath, $newTargetDirPath, $fileData);*/
         runWriteHtmlFile($fileData);
@@ -107,10 +110,13 @@ if(!empty($_POST)){
                 <a href="directory-scan-and-file-rename.php" class="left-side-menu-link">Scan And Rename</a>
             </li>
             <li class="left-side-menu-item">
-                <a href="" class="left-side-menu-link">Scan And HTML Generate Full Image Gallery</a>
+                <a href="directory-scan-and-generate-html-full-image-gallery.php" class="left-side-menu-link">Scan And HTML Generate Full Image Gallery</a>
             </li>
             <li class="left-side-menu-item">
                 <a href="directory-scan-and-generate-html-compound-image-gallery.php" class="left-side-menu-link">Scan And HTML Generate Compound Image Gallery</a>
+            </li>
+            <li class="left-side-menu-item">
+                <a href="directory-scan-and-generate-html-single-item-image-gallery.php" class="left-side-menu-link">Scan And HTML Generate Single Item Image Gallery</a>
             </li>
         </ul>
     </nav>

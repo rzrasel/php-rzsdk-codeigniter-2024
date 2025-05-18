@@ -1,16 +1,20 @@
 <?php
-namespace App\Microservice\Utils\Directory\File\Reader;
+namespace App\Microservice\Utils\Directory\Image\Gallery;
 ?>
 <?php
-class DirectoryFileReader {
+class DirectoryFullImageGallery {
     public static function traverseDirectoryRead($basePath, $files, $extensions = [], $readExtensions = []) {
+        // Normalize input data to consistent multi-dimensional format
+        $normalizedFiles = self::normalizeInputData($files);
+
         // Normalize extensions
         $extensions = self::normalizeExtensions($extensions);
         $readExtensions = self::normalizeExtensions($readExtensions);
 
-        $html = "<div class=\"image-album\">\n";
+        $html = "";
+        //$html = "<div class=\"image-album\">\n";
 
-        foreach ($files as $fileItem) {
+        foreach ($normalizedFiles as $fileItem) {
             if (empty($fileItem['files'])) continue;
 
             $label = self::formatLabel($fileItem['label']);
@@ -40,9 +44,24 @@ class DirectoryFileReader {
             $html .= "  </div>\n"; // Close image-album-section
         }
 
-        $html .= "</div>\n"; // Close image-album
+        //$html .= "</div>\n"; // Close image-album
 
         return $html;
+    }
+
+    private static function normalizeInputData($input) {
+        // If input is already in multi-dimensional format
+        if (isset($input[0])) {
+            return $input;
+        }
+
+        // If input is single-dimensional format, convert to multi-dimensional
+        if (isset($input['label']) && isset($input['files'])) {
+            return [$input];
+        }
+
+        // Handle other cases (empty input, etc.)
+        return [];
     }
 
     private static function normalizeExtensions($extensions) {
@@ -82,7 +101,7 @@ class DirectoryFileReader {
         return "      <div class=\"image-gallery-grid-item\">\n" .
             "        <div class=\"image-gallery-item\">\n" .
             "          <a href=\"{$filePath}\" target=\"_blank\" title=\"{$filename}\">\n" .
-            "            <img src=\"{$filePath}\" alt=\"{$filename}\" style=\"width: {$imageWidth}; border: 0;\"/>\n" .
+            "            <img src=\"{$filePath}\" alt=\"{$filename}\" loading=\"lazy\" style=\"width: {$imageWidth}; border: 0;\"/>\n" .
             "          </a>\n" .
             "        </div>\n" .
             "      </div>\n";
